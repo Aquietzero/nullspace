@@ -6,7 +6,7 @@ toc: true
 tags:
     - AI
     - 强化学习
-    - 阅读笔记
+    - 读书笔记
 ---
 
 ## The objective of a decision-making agent

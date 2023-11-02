@@ -6,7 +6,7 @@ toc: true
 tags:
     - AI
     - 强化学习
-    - 阅读笔记
+    - 读书笔记
 ---
 
 In this chapter, we’ll study agents that can learn to estimate the value of policies, similar to the policy-evaluation method, but this time without the MDP. This is often called the prediction problem because we’re estimating value functions, and these are defined as the expectation of future discounted rewards.
