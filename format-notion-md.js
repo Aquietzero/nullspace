@@ -33,6 +33,9 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   content = content.replace(/\\sub/g, '\\subset')
   content = content.replace(/\\sube/g, '\\subseteq')
 
+  content = content.replace(/\\exist/g, '\\exists')
+  content = content.replace(/\\lrarr/g, '\\iff')
+
   fs.writeFile(filePath, content, 'utf8', (err) => {
     if (err) {
       console.error(err)
