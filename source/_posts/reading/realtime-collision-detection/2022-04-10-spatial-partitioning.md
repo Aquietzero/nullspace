@@ -97,7 +97,7 @@ Consider the case in which objects are associated with a single cell only. When 
 ```cpp
 // Objects placed in single cell based on their bounding sphere center.
 // Checking object’s cell and all 8 neighboring grid cells:
-**check object’s cell
+check object’s cell
 check northwest neighbor cell
 check north neighbor cell
 check northeast neighbor cell
@@ -105,7 +105,7 @@ check west neighbor cell
 check east neighbor cell
 check southwest neighbor cell
 check south neighbor cell
-check southeast neighbor cell**
+check southeast neighbor cell
 ```
 
 **If instead the minimum corner of the AABB has been used**, most neighboring cells have to be tested only if the current object actually overlaps into them.
@@ -502,7 +502,7 @@ void TestAllCollisions(Node *pTree) {
 
 An effective way of dealing with straddling objects is to expand the node volumes by some amount to make them partially overlapping. The resulting relaxed octrees have been dubbed **loose octrees**.
 
-![(a) The cross section of a regular octree, shown as a quad tree.(b) Expanding the nodes of the octree, here by half the node width in all directions, turns the tree into a loose octree. (The loose nodes are offset and shown in different shades of gray to better show their boundaries. The original octree nodes are shown as dashed lines.)](source/assets/images/2022-04-10-spatial-partitioning/loose-octrees.png)
+![(a) The cross section of a regular octree, shown as a quad tree.(b) Expanding the nodes of the octree, here by half the node width in all directions, turns the tree into a loose octree. (The loose nodes are offset and shown in different shades of gray to better show their boundaries. The original octree nodes are shown as dashed lines.)](/assets/images/2022-04-10-spatial-partitioning/loose-octrees.png)
 
 # *k*-d Trees
 
@@ -569,7 +569,7 @@ Particularly common in many applications, games in particular, are line pick tes
 
 ## k-d Tree Intersection Test
 
-The basic idea behind intersecting a ray or directed line segment with a k-d tree is straightforward. The segment $S(t) = A + t\bold{d}$ is intersected against the node’s splitting plane, and the $t$ value of intersection is computed. It $t$ is within the interval of the segment, $0 \leq t \leq t_\text{max}$, the segment straddles the plane and both children of the tree are recursively descended.
+The basic idea behind intersecting a ray or directed line segment with a k-d tree is straightforward. The segment $S(t) = A + t\textbf{d}$ is intersected against the node’s splitting plane, and the $t$ value of intersection is computed. It $t$ is within the interval of the segment, $0 \leq t \leq t_\text{max}$, the segment straddles the plane and both children of the tree are recursively descended.
 
 ```cpp
 // Visit all k-d tree nodes intersected by segment S = a + t * d, 0 <= t < tmax

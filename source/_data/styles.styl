@@ -28,6 +28,8 @@ strong
     border: none
 
 // archieve list styles
+.collection-title
+  display: none
 .posts-collapse .post-content
   .collection-year
     margin: 30px 0 10px 0
@@ -48,15 +50,22 @@ strong
       background: #F1F1EF
       padding: 10px 20px
       border-radius: 5px
+      margin: 0 0 20px
       p
         padding: 0
         margin: 0
 
+    .highlight
+      border-radius: 5px
+
     figcaption
       font-weight: normal !important
-      text-align: left !important
+      line-height: 1.2
       strong
         color: #999 !important
+
+    .code
+      font-size: 1em
 
   // copyright
   .post-copyright
@@ -73,9 +82,16 @@ strong
     padding-left: 0 
     .popular-posts-item
       line-height: 1.6
+      margin-bottom: 20px
       .popular-posts-link
         opacity: 1
+        border-bottom: none
+        display: flex
+        flex-direction: column
+      .popular-posts-title
+        font-size: 1em
       .popular-posts-time
         opacity: 0.5
-        margin-left: 10px
         font-size: 0.8em
+        margin-bottom: -5px
+        text-decoration: none !important

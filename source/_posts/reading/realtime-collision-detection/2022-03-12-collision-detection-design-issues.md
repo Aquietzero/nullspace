@@ -60,7 +60,7 @@ Rather than having one all-encompassing collision detection system, it is often 
 
 ## Number of Objects
 
-Because any one object can potentially collide with any other object, a simulation with $n$ objects requires $(n-1)+(n-2)+\cdots+1 = n(n-1)/2 = O(n^2)$ pairwise tests, worst case. **To really speed up the process, the number of pairs tested must be reduced.** The reduction is performed by separating the collision handling of multiple objects into two phases: the **broad phase** and the **narrow phase**.
+Because any one object can potentially collide with any other object, a simulation with $n$ objects requires $(n-1)+(n-2)+\cdots+1 = O(n^2)$ pairwise tests, worst case. **To really speed up the process, the number of pairs tested must be reduced.** The reduction is performed by separating the collision handling of multiple objects into two phases: the **broad phase** and the **narrow phase**.
 
 - The broad phase identifies smaller groups of objects that may be colliding and quickly excludes those that definitely are not.
 - The narrow phase constitutes the pairwise tests within subgroups.

@@ -16,3 +16,7 @@ The book is concerned with the subject of collision detection: detecting if two 
 - {% post_link reading/realtime-collision-detection/2022-03-26-bounding-volumes %}
 - {% post_link reading/realtime-collision-detection/2022-04-05-basic-primitive-tests %}
 - {% post_link reading/realtime-collision-detection/2022-04-06-bounding-volume-hierarchies %}
+- {% post_link reading/realtime-collision-detection/2022-04-10-spatial-partitioning %}
+- {% post_link reading/realtime-collision-detection/2022-04-13-bsp-tree-hierarchies %}
+- {% post_link reading/realtime-collision-detection/2022-04-13-convexity-based-methods %}
+- {% post_link reading/realtime-collision-detection/2022-04-14-geometrical-robustness %}

@@ -13,11 +13,10 @@
         {%- set popular_post = site.posts.findOne({ path: path }) %}
         <li class="popular-posts-item">
           <a class="popular-posts-link" href="{{ url_for(popular_post.path) }}" rel="bookmark">
-          {{ popular_post.title }}
-          {%- if popular_post.date %}
-            <time class="popular-posts-time">{{ date(popular_post.date) }}</time>
-            <br>
-          {%- endif %}
+            {%- if popular_post.date %}
+              <time class="popular-posts-time">{{ date(popular_post.date) }}</time>
+            {%- endif %}
+            <span class="popular-posts-title">{{ popular_post.title }}</span>
           </a>
         </li>
       {%- endfor %}
