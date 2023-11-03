@@ -1,0 +1,30 @@
+{%- if theme.pjax %}
+  <div class="pjax">
+{%- endif %}
+{%- if page.related_posts and page.related_posts.length > 0 %}
+  <div class="posts-related">
+    <div class="animated">
+      <div class="popular-posts-title">
+        <i class="{{ theme.related_posts.icon }} fa-fw"></i>
+        Related Posts
+      </div>
+      <ul class="popular-posts">
+      {%- for path in page.related_posts %}
+        {%- set popular_post = site.posts.findOne({ path: path }) %}
+        <li class="popular-posts-item">
+          <a class="popular-posts-link" href="{{ url_for(popular_post.path) }}" rel="bookmark">
+          {{ popular_post.title }}
+          {%- if popular_post.date %}
+            <time class="popular-posts-time">{{ date(popular_post.date) }}</time>
+            <br>
+          {%- endif %}
+          </a>
+        </li>
+      {%- endfor %}
+      </ul>
+    </div>
+  </div>
+{%- endif %}
+{%- if theme.pjax %}
+  </div>
+{%- endif %}

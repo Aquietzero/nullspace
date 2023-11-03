@@ -24,7 +24,7 @@ custom_file_path:
   #sidebar: source/_data/sidebar.njk
   #postMeta: source/_data/post-meta.njk
   #postBodyStart: source/_data/post-body-start.njk
-  #postBodyEnd: source/_data/post-body-end.njk
+  postBodyEnd: source/_data/post-body-end.njk
   #footer: source/_data/footer.njk
   #bodyEnd: source/_data/body-end.njk
   #variable: source/_data/variables.styl
@@ -250,8 +250,8 @@ post_meta:
   item_text: true
   created_at: true
   updated_at:
-    enable: true
-    another_day: true
+    enable: false
+    another_day: false
   categories: true
 
 # Post wordcount display settings
@@ -287,7 +287,7 @@ follow_me:
 # Related popular posts
 # Dependencies: https://github.com/sergeyzwezdin/hexo-related-posts
 related_posts:
-  enable: true 
+  enable: false
   icon: fa fa-signs-post
 
 # Post edit
@@ -387,7 +387,7 @@ back2top:
 
 # Reading progress bar
 reading_progress:
-  enable: true
+  enable: false
   # Available values: left | right
   start_at: left
   # Available values: top | bottom
@@ -424,10 +424,11 @@ github_banner:
 # ---------------------------------------------------------------
 
 font:
-  enable: false
+  enable: true
 
   # Uri of fonts host, e.g. https://fonts.googleapis.com (Default).
-  host:
+  host: https://fonts.loli.net
+
 
   # Font options:
   # `external: true` will load this font family from `host` above.
@@ -437,8 +438,10 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external: true
-    family: PT Serif
-    size:
+    #family: PT Serif
+    family: Noto Serif SC
+    #family: Noto Sans SC
+    size: 1.2
 
   # Font settings for site title (.site-title).
   title:

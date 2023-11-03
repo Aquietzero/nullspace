@@ -9,6 +9,9 @@ strong
   font-weight: bold
 
 // site meta
+.site-title
+  font-weight: bold
+
 .brand
   background: white
   color: black
@@ -34,24 +37,45 @@ strong
     margin: 10px 2px 0
 
 // post styles
-.post-body
-  text-align: left
+.post-block
+  h1.post-title
+    font-weight: bold !important
 
-  aside
-    background: #F1F1EF
-    padding: 10px 20px
-    border-radius: 5px
-    p
-      padding: 0
-      margin: 0
+  .post-body
+    text-align: left
 
-  figcaption
-    font-weight: normal !important
-    text-align: left !important
-    strong
-      color: #999 !important
+    aside
+      background: #F1F1EF
+      padding: 10px 20px
+      border-radius: 5px
+      p
+        padding: 0
+        margin: 0
 
-// copyright
-.post-copyright
-  ul
-    border-left: solid 3px pink
+    figcaption
+      font-weight: normal !important
+      text-align: left !important
+      strong
+        color: #999 !important
+
+  // copyright
+  .post-copyright
+    ul
+      border-left: solid 3px pink
+
+// related posts
+.posts-related
+  margin: 50px 0
+  .popular-posts-title
+    font-size: 1.2em
+  .popular-posts
+    list-style-type: none
+    padding-left: 0 
+    .popular-posts-item
+      line-height: 1.6
+      .popular-posts-link
+        opacity: 1
+      .popular-posts-time
+        opacity: 0.5
+        margin-left: 10px
+        font-size: 0.8em
