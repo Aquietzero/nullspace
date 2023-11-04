@@ -21,7 +21,11 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   content = content.replace(/\\ctg/g, '\\cot')
   content = content.replace(/\\sh/g, '\\sinh')
   content = content.replace(/\\ch/g, '\\cosh')
+
+  // dumb but work
   content = content.replace(/\\th/g, '\\tanh')
+  content = content.replace(/\\tanheta/g, '\\theta')
+
   content = content.replace(/\\cth/g, '\\coth')
   content = content.replace(/\\arctg/g, '\\arctan')
   content = content.replace(/\\arcctg/g, '\\text{arccot}')
@@ -35,6 +39,9 @@ fs.readFile(filePath, 'utf8', (err, data) => {
 
   content = content.replace(/\\exist/g, '\\exists')
   content = content.replace(/\\lrarr/g, '\\iff')
+
+  content = content.replace(/\\darr/g, '\\downarrow')
+  content = content.replace(/\\argmax/g, '\\arg\\max')
 
   fs.writeFile(filePath, content, 'utf8', (err) => {
     if (err) {

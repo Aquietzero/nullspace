@@ -29,7 +29,7 @@ Bifnudo's NullSpace. Reading notes, thinkings and projects.
 
 ## Experience
 
-- 2019 - now: Tencent
-- 2017 - 2019: Bytedance
-- 2013 - 2017: Startup
+- 2021 - now: Tencent
+- 2019 - 2021: Bytedance
+- 2013 - 2019: Startup
 - 2013: Graduated from Sun Yat-sen University, China
