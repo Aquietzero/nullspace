@@ -118,8 +118,8 @@ menu_settings:
 
 sidebar:
   # Sidebar Position.
-  # position: left
-  position: right
+  position: left
+  # position: right
 
   # Manual define the sidebar width. If commented, will be default for:
   # Muse | Mist: 320
@@ -141,7 +141,7 @@ sidebar:
 # Sidebar Avatar
 avatar:
   # Replace the default image and set the url here.
-  url: /assets/images/me.png
+  url: /assets/images/me.webp
   # If true, the avatar will be displayed in circle.
   rounded: false
   # If true, the avatar will be rotated with the cursor.
@@ -155,8 +155,9 @@ site_state: true
 # Key is the link label showing to end users.
 # Value before `||` delimiter is the target permalink, value after `||` delimiter is the name of Font Awesome icon.
 social:
-  GitHub: https://github.com/aquietzero || fab fa-github
-  E-Mail: mailto:zhaoyunhaosss@gmail.com || fa fa-envelope
+  GitHub: https://github.com/aquietzero
+  豆瓣: https://www.douban.com/people/aquietzero
+  E-Mail: mailto:zhaoyunhaosss@gmail.com
   #Weibo: https://weibo.com/yourname || fab fa-weibo
   #Twitter: https://twitter.com/yourname || fab fa-twitter
   #FB Page: https://www.facebook.com/yourname || fab fa-facebook
@@ -188,7 +189,7 @@ toc:
   # If true, all words will placed on next lines if header width longer then sidebar width.
   wrap: false
   # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
-  expand_all: false
+  expand_all: true
   # Maximum heading depth of generated toc.
   max_depth: 6
 

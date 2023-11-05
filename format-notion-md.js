@@ -32,8 +32,6 @@ fs.readFile(filePath, 'utf8', (err, data) => {
 
   content = content.replace(/\\coshi/g, '\\chi')
 
-  content = content.replace(/\\bold/g, '\\textbf')
-
   content = content.replace(/\\sub/g, '\\subset')
   content = content.replace(/\\sube/g, '\\subseteq')
 
@@ -42,6 +40,13 @@ fs.readFile(filePath, 'utf8', (err, data) => {
 
   content = content.replace(/\\darr/g, '\\downarrow')
   content = content.replace(/\\argmax/g, '\\arg\\max')
+
+  content = content.replace(/\\textbf\{\\dot/g, '\\dot{\\textbf')
+  content = content.replace(/\\textbf\{\\ddot/g, '\\ddot{\\textbf')
+  content = content.replace(/\\textbf\{\\hat/g, '\\hat{\\textbf')
+  content = content.replace(/\\bold/g, '\\textbf')
+  content = content.replace(/\\textbfsymbol/g, '\\boldsymbol')
+
 
   fs.writeFile(filePath, content, 'utf8', (err) => {
     if (err) {
