@@ -100,10 +100,12 @@ BSPNode *BuildBSPTree(std::vector<Polygon *> &polygons, int depth) {
         Polygon *poly = polygons[i], *frontPart, *backPart;
         switch (**ClassifyPolygonToPlane**(poly, splitPlane)) {
             case COPLANAR_WITH_PLANE:
-            // What’s done in this case depends on what type of tree is being
-            // built. For a node-storing tree, the polygon is stored inside
-            // the node at this level (along with all other polygons coplanar
-            // with the plane). Here, for a leaf-storing tree, coplanar polygons // are sent to either side of the plane. In this case, to the front // side, by falling through to the next case
+                // What’s done in this case depends on what type of tree is being
+                // built. For a node-storing tree, the polygon is stored inside
+                // the node at this level (along with all other polygons coplanar
+                // with the plane). Here, for a leaf-storing tree, coplanar polygons
+                // are sent to either side of the plane. In this case, to the front
+                // side, by falling through to the next case
             case IN_FRONT_OF_PLANE:
                 frontList.push_back(poly);
                 break;
@@ -111,8 +113,10 @@ BSPNode *BuildBSPTree(std::vector<Polygon *> &polygons, int depth) {
                 backList.push_back(poly);
                 break;
             case STRADDLING_PLANE:
-            // Split polygon to plane and send a part to each side of the plane
-                **SplitPolygon**(*poly, splitPlane, &frontPart, &backPart); frontList.push_back(frontPart); backList.push_back(backPart);
+                // Split polygon to plane and send a part to each side of the plane
+                **SplitPolygon**(*poly, splitPlane, &frontPart, &backPart);
+                frontList.push_back(frontPart);
+                backList.push_back(backPart);
                 break;
         }
     }
