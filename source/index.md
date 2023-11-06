@@ -9,6 +9,7 @@ type: index
 
 - {% post_link reading/grokking-deep-reinforcement-learning/index %}
 - {% post_link reading/深度学习进阶-自然语言处理/index %}
+- {% post_link reading/ai-a-modern-approach/index %}
 - {% post_link reading/realtime-collision-detection/index %}
 - {% post_link reading/游戏引擎架构/index %}
 - {% post_link reading/2023-02-28-集异璧之大成 %}
