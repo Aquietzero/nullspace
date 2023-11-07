@@ -9,6 +9,15 @@ tags:
     - 方法论
 ---
 
+<figure class="book-cover">
+  <img src="/assets/images/books/ai-a-modern-approach.png" />
+  <figcaption>
+    AI: A Modern Approach
+    <br />
+    <span class="book-authors">Stuart Russell, Peter Norvig</span>
+  </figcaption>
+</figure>
+
 - {% post_link reading/ai-a-modern-approach/2023-03-08-intelligent-agents %}
 - {% post_link reading/ai-a-modern-approach/2023-03-23-solving-problems-by-searching %}
 - {% post_link reading/ai-a-modern-approach/2023-03-25-search-in-complex-environments %}

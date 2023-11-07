@@ -9,6 +9,15 @@ tags:
     - 强化学习
 ---
 
+<figure class="book-cover">
+  <img src="/assets/images/books/grokking-deep-reinforcement-learning.png" />
+  <figcaption>
+    Grokking Deep Reinforcement Learning
+    <br />
+    <span class="book-authors">Miguel Morales</span>
+  </figcaption>
+</figure>
+
 - {% post_link reading/grokking-deep-reinforcement-learning/2023-08-25-introduction %}
 - {% post_link reading/grokking-deep-reinforcement-learning/2023-09-02-mathematical-foundations-of-reinforcement-learning %}
 - {% post_link reading/grokking-deep-reinforcement-learning/2023-09-05-balancing-immediate-and-long-term-goals %}

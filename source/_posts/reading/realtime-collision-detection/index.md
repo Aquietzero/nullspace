@@ -9,6 +9,15 @@ tags:
     - 碰撞检测
 ---
 
+<figure class="book-cover">
+  <img src="/assets/images/books/realtime-collision-detection.png" />
+  <figcaption>
+    Real-Time Collision Detection
+    <br />
+    <span class="book-authors">Christer Ericson</span>
+  </figcaption>
+</figure>
+
 The book is concerned with the subject of collision detection: detecting if two (or more) objects are intersecting. More specifically, **collision detection concerns the problems of determining if, when, and where two objects come into contact.**
 
 - {% post_link reading/realtime-collision-detection/2022-03-12-collision-detection-design-issues %}

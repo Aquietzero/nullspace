@@ -9,6 +9,15 @@ tags:
     - 架构
 ---
 
+<figure class="book-cover">
+  <img src="/assets/images/books/游戏引擎架构.png" />
+  <figcaption>
+    游戏引擎架构
+    <br />
+    <span class="book-authors">Jason Gregory, 叶劲锋 译</span>
+  </figcaption>
+</figure>
+
 - {% post_link reading/游戏引擎架构/2022-02-17-概述 %}
 - {% post_link reading/游戏引擎架构/2022-02-18-低阶引擎系统 %}
 - {% post_link reading/游戏引擎架构/2022-02-18-游戏循环及实时模拟 %}
