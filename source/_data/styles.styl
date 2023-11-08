@@ -11,7 +11,6 @@ strong
 
 // site meta
 .site-title
-  font-size: 2.1em
   font-weight: bold
 
 .brand
@@ -48,6 +47,9 @@ strong
 
   .post-body
     text-align: left
+
+    table
+      font-size: 0.8em
 
     aside
       background: #F1F1EF
@@ -112,3 +114,20 @@ strong
     box-shadow: 0 0 15px #eee
   .book-authors
     font-size: 0.8em
+
+@media (max-width: 991px)
+  .math.display
+    font-size: 0.8em
+
+  .post-block
+    .post-body
+      img
+        width: 95% !important
+      figure 
+        margin-inline-start: 10px !important
+        margin-inline-end: 10px !important
+        &.book-cover
+          margin: 0 auto !important
+
+      .code
+        font-size: 0.7em

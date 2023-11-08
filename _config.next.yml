@@ -100,7 +100,7 @@ menu:
   tags: /tags/ || fa fa-tags
   categories: /categories/ || fa fa-th
   archives: /archives/ || fa fa-archive
-  about: /about/ || fa fa-user
+  about: /about || fa fa-user
   #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
@@ -441,9 +441,8 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external: true
-    #family: PT Serif
+    # family: PT Serif
     family: Noto Serif SC
-    #family: Noto Sans SC
     size: 1.2
 
   # Font settings for site title (.site-title).

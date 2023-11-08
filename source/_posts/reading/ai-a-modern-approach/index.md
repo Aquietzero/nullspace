@@ -24,3 +24,4 @@ tags:
 - {% post_link reading/ai-a-modern-approach/2023-05-10-logical-agent %}
 - {% post_link reading/ai-a-modern-approach/2023-04-23-first-order-logic %}
 - {% post_link reading/ai-a-modern-approach/2023-05-18-inference-in-first-order-logic %}
+- {% post_link reading/ai-a-modern-approach/2023-06-13-quantifying-uncertainty %}
