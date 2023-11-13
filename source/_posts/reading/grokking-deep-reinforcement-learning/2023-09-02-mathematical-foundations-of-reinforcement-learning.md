@@ -116,13 +116,13 @@ Episodic and continuing tasks can also be defined from the agent’s perspective
 
 ### Discount: The future is uncertain, value it less
 
-Because of the possibility of infinite sequences of time steps in infinite horizon tasks, we need a way to discount the value of rewards over time. It is common to use a positive real value less than one to eponentially discount the value of future rewards.
+Because of the possibility of infinite sequences of time steps in infinite horizon tasks, we need a way to discount the value of rewards over time. It is common to use a positive real value less than one to exponentially discount the value of future rewards.
 
 This number is called the **discount factor**, or **gamma**. 
 
 ![effect-of-discount-factor](/assets/images/2023-09-02-mathematical-foundations-of-reinforcement-learning/effect-of-discount-factor.png)
 
-💡 Interestingly, gamma is part of the MDP definistion: the problem, and not the agent.
+💡 Interestingly, gamma is part of the MDP definition: the problem, and not the agent.
 
 The sum of all rewards obtained during the course of an episode is referred to as the return.
 
@@ -147,6 +147,6 @@ $$
 
 💡 MDPs vs. POMDPs
 
-$\textbf{MDP}(S, A, T, R, S_\theta, \gamma, H)$ have state space $S$, action space $A$, trainsition function $T$, reward signal $R$. They also has a set of initial states distribution $S_\theta$, the discount factor $\gamma$, and the horizon $H$.
+$\textbf{MDP}(S, A, T, R, S_\theta, \gamma, H)$ have state space $S$, action space $A$, transition function $T$, reward signal $R$. They also has a set of initial states distribution $S_\theta$, the discount factor $\gamma$, and the horizon $H$.
 
 $\textbf{POMDP}(S, A, T, R, S_\theta, \gamma, H, O, \varepsilon)$ adds the observation space $O$ and an emission probability $\varepsilon$ that defines the probability of showing an observation $o_t$ given a state $s_t$.

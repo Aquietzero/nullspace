@@ -62,9 +62,7 @@ The advantage function describes how much better it is to take action $a$ instea
 
 ### Optimality
 
-**Policies**, **state-value functions**, **action-value functions**, and **action-advantage functions** are
-the components we use to describe, evaluate, and improve behaviors. We call it **optimality**
-**when these components are the best they can be.
+**Policies**, **state-value functions**, **action-value functions**, and **action-advantage functions** are the components we use to describe, evaluate, and improve behaviors. We call it **optimality** when these components are the best they can be.
 
 An **optimal policy** is a policy that for every state can obtain expected returns greater than or equal to any other policy.
 
