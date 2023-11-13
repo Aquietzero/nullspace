@@ -25,7 +25,7 @@ There are three main branches of ML: supervised, unsupervised, and reinforcement
 - **Unsupervised learning (UL)**: is the task of learning from unlabeled data.
 - **Reinforcement learning (RL)**: is the task of learning through trial and error.
 
-**Deep learning (DL)** is a collection of techniques and methods for using neural networks to solve ML tasks, whether SL, UL, or RL. DRL is simply the use of DL to solve RL tasks. 
+**Deep learning (DL)** is a collection of techniques and methods for using neural networks to solve ML tasks, whether SL, UL, or RL. *DRL is simply the use of DL to solve RL tasks*.
 
 ### Deep reinforcement learning is concerned with creating computer programs
 
@@ -37,7 +37,7 @@ In DRL, the computer programs that solve complex decision-making problems under 
 
 ### Deep reinforcement learning agents can solve problems that require intelligence
 
-On the other side of the agent is the **environment**. The strict boundary between the agent and the environment is that: the agent can only have a single role: making decisions. Everything that comes after the decision gets bundled into the environment.
+On the other side of the agent is the **environment**. The strict boundary between the agent and the environment is that: *the agent can only have a single role: making decisions*. Everything that comes after the decision gets bundled into the environment.
 
 ![boundary-between-agent-and-environment](/assets/images/2023-08-25-introduction/boundary-between-agent-and-environment.png)
 

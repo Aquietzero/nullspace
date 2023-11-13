@@ -76,11 +76,11 @@ seq2seq 中使用编码器对时序数据进行编码，然后将编码信息传
 
 如果使用下图的方式，Attention 层的输出直接作为 LSTM 层的输入，则使用上下文信息的就是 LSTM 层了。
 
-![](source/assets/images/2023-10-12-attention/attention的使用2.png)
+![](/assets/images/2023-10-12-attention/attention的使用2.png)
 
 多层的时候使用 Attention 层如下图所示。
 
-![](source/assets/images/2023-10-12-attention/attention的使用3.png)
+![](/assets/images/2023-10-12-attention/attention的使用3.png)
 
 # Attention 的应用
 

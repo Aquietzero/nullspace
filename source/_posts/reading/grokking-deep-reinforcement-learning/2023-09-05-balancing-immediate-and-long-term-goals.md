@@ -186,7 +186,7 @@ $$
 
 In VI, we don’t have to deal with policies at all. While the goal of VI is the same as the goal of PI —— to find the optimal policy for a given MDP —— VI happens to do this through the value functions.
 
-Whereas VI and PI are two different algorithms, in a more general view, they are two instances of **generalized policy iteration (GPI)**. GPI is a general idea in RL in which policies are improved using their value function estimates, and value function estimates are improved toward the actual value function for the current policy.
+Whereas VI and PI are two different algorithms, in a more general view, they are two instances of **generalized policy iteration (GPI)**. *GPI is a general idea in RL in which policies are improved using their value function estimates, and value function estimates are improved toward the actual value function for the current policy.*
 
 ```python
 def value_iteration(P, gamma=1.0, theta=1e-10):

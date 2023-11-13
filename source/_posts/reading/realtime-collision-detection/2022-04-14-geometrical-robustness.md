@@ -236,7 +236,7 @@ _.each(faces, face => {
 
 **T-junctions** or **t-joints** are referred as situations in which an endpoint of one edge lying on the interior of another edge — the vertex usually displaced off the line by some small amount.
 
-![(a) A mesh with an intentional hole. (b) A mesh with an unintentional hole — a crack (exaggerated).](source/assets/images/2022-04-14-geometrical-robustness/mesh-with-hole.png)
+![(a) A mesh with an intentional hole. (b) A mesh with an unintentional hole — a crack (exaggerated).](/assets/images/2022-04-14-geometrical-robustness/mesh-with-hole.png)
 
 ![(a) A (nonhole) crack. (b) A gap. (c) A t-junction (and its corresponding t-vertex).](/assets/images/2022-04-14-geometrical-robustness/mesh-with-crack.png)
 

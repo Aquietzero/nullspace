@@ -35,9 +35,9 @@ Most agents have a three-step process:
 
 ### The environment: everything else
 
-Most real-world decision-making problems can be expressed as RL environments. A common way to represent decision-making processes in RL is by modeling the problem using a mathematical framework known as **Markov decision processes (MDPs)**. In RL, we assume all environments have an MDP working under the hood.
+Most real-world decision-making problems can be expressed as RL environments. A common way to represent decision-making processes in RL is by modeling the problem using a mathematical framework known as **Markov decision processes (MDPs)**. *In RL, we assume all environments have an MDP working under the hood*.
 
-The environment is represented by a set of variables related to the problem. The combination of all the possible values this set of variables can take is referred to as the **state space**. A **state** is a specific set of values the variables take at any given time.
+The environment is represented by a set of variables related to the problem. *The combination of all the possible values this set of variables can take is referred to as the **state space**.* A **state** is a specific set of values the variables take at any given time.
 
 The set of variables the agent perceives at any given time is called an **observation**. The combination of all possible values these variables can take is the **observation space**.
 
@@ -82,7 +82,7 @@ MDPs make available a set of actions $A$ that depends on the state. In fact, $A$
 
 ### Transition function: Consequences of agent actions
 
-The way the environment changes as a response to actions is referred to as the **state-trainsition probabilities**, or, the **transition function**, and is denoted by $T(s, a, s')$. The transition function $T$ maps $s, a, s'$ to a probability. It can also be represented as $T(s, a)$ and return a dictionary with the next states for its keys and probabilities for its values.
+The way the environment changes as a response to actions is referred to as the **state-trainsition probabilities**, or, the **transition function**, and is denoted by $T(s, a, s')$. *The transition function $T$ maps $s, a, s'$ to a probability*. It can also be represented as $T(s, a)$ and return a dictionary with the next states for its keys and probabilities for its values.
 
 The transition function is defined as
 

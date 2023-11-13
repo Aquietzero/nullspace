@@ -382,7 +382,7 @@ int PointInSolidSpace(BSPNode *node, Point p) {
 
 ## Intersecting a Ray Against a Solid-leaf BSP Tree
 
-The routine to intersect the ray $R(t) = P + t\bold{d}, t \in [t_{min}, t_{max}]$ against a solid-leaf BSP tree as follows. The time $t_{hit}$ of the first intersection with a solid leaf is returned when such an intersection exists.
+The routine to intersect the ray $R(t) = P + t\textbf{d}, t \in [t_{\min}, t_{\max}]$ against a solid-leaf BSP tree as follows. The time $t_{hit}$ of the first intersection with a solid leaf is returned when such an intersection exists.
 
 ```cpp
 // Intersect ray/segment R(t) = p + t*d, tmin <= t <= tmax, against bsp tree

@@ -77,7 +77,7 @@ The probability of an action, given the parameters of the policy network, is den
 ![](/assets/images/2023-11-09-learning-to-pick-the-best-policy/action-reinforcement.png)
 
 Once an action is sampled from the policy network’s probability distribution, it produces a new state and reward. The reward signal is used to reinforce the action that was taken, that is, it
-increases the probability of that action given the state if the reward is positive, or it decreases the probability if the reward is negative. Notice that we only received information about action 3 (element 4), but since the probabilities must sum to 1, we have to lower the probabilities of the other actions.
+increases the probability of that action given the state if the reward is positive, or it decreases the probability if the reward is negative. *Notice that we only received information about action 3 (element 4), but since the probabilities must sum to 1, we have to lower the probabilities of the other actions.*
 
 ## Log probability
 
@@ -145,9 +145,9 @@ We train the policy network by updating the parameters to minimize the objective
 
 ### Calculate the probability of the action
 
-We can use the stored past transitions to recompute the probability distributions using the policy network, but this time we extract just the predicted probability for the action that was actually taken. This quantity is denoted as $P(a_t|\theta, s_t)$. This is a single probability value.
+We can use the stored past transitions to recompute the probability distributions using the policy network, *but this time we extract just the predicted probability for the action that was actually taken.* This quantity is denoted as $P(a_t|\theta, s_t)$. This is a single probability value.
 
-To be concrete, let’s say the current state is $S_5$. We input that into the policy network and it returns $P_\theta(A|s_5) = [0.25, 0.75]$. We sample from this distribution and taken action $a = 1$, and after this the pole falls over and the episode has ended. The total duration of the episode was $T = 5$. For each of these 5 time steps, we took an action according to $P_\theta(A|s_t)$ and we stored the specific probabilities of the actions that were actually taken, $P_\theta(a|s_t)$ in an array, which might look like $[0.5, 0.3, 0.25, 0.5, 0.75]$. We simply multiply these probabilities by the discounted rewards, take the sum, multiply by -1, and call that our overall loss for this episode.
+To be concrete, let’s say the current state is $S_5$. We input that into the policy network and it returns $P_\theta(A|s_5) = [0.25, 0.75]$. We sample from this distribution and taken action $a = 1$, and after this the pole falls over and the episode has ended. The total duration of the episode was $T = 5$. For each of these 5 time steps, we took an action according to $P_\theta(A|s_t)$ and *we stored the specific probabilities of the actions that were actually taken, $P_\theta(a|s_t)$ in an array*, which might look like $[0.5, 0.3, 0.25, 0.5, 0.75]$. We simply multiply these probabilities by the discounted rewards, take the sum, multiply by -1, and call that our overall loss for this episode.
 
 <aside>
 💡 Unlike Gridworld, in CartPole the last action is the one that loses the episode; we discount it the most since we want to penalize the worst move the most.

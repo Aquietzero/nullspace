@@ -8,16 +8,45 @@ Bifnudo's NullSpace. Reading notes, thinkings and projects.
 
 ## Profession
 
-- Fields: AI, Games, Architecture
-- Programming: JS/TS, Python, C++
-- Frameworks: Vue, React, express
-- OS: Mac
+### Frontend
+
+- Languages: Javascript / Typescript, CSS family
+- Frameworks:
+  - Vue Family: Vue 2/3, Vuex...
+  - React Family: React, Redux, SWR, Useful hooks...
+  - Lodash, Threejs, Axios...
+- Skills:
+  - Build complicated systems with decent architecture
+  - Fast coding with prototypes
+  - Methodology to keep software simple and stable
+
+### Backend
+
+- Languages: NodeJS
+- Frameworks:
+  - Koa
+  - Express
+- Skills
+  - Build complicated systems with proper design patterns and decent architecture
+  - Familiar with the best practices with a variety of common functionalities
+  - Fast coding with prototypes
+
+### AI
+
+- Languages: Python
+- Frameworks:
+  - Tensorflow
+  - Keras
+- Skills
+  - Familiar with basic training flow, methods and best practice
 
 ## Interests
 
+- Computer: All, especially `Games`, `AI`, `Architecture`, `Visualization`,
+- Math: All, especially `Group Theory`, `Analysis`
 - Piano: Classical Music
 - Sport: Snooker, Swimming
-- Cubes: Speed, Blind-folded, Single
+- Cubes: Speed, Blind-folded, One-handed
 
 ## Languages
 
@@ -28,7 +57,7 @@ Bifnudo's NullSpace. Reading notes, thinkings and projects.
 
 ## Experience
 
-- 2021 - now: Tencent
-- 2019 - 2021: Bytedance
-- 2013 - 2019: Startup
+- 2021 - now: Tencent `Frontend Developer`
+- 2019 - 2021: Bytedance `Frontend Developer`
+- 2013 - 2019: Startup `Full-Stack`
 - 2013: Graduated from Sun Yat-sen University, China

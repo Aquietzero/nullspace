@@ -42,7 +42,7 @@ where $\alpha$ is learning rate and $\gamma$ is discount factor.
 
 ## Building the network
 
-Generally, we want to use the Q function because it can tell us the value of taking an action in some state, so we can take the action that has the highest predicted value. But it would be rather wasteful to separately compute the Q values for every possible action given the state. A much more efficient procedure presented by DeepMind is to instead recast the Q function as a vector-valued function, it will compute the Q values for all actions, given some state, and return the vector of all those Q values. The new version of the Q function is denoted as $Q_A(s)$.
+Generally, we want to use the Q function because it can tell us the value of taking an action in some state, so we can take the action that has the highest predicted value. *But it would be rather wasteful to separately compute the Q values for every possible action given the state*. A much more efficient procedure presented by DeepMind is to instead recast the Q function as a vector-valued function, it will compute the Q values for all actions, given some state, and return the vector of all those Q values. The new version of the Q function is denoted as $Q_A(s)$.
 
 ![](/assets/images/2023-10-29-predicting-the-best-states-and-actions/q-function.png)
 
@@ -113,7 +113,7 @@ This is the general overview for Q-learning with a target network. It’s a fair
 
 # Summary
 
-- A **state-space** is the set of all possible states that the environment can be in. Usually the states are encoded as tensors, so the state space may be a vector of type $\R^n$ **or a matrix in $\R^{n \times m}$.
+- A **state-space** is the set of all possible states that the environment can be in. Usually the states are encoded as tensors, so the state space may be a vector of type $\mathbb{R}^n$ or a matrix in $\mathbb{R}^{n \times m}$.
 - An **action-space** is the set of all possible actions given a state; for example, the action space for the game chess would be the set of all legal moves given some state of the game.
 - A **state-value** is the expected sum of discounted rewards for a state given we follow some policy. If a state has a high state-value, that means that starting from this state will likely lead to high rewards.
 - An **action-value** is the expected rewards for taking an action in a particular state. It is the value of a state-action pair. If you know the action-values for all possible actions for a state, you can decide to take the action with the highest action-value, and you would expect to receive the highest reward as a result.

@@ -23,3 +23,4 @@ tags:
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-10-28-modeling-reinforcement-learning-problems %}
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-10-29-predicting-the-best-states-and-actions %}
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-11-09-learning-to-pick-the-best-policy %}
+- {% post_link reading/deep-reinforcement-learning-in-action/2023-11-12-tackling-more-complex-problems-with-actor-critic-methods %}
