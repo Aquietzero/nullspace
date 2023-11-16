@@ -1,13 +1,20 @@
 pink = #B35588
 pinkBg = #F9F2F5
 blue = #477DA5
+blueBg = #E9F3F7
+green = #548064 
+greenBg = #EEF3ED
+purple = #A48BBE
+purpleBg = #F6F3F8
+themeColor = pink
+themeColorBg = pinkBg
 
 body
   color: black
   line-height: 1.5
 
 strong
-  color: pink
+  color: themeColor
   font-weight: bold
 
 // site meta
@@ -20,7 +27,7 @@ strong
   font-size: 1.5em
   text-decoration: underline
   &:hover
-    color: pink
+    color: themeColor
 
 .pagination
   border: none
@@ -62,8 +69,8 @@ strong
         margin: 0
 
     code
-      color: pink
-      background: pinkBg
+      color: themeColor
+      background: themeColorBg
       text-decoration: none !important
 
     em
@@ -85,7 +92,7 @@ strong
   // copyright
   .post-copyright
     ul
-      border-left: solid 3px pink
+      border-left: solid 3px themeColor
 
 // related posts
 .posts-related
@@ -97,7 +104,7 @@ strong
     padding-left: 0 
     .popular-posts-item
       line-height: 1.6
-      margin-bottom: 20px
+      margin-bottom: 10px
       .popular-posts-link
         opacity: 1
         border-bottom: none
@@ -136,3 +143,28 @@ strong
 
       .code
         font-size: 0.7em
+
+.pagination
+  .page-number.current
+    background: themeColor
+
+.with-love
+  color: themeColor
+
+.theme-color-blue
+  code
+    color: blue !important
+    background: blueBg !important
+    text-decoration: none !important
+
+.theme-color-green
+  code
+    color: green !important
+    background: greenBg !important
+    text-decoration: none !important
+
+.theme-color-purple
+  code
+    color: purple !important
+    background: purpleBg !important
+    text-decoration: none !important
