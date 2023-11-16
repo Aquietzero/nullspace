@@ -10,34 +10,37 @@ Bifnudo's NullSpace. Reading notes, thinkings and projects.
 
 ### Frontend
 
-- Languages: Javascript / Typescript, CSS family
-- Frameworks:
-  - Vue Family: Vue 2/3, Vuex...
-  - React Family: React, Redux, SWR, Useful hooks...
-  - Lodash, Threejs, Axios...
+- Languages: `js/ts`, `css/sass/stylus`
+- Keywords:
+  - Vue Family: `vue 2/3`, `vuex`...
+  - React Family: `react`, `redux`, `recoil`, `swr`, `hooks`...
+  - MiniApp: `tarojs`, `uni-app`...
+  - Libs: `lodash`, `threejs`, `axios`...
 - Skills:
   - Build complicated systems with decent architecture
   - Fast coding with prototypes
   - Methodology to keep software simple and stable
+  - Performance enhancement, observability, data-driven
 
 ### Backend
 
-- Languages: NodeJS
-- Frameworks:
-  - Koa
-  - Express
-- Skills
+- Languages: `nodejs`, `python`, `golang`
+- Keywords:
+  - `koa`, `expressjs`
+  - `mongodb`, `mongoose`
+  - `redis`
+  - `docker`, `prometheus`, `grafana`
+- Skills:
   - Build complicated systems with proper design patterns and decent architecture
   - Familiar with the best practices with a variety of common functionalities
   - Fast coding with prototypes
 
 ### AI
 
-- Languages: Python
-- Frameworks:
-  - Tensorflow
-  - Keras
-- Skills
+- Languages: `python`
+- Keywords:
+  - `tensorflow`, `keras`, `pytorch`
+- Skills:
   - Familiar with basic training flow, methods and best practice
 
 ## Interests
