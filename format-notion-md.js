@@ -46,6 +46,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   content = content.replace(/\\textbf\{\\hat/g, '\\hat{\\textbf')
   content = content.replace(/\\bold/g, '\\textbf')
   content = content.replace(/\\textbfsymbol/g, '\\boldsymbol')
+  content = content.replace(/\\~/g, '\\tilde')
 
 
   fs.writeFile(filePath, content, 'utf8', (err) => {

@@ -24,3 +24,6 @@ tags:
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-10-29-predicting-the-best-states-and-actions %}
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-11-09-learning-to-pick-the-best-policy %}
 - {% post_link reading/deep-reinforcement-learning-in-action/2023-11-12-tackling-more-complex-problems-with-actor-critic-methods %}
+- {% post_link reading/deep-reinforcement-learning-in-action/2023-11-25-distributional-dqn %}
+- {% post_link reading/deep-reinforcement-learning-in-action/2023-11-27-alternative-optimization-methods-evolutionary-algorithms %}
+- {% post_link reading/deep-reinforcement-learning-in-action/2023-11-27-curiosity-driven-exploration %}

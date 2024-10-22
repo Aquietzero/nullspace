@@ -7,6 +7,7 @@ type: index
 
 最近兴趣集中在游戏引擎以及人工智能，下面是一些近期阅读的书籍及其读书笔记，这些读书笔记没有经过转述，基本上都是原封不动的摘抄，想节省时间不想阅读但又想得到一手表述的朋友们，可以看看这些读书笔记。
 
+- {% post_link reading/ray-tracing-in-one-weekend/index %}
 - {% post_link reading/deep-reinforcement-learning-in-action/index %}
 - {% post_link reading/grokking-deep-reinforcement-learning/index %}
 - {% post_link reading/深度学习进阶-自然语言处理/index %}
