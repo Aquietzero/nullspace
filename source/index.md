@@ -20,6 +20,7 @@ type: index
 
 本部分主要是阅读之后对笔记的总结，加上自己的理解整理而成的知识概述。
 
+- {% post_link computer/AI学习/AI学习时间 %}
 - {% post_link computer/2024-11-09-光线追踪初步 %}
 - {% post_link math/2023-01-27-哥德尔证明 %}
 
