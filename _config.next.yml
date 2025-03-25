@@ -536,8 +536,9 @@ pdf:
 
 # Mermaid tag
 mermaid:
-  enable: false
+  enable: true 
   # Available themes: default | dark | forest | neutral
+  version: 11.5.0
   theme:
     light: default
     dark: dark
