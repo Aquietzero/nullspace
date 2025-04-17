@@ -80,6 +80,7 @@ math:
 
 related_posts:
   enabled: true
+  enable_env_name: production
   filter_threshold: 0.3
   related_count: 6
   weight:
