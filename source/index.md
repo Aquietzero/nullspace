@@ -46,3 +46,9 @@ type: index
   <li><a href="/categories/Piano">钢琴系列</a></li>
   <li><a href="/categories/Languages">语言系列</a></li>
 </ul>
+
+# 往事系列
+
+生活中的随笔，记录一些生活中的小片段，回忆，或者是一些吐槽。
+
+- {% post_link life/2024-07-03-往事系列 %}
