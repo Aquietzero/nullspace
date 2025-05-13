@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "AI学习时间 07 - Transformer与自注意力机制2"
-date: 2025-04-30
+title: AI学习时间 07 - Transformer 与自注意力机制 2
+date: 2025-05-07
 categories:
     - AI
 tags:
@@ -13,7 +13,7 @@ tags:
 ---
 
 <div class="theme-color-blue" markdown=1>
-`#大语言模型` `#时序数据` `#Transformer` `#自注意力机制`
+`#大语言模型` `#Transformer` `#自编码器` `#神经风格迁移` `#多模态大语言模型`
 </div>
 
 # 复习

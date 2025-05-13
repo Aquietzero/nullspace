@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AI学习时间 06 - Transformer与自注意力机制1
+title: AI学习时间 06 - Transformer 与自注意力机制 1
 date: 2025-04-30
 categories:
     - AI
