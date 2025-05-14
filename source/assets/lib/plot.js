@@ -179,4 +179,26 @@ class Plot {
     this.ctx.rect(screenX, screenY, screenWidth, screenHeight);
     this.ctx.stroke();
   }
+
+  drawText(coor, text, options = {}) {
+    const scaleFactor = this.width/10;
+    const [x, y] = coor;
+    const screenX = x * scaleFactor;
+    const screenY = y * scaleFactor;
+
+    // 因为文本需要正向显示，所以需要临时反转 Y 轴
+    this.ctx.scale(1, -1);
+    
+    // 设置文本样式
+    this.ctx.fillStyle = options.color || '#000';
+    this.ctx.font = options.font || '14px Arial';
+    this.ctx.textAlign = options.align || 'center';
+    this.ctx.textBaseline = options.baseline || 'middle';
+    
+    // 绘制文本（注意 y 坐标需要取反）
+    this.ctx.fillText(text, screenX, -screenY);
+    
+    // 恢复坐标系
+    this.ctx.scale(1, -1);
+  }
 }
