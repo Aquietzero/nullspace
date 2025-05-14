@@ -20,3 +20,4 @@ AI 系列课程，从零开始讲述 AI 的各个方面与领域。希望提升�
 - {% post_link computer/AI学习/解码与推理 %}
 - {% post_link computer/AI学习/Transformer与自注意力机制1 %}
 - {% post_link computer/AI学习/Transformer与自注意力机制2 %}
+- {% post_link computer/AI学习/Transformer与自注意力机制3 %}
