@@ -9,11 +9,12 @@ class Board {
    * @param {HTMLElement} container - 棋盘容器元素
    * @param {number} size - 棋盘大小（默认为19路棋盘）
    */
-  constructor(container, size = 19) {
+  constructor(container, size = 19, opts = {}) {
     this.container = container;
     this.size = size;
     this.board = []; // 存储棋盘状态
     this.cellSize = 0; // 每个格子的尺寸
+    this.opts = opts;
     
     // 初始化棋盘状态
     for (let i = 0; i < size; i++) {
@@ -32,7 +33,11 @@ class Board {
     
     // 设置棋盘样式
     this.container.style.position = 'relative';
-    this.container.style.border = '2px solid #000';
+    if (this.opts.noBorder) {
+      this.container.style.border = 'none';
+    } else {
+      this.container.style.border = '2px solid #000';
+    }
     
     // 计算格子大小
     const containerWidth = this.container.clientWidth;
@@ -54,7 +59,7 @@ class Board {
     svg.style.left = '0';
     
     // 绘制横线
-    for (let i = 0; i < this.size; i++) {
+    for (let i = 1; i < this.size - 1; i++) {
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', '0');
       line.setAttribute('y1', i * this.cellSize);
@@ -66,7 +71,7 @@ class Board {
     }
     
     // 绘制竖线
-    for (let i = 0; i < this.size; i++) {
+    for (let i = 1; i < this.size - 1; i++) {
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', i * this.cellSize);
       line.setAttribute('y1', '0');
