@@ -10,14 +10,21 @@ class GridWorld {
    * @param {number} size - 网格大小（例如4表示4x4网格）
    * @param {Object} options - 配置选项
    */
-  constructor(container, size = 4, options = {}) {
+  constructor(id, container, size = 4, options = {}) {
+    this.id = id;
     this.container = container;
     this.size = size;
     this.options = Object.assign({
       cellSize: Math.min(container.clientWidth, container.clientHeight) / size,
       learningRate: 0.1,  // 学习率
       discountFactor: 0.9, // 折扣因子
-      explorationRate: 0.1 // 探索率
+      explorationRate: 0.1, // 探索率
+      // ui
+      showTriangles: true,
+      pathColor: 'black', // 路径颜色
+      pathWidth: 3,         // 路径线宽
+      textColor: '#333',   // 文本颜色
+      textSize: 12,        // 文本大小(px)
     }, options);
     
     // 初始化网格状态
@@ -82,14 +89,14 @@ class GridWorld {
       for (let j = 0; j < this.size; j++) {
         const cell = document.createElement('div');
         cell.className = 'grid-cell';
-        cell.id = `cell-${i}-${j}`;
+        cell.id = `${this.id}-cell-${i}-${j}`;
         cell.style.position = 'absolute';
         cell.style.left = `${j * this.options.cellSize}px`;
         cell.style.top = `${i * this.options.cellSize}px`;
         cell.style.width = `${this.options.cellSize}px`;
         cell.style.height = `${this.options.cellSize}px`;
         cell.style.boxSizing = 'border-box';
-        cell.style.border = '1px solid #ccc';
+        cell.style.border = '0.5px solid #ccc';
         cell.style.backgroundColor = '#fff';
         
         // 创建四个方向的三角形
@@ -107,60 +114,62 @@ class GridWorld {
    * @param {number} col - 列索引
    */
   createTriangles(cell, row, col) {
-    // 将三角形尺寸从 1/3 改为 1/4，使其更小
-    const triangleSize = this.options.cellSize / 4;
+    if (!this.options.showTriangles) return;
+
+    this.triangleSize = this.options.cellSize / 5;
     const center = this.options.cellSize / 2;
+    const trianglePadding = 5;
     
     // 上三角形
     const upTriangle = document.createElement('div');
-    upTriangle.id = `triangle-${row}-${col}-up`;
+    upTriangle.id = `${this.id}-triangle-${row}-${col}-up`;
     upTriangle.style.position = 'absolute';
-    upTriangle.style.left = `${center - triangleSize / 2}px`;
-    upTriangle.style.top = '0';
+    upTriangle.style.left = `${center - this.triangleSize / 2}px`;
+    upTriangle.style.top = `${trianglePadding}px`;
     upTriangle.style.width = '0';
     upTriangle.style.height = '0';
-    upTriangle.style.borderLeft = `${triangleSize / 2}px solid transparent`;
-    upTriangle.style.borderRight = `${triangleSize / 2}px solid transparent`;
-    upTriangle.style.borderBottom = `${triangleSize}px solid #e6e6e6`; // 更浅的灰色
+    upTriangle.style.borderLeft = `${this.triangleSize / 2}px solid transparent`;
+    upTriangle.style.borderRight = `${this.triangleSize / 2}px solid transparent`;
+    upTriangle.style.borderBottom = `${this.triangleSize / 2}px solid #e6e6e6`; // 更浅的灰色
     cell.appendChild(upTriangle);
     
     // 右三角形
     const rightTriangle = document.createElement('div');
-    rightTriangle.id = `triangle-${row}-${col}-right`;
+    rightTriangle.id = `${this.id}-triangle-${row}-${col}-right`;
     rightTriangle.style.position = 'absolute';
-    rightTriangle.style.right = '0';
-    rightTriangle.style.top = `${center - triangleSize / 2}px`;
+    rightTriangle.style.right = `${trianglePadding}px`;
+    rightTriangle.style.top = `${center - this.triangleSize / 2}px`;
     rightTriangle.style.width = '0';
     rightTriangle.style.height = '0';
-    rightTriangle.style.borderTop = `${triangleSize / 2}px solid transparent`;
-    rightTriangle.style.borderBottom = `${triangleSize / 2}px solid transparent`;
-    rightTriangle.style.borderLeft = `${triangleSize}px solid #e6e6e6`; // 更浅的灰色
+    rightTriangle.style.borderTop = `${this.triangleSize / 2}px solid transparent`;
+    rightTriangle.style.borderBottom = `${this.triangleSize / 2}px solid transparent`;
+    rightTriangle.style.borderLeft = `${this.triangleSize / 2}px solid #e6e6e6`; // 更浅的灰色
     cell.appendChild(rightTriangle);
     
     // 下三角形
     const downTriangle = document.createElement('div');
-    downTriangle.id = `triangle-${row}-${col}-down`;
+    downTriangle.id = `${this.id}-triangle-${row}-${col}-down`;
     downTriangle.style.position = 'absolute';
-    downTriangle.style.left = `${center - triangleSize / 2}px`;
-    downTriangle.style.bottom = '0';
+    downTriangle.style.left = `${center - this.triangleSize / 2}px`;
+    downTriangle.style.bottom = `${trianglePadding}px`;
     downTriangle.style.width = '0';
     downTriangle.style.height = '0';
-    downTriangle.style.borderLeft = `${triangleSize / 2}px solid transparent`;
-    downTriangle.style.borderRight = `${triangleSize / 2}px solid transparent`;
-    downTriangle.style.borderTop = `${triangleSize}px solid #e6e6e6`; // 更浅的灰色
+    downTriangle.style.borderLeft = `${this.triangleSize / 2}px solid transparent`;
+    downTriangle.style.borderRight = `${this.triangleSize / 2}px solid transparent`;
+    downTriangle.style.borderTop = `${this.triangleSize / 2}px solid #e6e6e6`; // 更浅的灰色
     cell.appendChild(downTriangle);
     
     // 左三角形
     const leftTriangle = document.createElement('div');
-    leftTriangle.id = `triangle-${row}-${col}-left`;
+    leftTriangle.id = `${this.id}-triangle-${row}-${col}-left`;
     leftTriangle.style.position = 'absolute';
-    leftTriangle.style.left = '0';
-    leftTriangle.style.top = `${center - triangleSize / 2}px`;
+    leftTriangle.style.left = `${trianglePadding}px`;
+    leftTriangle.style.top = `${center - this.triangleSize / 2}px`;
     leftTriangle.style.width = '0';
     leftTriangle.style.height = '0';
-    leftTriangle.style.borderTop = `${triangleSize / 2}px solid transparent`;
-    leftTriangle.style.borderBottom = `${triangleSize / 2}px solid transparent`;
-    leftTriangle.style.borderRight = `${triangleSize}px solid #e6e6e6`; // 更浅的灰色
+    leftTriangle.style.borderTop = `${this.triangleSize / 2}px solid transparent`;
+    leftTriangle.style.borderBottom = `${this.triangleSize / 2}px solid transparent`;
+    leftTriangle.style.borderRight = `${this.triangleSize / 2}px solid #e6e6e6`; // 更浅的灰色
     cell.appendChild(leftTriangle);
   }
   
@@ -175,19 +184,18 @@ class GridWorld {
     // 更新UI
     this.rewards.forEach(reward => {
       const [row, col] = reward.position;
-      const cell = document.getElementById(`cell-${row}-${col}`);
+      const cell = document.getElementById(`${this.id}-cell-${row}-${col}`);
       if (cell) {
-        cell.style.backgroundColor = '#9fe67a'; // 绿色背景表示奖励
+        cell.style.backgroundColor = '#c7f9cc'; // 绿色背景表示奖励
         
         // 添加奖励值文本
         const valueText = document.createElement('div');
         valueText.style.position = 'absolute';
-        valueText.style.left = '50%';
-        valueText.style.top = '50%';
-        valueText.style.transform = 'translate(-50%, -50%)';
-        valueText.style.fontSize = `${this.options.cellSize / 3}px`;
+        valueText.style.right = '4px';
+        valueText.style.bottom = '2px';
+        valueText.style.fontSize = `${this.options.cellSize / 4}px`;
         valueText.style.fontWeight = 'bold';
-        valueText.style.color = '#006400';
+        valueText.style.color = '#22577a';
         valueText.textContent = `+${reward.value}`;
         cell.appendChild(valueText);
       }
@@ -205,19 +213,18 @@ class GridWorld {
     // 更新UI
     this.penalties.forEach(penalty => {
       const [row, col] = penalty.position;
-      const cell = document.getElementById(`cell-${row}-${col}`);
+      const cell = document.getElementById(`${this.id}-cell-${row}-${col}`);
       if (cell) {
-        cell.style.backgroundColor = '#ffb3b3'; // 红色背景表示惩罚
+        cell.style.backgroundColor = '#f49cbb'; // 红色背景表示惩罚
         
         // 添加惩罚值文本
         const valueText = document.createElement('div');
         valueText.style.position = 'absolute';
-        valueText.style.left = '50%';
-        valueText.style.top = '50%';
-        valueText.style.transform = 'translate(-50%, -50%)';
-        valueText.style.fontSize = `${this.options.cellSize / 3}px`;
+        valueText.style.right = '4px';
+        valueText.style.bottom = '2px';
+        valueText.style.fontSize = `${this.options.cellSize / 4}px`;
         valueText.style.fontWeight = 'bold';
-        valueText.style.color = '#8b0000';
+        valueText.style.color = '#880d1e';
         valueText.textContent = penalty.value;
         cell.appendChild(valueText);
       }
@@ -231,21 +238,22 @@ class GridWorld {
     const [row, col] = this.currentPosition;
     
     // 移除旧的智能体
-    const oldAgent = document.getElementById('agent');
+    const oldAgent = document.getElementById(`${this.id}-agent`);
     if (oldAgent) {
       oldAgent.remove();
     }
     
     // 创建新的智能体
     const agent = document.createElement('div');
-    agent.id = 'agent';
+    agent.id = `${this.id}-agent`;
     agent.style.position = 'absolute';
     // 调整位置以适应更小的大小
-    agent.style.left = `${col * this.options.cellSize + this.options.cellSize / 3}px`;
-    agent.style.top = `${row * this.options.cellSize + this.options.cellSize / 3}px`;
+    agent.style.left = `${col * this.options.cellSize + this.options.cellSize / 2}px`;
+    agent.style.top = `${row * this.options.cellSize + this.options.cellSize / 2}px`;
     // 减小智能体大小
-    agent.style.width = `${this.options.cellSize / 3}px`;
-    agent.style.height = `${this.options.cellSize / 3}px`;
+    agent.style.width = `${this.options.cellSize / 5}px`;
+    agent.style.height = `${this.options.cellSize / 5}px`;
+    agent.style.transform = 'translate(-50%, -50%)';
     agent.style.borderRadius = '50%';
     // 将颜色改为黑色
     agent.style.backgroundColor = '#000';
@@ -314,6 +322,31 @@ class GridWorld {
   reset(startPosition = [0, 0]) {
     this.currentPosition = startPosition;
     this.placeAgent();
+    return this.currentPosition;
+  }
+
+  /**
+   * 重置训练相关数据（Q表、探索率等）
+   */
+  resetTraining() {
+    // 重置Q表
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        this.qTable[`${i},${j}`] = {
+          up: 0,
+          right: 0,
+          down: 0,
+          left: 0
+        };
+      }
+    }
+    
+    // 重置探索率到初始值
+    this.options.explorationRate = 0.1;
+    
+    // 更新三角形颜色
+    this.updateTrianglesColor();
+    
     return this.currentPosition;
   }
   
@@ -387,7 +420,7 @@ class GridWorld {
         // 更新每个方向的三角形颜色
         this.actions.forEach(action => {
           const qValue = qValues[action];
-          const triangleId = `triangle-${i}-${j}-${action}`;
+          const triangleId = `${this.id}-triangle-${i}-${j}-${action}`;
           const triangle = document.getElementById(triangleId);
           
           if (triangle) {
@@ -399,16 +432,16 @@ class GridWorld {
             // 更新三角形颜色
             switch(action) {
               case 'up':
-                triangle.style.borderBottom = `${this.options.cellSize / 3}px solid ${color}`;
+                triangle.style.borderBottom = `${this.triangleSize / 2}px solid ${color}`;
                 break;
               case 'right':
-                triangle.style.borderLeft = `${this.options.cellSize / 3}px solid ${color}`;
+                triangle.style.borderLeft = `${this.triangleSize / 2}px solid ${color}`;
                 break;
               case 'down':
-                triangle.style.borderTop = `${this.options.cellSize / 3}px solid ${color}`;
+                triangle.style.borderTop = `${this.triangleSize / 2}px solid ${color}`;
                 break;
               case 'left':
-                triangle.style.borderRight = `${this.options.cellSize / 3}px solid ${color}`;
+                triangle.style.borderRight = `${this.triangleSize / 2}px solid ${color}`;
                 break;
             }
           }
@@ -517,6 +550,91 @@ class GridWorld {
    * @param {number} maxSteps - 每回合最大步数
    * @param {Function} callback - 每步回调函数
    */
+  /**
+   * 显示路径
+   * @param {Array<Array<number>>} path - 路径坐标数组，如 [[0,0], [0,1], [1,1]]
+   */
+  showPath(path) {
+    // 移除旧的路径
+    const oldPath = document.getElementById(`${this.id}-grid-path`);
+    if (oldPath) {
+      oldPath.remove();
+    }
+
+    // 创建路径容器
+    const pathElement = document.createElement('div');
+    pathElement.id = 'grid-path';
+    pathElement.style.position = 'absolute';
+    pathElement.style.top = '0';
+    pathElement.style.left = '0';
+    pathElement.style.width = '100%';
+    pathElement.style.height = '100%';
+    pathElement.style.pointerEvents = 'none'; // 防止路径阻挡点击
+
+    // 创建SVG路径
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    
+    const pathLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathLine.setAttribute('stroke', this.options.pathColor);
+    pathLine.setAttribute('stroke-width', this.options.pathWidth);
+    pathLine.setAttribute('fill', 'none');
+    pathLine.setAttribute('stroke-linecap', 'round');
+    pathLine.setAttribute('stroke-linejoin', 'round');
+
+    // 构建路径数据
+    let pathData = '';
+    path.forEach(([row, col], index) => {
+      const x = col * this.options.cellSize + this.options.cellSize / 2;
+      const y = row * this.options.cellSize + this.options.cellSize / 2;
+      
+      if (index === 0) {
+        pathData += `M ${x} ${y}`;
+      } else {
+        pathData += ` L ${x} ${y}`;
+      }
+    });
+
+    pathLine.setAttribute('d', pathData);
+    svg.appendChild(pathLine);
+    pathElement.appendChild(svg);
+    this.container.appendChild(pathElement);
+  }
+
+  /**
+   * 在指定单元格右下角显示文本
+   * @param {Array<number>} position - 单元格坐标 [row, col]
+   * @param {string} text - 要显示的文本
+   */
+  showText(position, text) {
+    const [row, col] = position;
+    const cellId = `${this.id}-cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    
+    if (!cell) return;
+
+    // 移除旧的文本元素
+    const oldText = document.getElementById(`${this.id}-text-${row}-${col}`);
+    if (oldText) {
+      oldText.remove();
+    }
+
+    // 创建新的文本元素
+    const textElement = document.createElement('div');
+    textElement.id = `${this.id}-text-${row}-${col}`;
+    textElement.style.position = 'absolute';
+    textElement.style.right = '5px';
+    textElement.style.bottom = '5px';
+    textElement.style.fontSize = `${this.options.textSize}px`;
+    textElement.style.color = this.options.textColor;
+    textElement.style.fontFamily = 'Arial, sans-serif';
+    textElement.style.whiteSpace = 'pre-line';
+    textElement.textContent = text;
+
+    cell.appendChild(textElement);
+  }
+
   async train(episodes = 100, maxSteps = 100, callback = null) {
     for (let episode = 0; episode < episodes; episode++) {
       // 重置环境

@@ -11,10 +11,27 @@ tags:
     - Q学习
 ---
 
-<script src="/assets/lib/girdworld.js" /></script>
+<script src="/assets/lib/gridworld.js"></script>
+
+<style>
+.gridworld {
+  display: block;
+  margin: auto;
+  margin-bottom: 20px;
+  font-family: sans-serif;
+  color: black;
+}
+.button {
+  font-family: sans-serif;
+  border: solid 1px black;
+  padding: 2px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
 
 <div class="theme-color-blue" markdown=1>
-`#强化学习` `#Q学习`
+`#强化学习` `#Q函数` `#Q学习`
 </div>
 
 # 复习
@@ -27,11 +44,95 @@ tags:
 - **价值函数**：可以将状态，或者动作映射为一个数值（价值）。
 - **选择策略**：可以根据价值函数计算出来的价值，通过 **探索** 或者 **利用** 来选择一个动作。
 
+# GridWorld
+
+大多数强化学习都会使用 GridWorld 场景进行描述，这是一个非常通用的，简单的强化学习问题场景。可以衍生出很多复杂的问题与概念。我们也会以这个场景贯穿整个课程。
+
+<div id="g1" class="gridworld" style="width: 400px; height: 400px;"></div>
+
+<script>
+  const c1 = document.getElementById('g1');
+  const g1 = new GridWorld('g1', c1, 6, {
+    showTriangles: false,
+  });
+  
+  // 设置奖励点和惩罚点
+  g1.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
+  g1.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
+</script>
+
+在这个简单的 GridWorld 里，规则很简单。
+
+- 智能体的起点是左上角的格子。
+- 只有三种格子，普通格子，有惩罚的格子“-1”，有奖励的格子“+1”。
+- 在普通格子里可以随便上下左右走动，当然走到边缘不能再走。
+- 当走到有惩罚或者有奖励的格子的时候，本次“尝试”就结束了。
+
+下面是其中一次尝试成功的例子。
+
+<div id="g2" class="gridworld" style="width: 400px; height: 400px;"></div>
+
+<script>
+  const c2 = document.getElementById('g2');
+  const g2 = new GridWorld('g2', c2, 6, {
+    showTriangles: false,
+    pathColor: 'rgba(0, 0, 0, 0.3)',
+    pathWidth: 8,
+  });
+  
+  // 设置奖励点和惩罚点
+  g2.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
+  g2.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
+  g2.showPath([
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [3, 0],
+    [3, 1],
+    [3, 2],
+    [3, 3],
+    [4, 3],
+    [5, 3],
+    [5, 4],
+    [5, 5],
+  ]);
+</script>
+
+下面是其中一次尝试失败的例子。
+
+<div id="g22" class="gridworld" style="width: 400px; height: 400px;"></div>
+
+<script>
+  const c22 = document.getElementById('g22');
+  const g22 = new GridWorld('g22', c22, 6, {
+    showTriangles: false,
+    pathColor: 'rgba(0, 0, 0, 0.3)',
+    pathWidth: 8,
+  });
+  
+  // 设置奖励点和惩罚点
+  g22.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
+  g22.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
+  g22.showPath([
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [3, 0],
+    [3, 1],
+    [3, 2],
+    [2, 2],
+  ]);
+</script>
+
+在这样的环境下，我们提出以下的问题：
+
+> 问题：训练出一个能大概率走到奖励终点的智能体，尽量避免走到惩罚点。
+
 # Q 函数
 
 ## 未来加权收益
 
-上次提到 **状态价值函数**，以及 **动作价值函数**，都可以被称为 Q 函数。Q 是 Quality 的缩写，代表当前状态，或者在当前状态下执行一个动作的 **质量**。Q 函数是强化学习中常用的一种价值函数，它可以将状态和动作映射为一个数值（价值）。
+上次提到 **状态价值函数**，以及 **动作价值函数**，都可以被称为 Q 函数。Q 是 Quality 的缩写，代表当前状态，或者在当前状态下执行一个动作的**质量**。Q 函数是强化学习中常用的一种价值函数，它可以将状态和动作映射为一个数值（价值）。
 
 Q 函数通过衡量未来的加权收益，来衡量当前状态或者动作的好坏。回到我们熟悉的加权平均，可以看如下公式：
 
@@ -46,6 +147,45 @@ Q(s, a) = R + \gamma R + \gamma^2 R + \dots + \gamma^{t-1} R
 $$
 
 其中 $\gamma$ 是折扣因子，$R$ 是最后的收益。
+
+<div id="g23" class="gridworld" style="width: 400px; height: 400px;"></div>
+
+<script>
+  const c23 = document.getElementById('g23');
+  const g23 = new GridWorld('g23', c23, 6, {
+    showTriangles: false,
+    pathColor: 'rgba(0, 0, 0, 0.3)',
+    pathWidth: 8,
+  });
+  
+  // 设置奖励点和惩罚点
+  g23.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
+  g23.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
+  const p23 = [
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [3, 0],
+    [3, 1],
+    [3, 2],
+    [3, 3],
+    [4, 3],
+    [5, 3],
+    [5, 4],
+    [5, 5],
+  ];
+  g23.showPath(p23);
+  g23.showText([5, 4], `A = 右 \n R = ${1 * Math.pow(0.9, 1).toFixed(2)}`);
+  g23.showText([5, 3], `A = 右 \n R = ${1 * Math.pow(0.9, 2).toFixed(2)}`);
+  g23.showText([4, 3], `A = 下 \n R = ${1 * Math.pow(0.9, 3).toFixed(2)}`);
+  g23.showText([3, 3], `A = 下 \n R = ${1 * Math.pow(0.9, 4).toFixed(2)}`);
+  g23.showText([3, 2], `A = 右 \n R = ${1 * Math.pow(0.9, 5).toFixed(2)}`);
+  g23.showText([3, 1], `A = 右 \n R = ${1 * Math.pow(0.9, 6).toFixed(2)}`);
+  g23.showText([3, 0], `A = 右 \n R = ${1 * Math.pow(0.9, 7).toFixed(2)}`);
+  g23.showText([2, 0], `A = 下 \n R = ${1 * Math.pow(0.9, 8).toFixed(2)}`);
+  g23.showText([1, 0], `A = 下 \n R = ${1 * Math.pow(0.9, 9).toFixed(2)}`);
+  g23.showText([0, 0], `A = 下 \n R = ${1 * Math.pow(0.9, 10).toFixed(2)}`);
+</script>
 
 而期望值本身是一个加权平均，所以上面的加权平均可以简写为 $Q(s, a) = \mathbb{E}[R | \pi, s, a]$，其中 $\pi$ 代表策略，$s$ 代表状态，$a$ 代表动作。这个简洁的表示可以理解为 **当前的智能体策略为 $\pi$，当前状态 $s$ 下执行动作 $a$ 后，得到奖励 $R$ 的期望**。
 
@@ -167,20 +307,17 @@ const updateQValue = (state, action, reward, nextState) => {
 下面的伪代码展示了每一步需要做的事情。
 
 ```ts
-step() {
+const step = () => {
     // 当前状态
-    const state = this.getState();
-  
+    const state = this.getState()
     // 选择动作
-    const action = this.selectAction(state);
-  
+    const action = this.selectAction(state)
     // 执行动作
-    const { state: nextState, reward, done } = this.step(action);
-  
+    const { state: nextState, reward, done } = this.step(action)
     // 更新Q值
-    this.updateQValue(state, action, reward, nextState, done);
+    this.updateQValue(state, action, reward, nextState, done)
   
-    return { state, action, reward, nextState, done };
+    return { state, action, reward, nextState, done }
 }
 ```
 
@@ -194,62 +331,101 @@ step() {
 但对于第二点来说，Q 值何为之“够好”呢？在 GridWorld 例子里，我们的 Q 值实际上是存放在一个巨大的表里的，由于 GridWorld 是一个有限的世界，路径其实也是可以枚举的，所以我们可以知道在这个世界里，是有一个最优的解的，而尝试并不会使策略停留在一个“局部最优”的状态，因为在局部最优的时候，依然存在朝向最优解的方向，所以到达最优解之后，不能再进一步优化了。所以结束条件是 Q 值表没有发生任何变化了。
 
 ```ts
-async train(episodes = 100, maxSteps = 100, callback = null) {
-  for (let episode = 0; episode < episodes; episode++) {
-      // 重置环境
-      this.reset();
-    
-      for (let step = 0; step < maxSteps; step++) {
-          // 获取当前 Q 值表
-          const qTable = this.getQTable();
-        
-          // 执行一步Q学习
-          const result = this.step();
-        
-          // 如果到达终止状态，结束当前回合
-          if (result.done) {
-            break;
-          }
-        
-          // 获取更新后的 Q 值表
-          const updatedQTable = this.getQTable();
+const train = (episodes = 100, maxSteps = 100) => {
+    for (let episode = 0; episode < episodes; episode++) {
+        // 重置环境
+        this.reset()
 
-          // 检查 Q 值表是否发生变化
-          if (diff(qTable, updatedQTable) < EPSILON) {
-              // Q 值表没有发生变化，结束当前回合
-              break;
-          }
-      }
-  }
+        // 获取当前 Q 值表
+        const qTable = this.getQTable()
+      
+        for (let step = 0; step < maxSteps; step++) {
+            // 执行一步Q学习
+            const result = this.step()
+            // 如果到达终止状态，结束当前回合
+            if (result.done) break
+        }
+
+        // 获取更新后的 Q 值表
+        const updatedQTable = this.getQTable()
+
+        // 检查 Q 值表是否发生变化，Q 值表没有发生变化，结束当前回合
+        if (diff(qTable, updatedQTable) < EPSILON) break
+    }
 }
+```
+
+下面是整个训练过程的流程图。
+
+```mermaid
+stateDiagram-v2
+    %% GridWorld Q-learning 训练流程
+    [*] --> 初始化Q表
+    初始化Q表 --> 选择动作: 根据当前状态
+    
+    选择动作 --> 执行动作: ε-贪心策略
+    执行动作 --> 观察新状态和奖励
+    
+    观察新状态和奖励 --> 更新Q值
+    更新Q值 --> 判断终止
+    
+    判断终止 --> [*]: 达到终止状态
+    判断终止 --> 选择动作: 未终止
+    
+    %% 注释说明
+    note left of 初始化Q表: Q表初始化为0或随机值
+    note right of 选择动作: ε概率随机选动作\n1-ε概率选最大Q值动作
+    note left of 更新Q值: Q(s,a) = Q(s,a) + α[r + γmaxQ(s',a') - Q(s,a)]
+    note right of 判断终止: 检查是否到达目标或最大步数
 ```
 
 # GridWorld 例子
 
-<div id="gridworld" style="width: 400px; height: 400px;"></div>
-<div id="step-button">step</div>
-<div id="train-button">train</div>
+下面是一个使用 Q 学习训练 GridWorld 智能体的例子。每个格子里面的三角形表示向每个方向走动的倾向性，蓝色表示分数越高，灰色表示分数越低。
 
-<script src="/assets/lib/gridworld.js"></script>
+例子的训练参数很简单
+
+- episode（总尝试次数）：200
+- maxSteps（每次尝试的最大步数）：20
+- learningRate（学习率）：0.1
+- discountFactor（折扣因子）：0.9
+- explorationRate（探索率）：0.1
+
+<div style="display: flex;flex-direction: column; justify-content: center;">
+<div id="g3" class="gridworld" style="width: 400px; height: 400px;"></div>
+<div style="display: flex;flex-direction: row; justify-content: center;">
+<div id="train-button" class="button" style="margin-right: 10px">训练</div>
+<div id="reset-button" class="button">重置</div>
+</div>
+</div>
+
 <script>
   // 创建GridWorld实例
-  const container = document.getElementById('gridworld');
-  const gridworld = new GridWorld(container, 6);
+  const c3 = document.getElementById('g3');
+  const g3 = new GridWorld('g3', c3, 6);
   
   // 设置奖励点和惩罚点
-  gridworld.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
-  gridworld.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
+  g3.setRewards([[5, 5]], 1);  // 两个奖励点，值为1
+  g3.setPenalties([[1, 1], [2, 2], [5, 0], [2, 4]], -1); // 两个惩罚点，值为-1
   
-  // 执行一步Q学习
-  document.getElementById('step-button').addEventListener('click', () => {
-    const result = gridworld.qLearnStep();
-    console.log(result);
-  });
-  
-  // 或者自动训练
   document.getElementById('train-button').addEventListener('click', async () => {
-    await gridworld.train(500, 20, (episode, step, result) => {
+    await g3.train(200, 20, (episode, step, result) => {
       console.log(`Episode ${episode}, Step ${step}:`, result);
     });
   });
+  document.getElementById('reset-button').addEventListener('click', () => {
+    g3.resetTraining();
+  });
 </script>
+
+从训练结果可以看到
+
+- 靠近奖励点“+1”的格子，动作都比较明确，证明智能体是知道奖励点的方位了。
+- 靠近惩罚点“-1”的格子，动作都是倾向于远离的，证明智能体知道需要避免走到惩罚点。
+- 边缘格子往边缘方向的倾向性不高，证明智能体也知道 GridWorld 是有边界的。
+
+# 小结
+
+- **Q 函数**：价值函数，计算状态或在在某个状态下的执行某个动作的价值。
+- **改进的 Q 函数**：通过状态计算出动作的 Q 值分布。
+- **Q 学习**：一种强化学习方法。在学习过程中，使用 Q 函数辅助决策，通过未来收益不断调整 Q 值，最终形成一个最优策略。
