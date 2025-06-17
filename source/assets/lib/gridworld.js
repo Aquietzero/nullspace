@@ -234,7 +234,7 @@ class GridWorld {
   /**
    * 放置智能体
    */
-  placeAgent() {
+  placeAgent(remove = false) {
     const [row, col] = this.currentPosition;
     
     // 移除旧的智能体
@@ -242,6 +242,9 @@ class GridWorld {
     if (oldAgent) {
       oldAgent.remove();
     }
+
+    // 单纯移除智能体
+    if (remove) return;
     
     // 创建新的智能体
     const agent = document.createElement('div');
@@ -323,6 +326,25 @@ class GridWorld {
     this.currentPosition = startPosition;
     this.placeAgent();
     return this.currentPosition;
+  }
+
+  /**
+   * 设置智能体位置
+   * @param {Array<number>} position - 新位置 [row, col]
+   */
+  setAgent(position) {
+    // 验证位置是否有效
+    if (!Array.isArray(position) || position.length !== 2) {
+      throw new Error('位置必须是包含两个数字的数组');
+    }
+    
+    const [row, col] = position;
+    if (row < 0 || row >= this.size || col < 0 || col >= this.size) {
+      throw new Error(`位置[${row},${col}]超出网格范围`);
+    }
+    
+    this.currentPosition = [row, col];
+    this.placeAgent();
   }
 
   /**
@@ -550,6 +572,62 @@ class GridWorld {
    * @param {number} maxSteps - 每回合最大步数
    * @param {Function} callback - 每步回调函数
    */
+  /**
+   * 在指定位置显示动作值
+   * @param {Array<number>} position - 单元格坐标 [row, col]
+   * @param {Object} values - 动作值对象 {up: number, right: number, down: number, left: number}
+   */
+  showActionValues(position, values) {
+    const [row, col] = position;
+    
+    // 验证位置是否有效
+    if (row < 0 || row >= this.size || col < 0 || col >= this.size) {
+      throw new Error(`位置[${row},${col}]超出网格范围`);
+    }
+    
+    // 获取所有动作值
+    const actionValues = [
+      values.up,
+      values.right,
+      values.down,
+      values.left
+    ];
+    
+    // 计算最大值和最小值
+    const maxValue = Math.max(...actionValues);
+    const minValue = Math.min(...actionValues);
+    
+    // 更新每个方向的三角形颜色
+    ['up', 'right', 'down', 'left'].forEach(action => {
+      const triangleId = `${this.id}-triangle-${row}-${col}-${action}`;
+      const triangle = document.getElementById(triangleId);
+      
+      if (triangle) {
+        const value = values[action];
+        // 归一化到0-1范围
+        const normalized = (value - minValue) / (maxValue - minValue || 1);
+        // 获取颜色
+        const color = this.getColorForValue(normalized);
+        
+        // 更新三角形颜色
+        switch(action) {
+          case 'up':
+            triangle.style.borderBottom = `${this.triangleSize / 2}px solid ${color}`;
+            break;
+          case 'right':
+            triangle.style.borderLeft = `${this.triangleSize / 2}px solid ${color}`;
+            break;
+          case 'down':
+            triangle.style.borderTop = `${this.triangleSize / 2}px solid ${color}`;
+            break;
+          case 'left':
+            triangle.style.borderRight = `${this.triangleSize / 2}px solid ${color}`;
+            break;
+        }
+      }
+    });
+  }
+
   /**
    * 显示路径
    * @param {Array<Array<number>>} path - 路径坐标数组，如 [[0,0], [0,1], [1,1]]
