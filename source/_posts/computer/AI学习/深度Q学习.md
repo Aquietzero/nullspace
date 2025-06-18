@@ -12,6 +12,8 @@ tags:
 ---
 
 <script src="/assets/lib/gridworld.js"></script>
+<script src="/assets/lib/plot.js" /></script>
+<script src="/assets/lib/graph.js" /></script>
 
 <style>
 .gridworld {
@@ -28,10 +30,18 @@ tags:
   border-radius: 5px;
   cursor: pointer;
 }
+canvas {
+  display: block;
+  margin: auto;
+  margin-bottom: 20px;
+  border:1px solid #ddd;
+  width:300px;
+  height:300px;
+}
 </style>
 
 <div class="theme-color-blue" markdown=1>
-`#强化学习` `#灾难性遗忘` `#深度Q学习`
+`#强化学习` `#灾难性遗忘` `#状态叠加编码` `#深度Q学习`
 </div>
 
 # 复习
@@ -39,6 +49,15 @@ tags:
 - **Q 函数**：价值函数，计算状态或在在某个状态下的执行某个动作的价值。
 
 ```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
 graph LR
     S[状态s] --> Q["Q(s, a)"]
     A[动作a] --> Q["Q(s, a)"]
@@ -48,6 +67,15 @@ graph LR
 - **改进的 Q 函数**：通过状态计算出动作的 Q 值分布。
 
 ```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
 graph LR
     S[状态s] --> Q["Q'(s)"]
     Q --->|计算出一个分布| V["0.1<br>0.9<br>-0.2<br>-0.7<br>"]
@@ -144,7 +172,7 @@ $$
 
 # 灾难性遗忘
 
-灾难性遗忘（Catastrophic Forgetting）在这类问题里非常普遍，我们先看看这个问题。在上面的新问题中，我们喂给智能体的是各种随机 GridWorld，下面随便给出两个例子。
+**灾难性遗忘（Catastrophic Forgetting）**在这类问题里非常普遍，我们先看看这个问题。在上面的新问题中，我们喂给智能体的是各种随机 GridWorld，下面随便给出两个例子。
 
 <div style="display:flex;flex-direction:row;">
 <div id="g31" class="gridworld" style="width: 300px; height: 300px;"></div>
@@ -198,6 +226,15 @@ $$
 考虑到改进后的 Q 函数具有以下的形式：
 
 ```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
 graph LR
     S[状态s] --> Q["Q'(s)"]
     Q --->|计算出一个分布| V["0.1<br>0.9<br>-0.2<br>-0.7<br>"]
@@ -217,7 +254,7 @@ const s2 = up(s1) // 当前智能体在 [1, 3] 这个位置
 
 这种编码方式虽然很简单很直观，但是最致命的弱点是智能体没有学到世界的所有信息，它只知道在“当前这个世界下”，在某个位置是否安全，或者在这个位置向左走，或者向右走会大概有什么结果。它并不清楚世界里，有奖励点，有惩罚点。**但我们的目标是希望智能体能够辨别奖励点，惩罚点。**只有它能够辨别，才能在另一个随机世界里也能做出正确的决策，避开惩罚点，到达奖励点。
 
-## 叠加状态编码
+## 状态叠加编码
 
 为了解决这个问题，我们需要将尽量多的环境信息编码到状态。这个涉及到训练设计的问题，不过一种很常规，并且很容易理解的办法是将各种信息分类分层，然后再叠加在一起。
 
@@ -231,9 +268,11 @@ const s2 = up(s1) // 当前智能体在 [1, 3] 这个位置
 
 <div style="display:flex;flex-direction:row;align-items:center;">
 <div id="g41" class="gridworld" style="width: 150px; height: 150px;"></div>
-<div> = </div>
+<div style="margin-bottom: 20px"> = </div>
 <div id="g42" class="gridworld" style="width: 150px; height: 150px;"></div>
+<div style="margin-bottom: 20px"> &#x2b; </div>
 <div id="g43" class="gridworld" style="width: 150px; height: 150px;"></div>
+<div style="margin-bottom: 20px"> &#x2b; </div>
 <div id="g44" class="gridworld" style="width: 150px; height: 150px;"></div>
 </div>
 
@@ -289,4 +328,172 @@ const state = [
     [0, 0, 0, 0, 0, 0],
   ],
 ]
+```
+
+注意到，这种实现其实也并不困难，在环境中会有 `getState` 方法，通过这个方法可以获取当前环境的状态。
+
+```ts
+class Env {
+  getState(): State {
+    return [
+      this.rewards,
+      this.penalties,
+      this.getAgentState(),
+    ]
+  }
+}
+```
+
+其中的 `getAgentState` 方法用于获取智能体当前位置，然后转化为这种张量格式，它所处位置的数组元素为 `1`，数组其余位置都是 `0`。这种编码方式可以让智能体在学习的过程中，“学会”这些信息之间的关联。
+
+## 经验回放
+
+回想之前讨论的训练过程，为了让学习过程更快收敛，学习的结果更为准确，其中一个技巧是**小批量学习**。
+
+<div style="display: flex;flex-direction: row">
+<canvas id="learn-by-one-point-y=2x"></canvas>
+<canvas id="learn-by-few-points-y=2x"></canvas>
+</div>
+
+<script>
+const p8 = new Plot('learn-by-one-point-y=2x');
+p8.draw(x => 2*x);
+p8.draw(x => -3*x + 5, { color: 'green' });
+p8.draw(x => 3*x - 1, { color: 'blue' });
+p8.drawPoints([[1, 2]], { color: 'black', radius: 3});
+
+const p9 = new Plot('learn-by-few-points-y=2x');
+const p9Points = [[-1, -2], [-0.8, -1.6], [0.2, 0.4]];
+p9.draw(x => 2*x);
+p9.drawPoints(p9Points, {
+  color: 'black', radius: 3,
+  func: x => -3*x + 5,
+  showDistance: true,
+  distanceColor: 'green',
+});
+p9.drawPoints(p9Points, {
+  color: 'black', radius: 3,
+  func: x => 3*x - 1,
+  showDistance: true,
+  distanceColor: 'blue',
+});
+p9.draw(x => -3*x + 5, { color: 'green' });
+p9.draw(x => 3*x - 1, { color: 'blue' });
+</script>
+
+经验回放其实与小批量的思路是一致的，就是一次迭代过程中，传入批量的**经验数据**。有了上面的编码之后，在一次迭代中
+
+1. 获取当前状态 `state`
+2. 选择动作 `action`
+3. 执行动作
+4. 环境更新状态 `nextState`，同时反馈（奖励）`reward`
+5. 一般环境更新状态的同时会给出此次探索是否终止 `done`
+
+这样一条经验数据为 `[state, action, nextState, reward, done]`。当智能体在环境中自由探索，并且没有终结之前，就能持续获得经验数据。这样在一次探索中，最后获得一组经验数据。
+
+```ts
+// 一条经验数据
+type Experience = [State, Action, State, Reward, Done]
+// 一次探索里得到的一组经验数据
+type Episode = Experience[]
+```
+
+经验回放在训练过程中起到收集经验数据，然后组织为批量数据作为训练的输入的作用。
+
+```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
+graph LR
+    Env[环境] --> |迭代与变化| Exp[经验收集器]
+    Exp --> |经验数据| Agent[智能体]
+    Agent --->|选择与执行| Action[动作]
+    Action ---> |作用于| Env
+    Action ---> Exp
+```
+
+# 深度 Q 学习
+
+上次我们说到的 Q 学习，可以直接迁移到深度网络中。Q 学习的核心在于 Q 值的更新，而上次使用的是确定性的 Q 值更新方法，也就是
+
+$$
+\overbrace{Q(S_t, A_t)}^\text{更新的 Q 值} 
+= 
+\overbrace{Q(S_t, A_t)}^\text{当前的 Q 值} +
+\alpha[
+\underbrace{R_{t+1}}_\text{奖励} + 
+\gamma \underbrace{\max Q(S_{t+1}, a)}_\text{所有动作里的最大 Q 值} -
+Q(S_t, A_t)
+]
+$$
+
+在代码中我们也是用确定性方法进行实现。
+
+```ts
+const updateQValue = (state, action, reward, nextState) => {
+    // 当前状态的 Q 值
+    const currentQ = this.qTable[state][action];
+
+    // 计算下一个状态的最大Q值
+    let maxNextQ = 0;
+    if (!done) {
+        maxNextQ = Math.max(...Object.values(this.qTable[nextState]));
+    }
+    
+    // 更新公式: Q(s,a) = Q(s,a) + α * [r + γ * max(Q(s',a')) - Q(s,a)]
+    const newQ = currentQ + learningRate * 
+                (reward + discountFactor * maxNextQ - currentQ);
+    
+    // 更新 Q 表
+    this.qTable[state][action] = newQ;
+}
+```
+
+但经过这段时间的学习，我们应该慢慢能感受到非确定性方法所带来的魅力。在解决复杂问题的时候，非确定性方法可以不显式指定规则，通过学习的方式将“规则”内化到智能体内。**所以深度 Q 学习，实际上是将 Q 值的计算交给深度神经网络进行计算**，原来的 `updateQValue` 方法是用来存储一个巨大的 Q 值表，但现在通过神经网络计算的话，这个 Q 值表，实际上变成了网络内部的参数表示了。
+
+结合经验回放，下面是整个深度 Q 学习的流程图。
+
+```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
+graph TD
+    Env["环境状态$S_{t+1}$"] --> |"产生经验$[s, a, s_{t+1}, r_{t+1}]$"| Exp[经验收集器]
+    Exp --> |经验数据| Q[深度Q网络]
+    Q --->|预测Q值| Action["$\epsilon$-贪心策略"]
+    Action ---> |执行动作$a$| Env
+    Env ---> |"奖励$R_{t+1}$"| Env
+```
+
+下面是深度 Q 学习的循环伪代码，可以与之前的进行对比。
+
+```ts
+const step = () => {
+    // 获取当前状态
+    const state = this.getState()
+    // 获取当前状态下的经验数据
+    const experience = this.getExperience()
+    // 追加到经验回放器
+    this.experienceReplay.push(experience)
+    // 获取小批量经验数据
+    const experiences = this.experienceReplay.getBatch()
+    // 使用深度 Q 网络计算 Q 值
+    const qValues = this.deepQNetwork(state, experiences)
+    // 使用 ε-贪心策略选择动作
+    const action = this.selectAction(qValues)
+    // 执行动作
+    this.env.takeAction(action)
+}
 ```
