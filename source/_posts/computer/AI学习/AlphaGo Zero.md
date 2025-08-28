@@ -34,3 +34,59 @@ tags:
 # AlphaGo Zero整体框架
 
 AlphaGo Zero通过三个主要部分并行训练。
+
+## 自对弈
+
+通过自对弈生成棋局数据。AlphaGo Zero最终产物是一个会下棋的智能体，其内部参数统称为 $\theta$，下棋规则蕴含在这个智能体里。
+
+```mermaid
+graph LR
+  player["Player(θ)"] --> games["Games"]
+```
+
+每一个 Game 是一局棋，每一局棋里是一系列的状态，每走一步就是一个状态。
+
+## 优化
+
+优化过程实际上是使用自对弈数据进行训练，让 Player 变得更厉害。其中使用到的方法是蒙地卡罗树搜索与强化学习。在学习的迭代过程中，每 1000（AlphaGo Zero训练设定） 个循环会产生一个检查点，保存此时的 Player，为后面的评估做准备。
+
+```mermaid
+graph LR
+  player["Player(θ)"] --> games["Games"]
+  games ---> player1["Player(θ1)"]
+  games ---> player2["Player(θ2)"]
+  games ---> playerN["Player(θn)"]
+```
+
+## 评估
+
+在一段时间内通过学习检查点得到的 Player 会在一起评判。在 AGZ 的设定中，这些 Player 会相互对局，从中选出最厉害的 Player（胜率最高），作为下一轮生成自对弈数据的 Player。
+
+```mermaid
+%%{
+  init: {
+    'themeVariables': {
+      'edgeLabelBackground': '#fff',
+      'edgeLabelColor': '#333',
+      'edgeLabelFontSize': '14px'
+    }
+  }
+}%%
+graph LR
+  player1["Player(θ1)"] --> eval["相互对弈"]
+  player2["Player(θ2)"] --> eval
+  playerN["Player(θn)"] --> eval
+  eval -->|取胜率最高的Player| best["Player(θ*)"]
+```
+
+下面是这三个环节相互之间的关系。
+
+```mermaid
+graph LR
+  self[自对弈] --> data[棋局数据]
+  data --> train[强化学习]
+  train --> players[Players]
+  players --> eval[评价]
+  eval --> player[当前最厉害的 Player]
+  player --> self
+```
