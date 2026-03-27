@@ -1,0 +1,64 @@
+/* ConceptGraph 默认样式 */
+
+.concept-graph-svg {
+  display: block;
+  margin: 20px auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafbfc;
+  cursor: grab;
+  max-width: 100%;
+}
+
+.concept-graph-svg:active {
+  cursor: grabbing;
+}
+
+/* 节点 */
+.cg-node {
+  cursor: pointer;
+}
+
+.cg-node-shape {
+  transition: filter 0.2s;
+}
+
+.cg-node:hover .cg-node-shape {
+  filter: brightness(1.15) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.cg-node-label {
+  font-size: 13px;
+  font-weight: 600;
+  fill: #fff;
+  pointer-events: none;
+  user-select: none;
+  font-family: -apple-system, 'Noto Serif SC', 'PingFang SC', sans-serif;
+}
+
+.cg-node-note {
+  font-size: 10px;
+  fill: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  user-select: none;
+  font-family: -apple-system, 'Noto Serif SC', 'PingFang SC', sans-serif;
+}
+
+/* 边 */
+.cg-edge-line {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.cg-edge:hover .cg-edge-line {
+  opacity: 1;
+  stroke-width: 2.5;
+}
+
+.cg-edge-label {
+  font-size: 11px;
+  fill: #666;
+  pointer-events: none;
+  user-select: none;
+  font-family: -apple-system, 'Noto Serif SC', 'PingFang SC', sans-serif;
+}
