@@ -253,5 +253,6 @@ $$\mathbb{Q}(\sqrt{2}) = \{a + b\sqrt{2} \mid a, b \in \mathbb{Q}\}$$
 
 # 目录
 
-- {% post_link math/数学漫步/抽象代数/2026-03-26-集合 %}
+- {% post_link math/数学漫步/抽象代数/2026-03-25-集合 %}
+- {% post_link math/数学漫步/抽象代数/2026-03-25-等价关系与划分 %}
 - {% post_link math/数学漫步/抽象代数/2026-03-26-群 %}
