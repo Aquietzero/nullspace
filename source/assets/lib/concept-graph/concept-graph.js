@@ -38,13 +38,13 @@ class ConceptGraph {
         nodeRadius: 28,
         // 颜色主题
         groups: {
-          blue:   { fill: '#4a90d9', text: '#fff',  stroke: '#3a7bc8' },
-          orange: { fill: '#e8913a', text: '#fff',  stroke: '#d07e2a' },
-          green:  { fill: '#50b87a', text: '#fff',  stroke: '#40a06a' },
-          purple: { fill: '#A48BBE', text: '#fff',  stroke: '#8a6eaa' },
-          red:    { fill: '#e05555', text: '#fff',  stroke: '#c84040' },
-          gray:   { fill: '#888',    text: '#fff',  stroke: '#666'    },
-          pink:   { fill: '#B35588', text: '#fff',  stroke: '#993f6e' },
+          blue:   { fill: '#d0e2f4', text: '#1a3d66', stroke: '#a3c4e4' },
+          orange: { fill: '#f5dfc4', text: '#6b3f0a', stroke: '#e4c8a0' },
+          green:  { fill: '#c8ebd6', text: '#1a5232', stroke: '#a0d4b4' },
+          purple: { fill: '#ddd2ea', text: '#3e2260', stroke: '#c4b0d8' },
+          red:    { fill: '#f4cdcd', text: '#6e1a1a', stroke: '#e4a8a8' },
+          gray:   { fill: '#ddd',    text: '#333',    stroke: '#bbb'    },
+          pink:   { fill: '#ebd0df', text: '#5e1a40', stroke: '#d8aec6' },
         },
         defaultGroup: 'blue',
         // 边的样式
@@ -265,7 +265,7 @@ class ConceptGraph {
       .attr('y', -20)
       .append('xhtml:div')
       .attr('class', 'cg-edge-label')
-      .html((d) => this._texToHTML(d.label, '#666'))
+      .html((d) => this._texToHTML(d.label, '#555'))
 
     // ---------- 节点 ----------
     const nodeG = g.append('g').attr('class', 'cg-nodes')
@@ -292,8 +292,11 @@ class ConceptGraph {
 
       if (d.shape === 'rect') {
         const textLen = (d.label || '').length
-        const w = Math.max(r * 2, textLen * 14 + 16)
-        const h = r * 1.6
+        const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
+        const contentLen = Math.max(textLen, noteLen)
+        const w = Math.max(r * 2, contentLen * 14 + 48)
+        const hasNote = !!d.note
+        const h = hasNote ? r * 2.0 : r * 1.4
         el.append('rect')
           .attr('class', 'cg-node-shape')
           .attr('x', -w / 2)
@@ -323,7 +326,7 @@ class ConceptGraph {
       }
     })
 
-    // 普通节点标签（仅 label，不含 note）
+    // 普通节点标签（矩形节点含 note 时在内部显示）
     node.each((d, i, nodes) => {
       const el = d3.select(nodes[i])
       const colors =
@@ -331,10 +334,12 @@ class ConceptGraph {
         this.options.groups[this.options.defaultGroup]
       const r = d.radius || this.options.nodeRadius
 
+      const hasNote = d.shape === 'rect' && !!d.note
+      const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
       const foW = d.shape === 'rect'
-        ? Math.max(r * 2, (d.label || '').length * 14 + 16) + 20
+        ? Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48) + 20
         : r * 2 + 40
-      const foH = r * 1.6 + 10
+      const foH = hasNote ? r * 2.0 + 10 : (d.shape === 'rect' ? r * 1.4 + 10 : r * 1.6 + 10)
 
       const fo = el
         .append('foreignObject')
@@ -353,6 +358,15 @@ class ConceptGraph {
         .attr('class', 'cg-node-label')
         .style('color', colors.text)
         .html(this._texToHTML(d.label, colors.text))
+
+      // 矩形节点内部显示 note
+      if (hasNote) {
+        wrapper
+          .append('xhtml:div')
+          .attr('class', 'cg-node-note-inline')
+          .style('color', colors.text)
+          .html(this._texToHTML(d.note, colors.text))
+      }
     })
 
     // ---------- 说明节点 ----------
@@ -384,8 +398,8 @@ class ConceptGraph {
 
       fo.append('xhtml:div')
         .attr('class', 'cg-note-label')
-        .style('color', colors.fill)
-        .html(this._texToHTML(d.label, colors.fill))
+        .style('color', colors.text)
+        .html(this._texToHTML(d.label, colors.text))
     })
 
     // ---------- Tick ----------
@@ -462,6 +476,8 @@ class ConceptGraph {
 
     this.nodes.forEach((n) => {
       if (!n.note) return
+      // 矩形节点的 note 直接显示在矩形内部，不生成独立说明节点
+      if (n.shape === 'rect') return
 
       const noteId = n.id + '__note'
       const noteNode = {
