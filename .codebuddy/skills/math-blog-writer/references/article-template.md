@@ -18,9 +18,9 @@ tags:
 ---
 ```
 
-## 引入外部库（按需）
+## 引入外部库
 
-如果文章需要概念关系图（ConceptGraph），在 front matter 之后立即引入：
+每篇文章都需要概念关系图，在 front matter 之后立即引入 d3 和 ConceptGraph：
 
 ```html
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -28,7 +28,7 @@ tags:
 <link rel="stylesheet" href="/assets/lib/concept-graph/concept-graph.css">
 ```
 
-如果需要 2D 数学图形（Graph2D），追加：
+如果文章还需要 2D 数学图形（Graph2D），追加引入：
 
 ```html
 <script src="/assets/lib/2d-graph/graph2d.js"></script>
@@ -43,7 +43,7 @@ tags:
 4. **定理/性质**（`## 定理：xxx`，重要定理需要例子和通俗解释）
 5. **例子**（`# 例子` 或 `## 例子`）
 6. **小结**（`# 小结`，用无序列表总结要点）
-7. **概念关系图**（如有，放在小结之后）
+7. **概念关系图**（**必需**，每篇文章末尾都要根据文章概念关系绘制一个概念图）
 
 ## `<aside>` 用法
 
@@ -55,7 +55,6 @@ tags:
 
 证明正文...
 
-$\square$
 </aside>
 ```
 
@@ -90,7 +89,6 @@ $\square$
 
 设 $G = \{g_1, g_2, \ldots, g_n\}$...
 
-$\square$
 </aside>
 
 ## 通俗理解
@@ -115,6 +113,8 @@ $\square$
 ```
 
 ## ConceptGraph 概念图写法
+
+概念关系图使用 d3 驱动的 ConceptGraph 库（力导向布局）：
 
 ```html
 <div id="xxx-concept-graph"></div>
@@ -150,8 +150,10 @@ $\square$
 
 概念图组织原则：
 - 用清晰的层次结构，从核心概念向外展开
-- 实线表示直接关系，虚线表示跨组联系或类比
+- `shape: 'rect'` 用于重要/核心概念，默认圆形用于其他概念
+- 实线表示直接关系，`style: 'dashed'` 表示跨组联系或类比
 - 节点数量控制在 15-20 个以内，避免过于拥挤
+- `note` 字段用于 LaTeX 公式或简短说明（hover 时显示）
 
 ## Graph2D 数学图形写法
 
@@ -179,4 +181,5 @@ $\square$
 - 定义中的被定义术语用 `**加粗**`
 - 引用/提示用 `> 💡 ...` 或 `<aside>💡 ...</aside>`
 - 列表项之间不需要空行（除非列表项本身包含多段）
-- 证明结尾用 `$\square$`
+- 证明结尾**不加** `$\square$` 或任何 QED 符号
+- **不要**插入仓库中不存在的图片引用（`![](...)`)，需要图形时用 Graph2D 或 ConceptGraph 库程序化生成
