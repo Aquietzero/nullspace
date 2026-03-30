@@ -1,0 +1,56 @@
+/* Graph2D 默认样式 */
+
+.graph2d-container {
+  display: block;
+  margin: 20px auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafbfc;
+}
+
+.graph2d-fullwidth {
+  position: relative;
+  width: 100vw !important;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.graph2d-canvas {
+  display: block;
+}
+
+/* HTML 标签覆盖层 */
+.graph2d-labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* 单个标签 */
+.graph2d-label {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 12px;
+  font-family: -apple-system, 'Noto Serif SC', 'PingFang SC', sans-serif;
+  color: #333;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1.4;
+}
+
+/* MathJax 在标签内的样式 */
+.graph2d-label .MathJax,
+.graph2d-label mjx-container {
+  color: inherit !important;
+  display: inline !important;
+}
