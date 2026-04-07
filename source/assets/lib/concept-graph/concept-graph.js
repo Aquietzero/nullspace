@@ -36,19 +36,19 @@ class ConceptGraph {
         collideRadius: 50,
         // 节点
         nodeRadius: 28,
-        // 颜色主题
+        // 颜色主题 — Monochrome Geek: 黑白灰层次
         groups: {
-          blue:   { fill: '#d0e2f4', text: '#1a3d66', stroke: '#a3c4e4' },
-          orange: { fill: '#f5dfc4', text: '#6b3f0a', stroke: '#e4c8a0' },
-          green:  { fill: '#c8ebd6', text: '#1a5232', stroke: '#a0d4b4' },
-          purple: { fill: '#ddd2ea', text: '#3e2260', stroke: '#c4b0d8' },
-          red:    { fill: '#f4cdcd', text: '#6e1a1a', stroke: '#e4a8a8' },
-          gray:   { fill: '#ddd',    text: '#333',    stroke: '#bbb'    },
-          pink:   { fill: '#ebd0df', text: '#5e1a40', stroke: '#d8aec6' },
+          blue:   { fill: '#f0f0f0', text: '#1a1a1a', stroke: '#999' },
+          orange: { fill: '#e8e8e8', text: '#1a1a1a', stroke: '#888' },
+          green:  { fill: '#f5f5f5', text: '#1a1a1a', stroke: '#aaa' },
+          purple: { fill: '#eaeaea', text: '#1a1a1a', stroke: '#999' },
+          red:    { fill: '#e0e0e0', text: '#1a1a1a', stroke: '#888' },
+          gray:   { fill: '#f2f2f2', text: '#1a1a1a', stroke: '#bbb' },
+          pink:   { fill: '#ebebeb', text: '#1a1a1a', stroke: '#999' },
         },
         defaultGroup: 'blue',
         // 边的样式
-        edgeColor: '#999',
+        edgeColor: '#888',
         edgeDashArray: null,
         // 是否可缩放拖拽
         zoomable: true,
@@ -265,7 +265,7 @@ class ConceptGraph {
       .attr('y', -20)
       .append('xhtml:div')
       .attr('class', 'cg-edge-label')
-      .html((d) => this._texToHTML(d.label, '#555'))
+      .html((d) => this._texToHTML(d.label, '#666'))
 
     // ---------- 节点 ----------
     const nodeG = g.append('g').attr('class', 'cg-nodes')

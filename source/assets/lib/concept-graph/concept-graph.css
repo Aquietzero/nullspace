@@ -1,11 +1,11 @@
-/* ConceptGraph 默认样式（支持 TeX / foreignObject） */
+/* ConceptGraph 默认样式 — Monochrome Geek（支持 TeX / foreignObject） */
 
 .concept-graph-svg {
   display: block;
   margin: 20px auto;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background: #fafbfc;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  background: #fff;
   cursor: grab;
   max-width: 100%;
 }
@@ -97,7 +97,7 @@
   opacity: 0.75;
   pointer-events: none;
   user-select: none;
-  font-family: -apple-system, 'Noto Serif SC', 'PingFang SC', sans-serif;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
 }
 
 .cg-node-note-inline .MathJax,

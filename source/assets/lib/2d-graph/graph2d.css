@@ -1,12 +1,12 @@
-/* Graph2D 默认样式 */
+/* Graph2D 默认样式 — Monochrome Geek */
 
 .graph2d-container {
   display: block;
   margin: 20px auto;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
   overflow: hidden;
-  background: #fafbfc;
+  background: #fff;
 }
 
 .graph2d-fullwidth {

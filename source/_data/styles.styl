@@ -22,6 +22,10 @@ purpleBg = #F6F3F8
 themeColor = accent
 themeColorBg = accentBg
 
+// --- Hide Headband (top bar) ---
+.headband
+  display: none
+
 // --- Base ---
 body
   color: #1a1a1a
@@ -145,22 +149,64 @@ strong
       margin-bottom: 1.2em
 
     table
-      font-size: 0.85em
+      font-size: 0.84em
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
       border-collapse: collapse
+      border: none
+      width: 100%
+      margin: 1.5em 0
+      thead
+        tr
+          border-bottom: 2px solid #000
       th
-        background: #fafafa
+        background: none
         font-weight: 700
-        border-bottom: 2px solid #000
-      td, th
-        padding: 8px 12px
-        border: 1px solid borderColor
+        text-transform: uppercase
+        letter-spacing: 0.06em
+        font-size: 0.85em
+        color: #666
+        padding: 6px 14px 8px
+        border: none
+        text-align: left
+      td
+        padding: 7px 14px
+        border: none
+        border-bottom: 1px solid #eee
+        color: #333
+      tbody
+        tr
+          transition: background 0.1s ease
+          &:hover
+            background: #fafafa
+          &:last-child td
+            border-bottom: none
 
     aside
-      background: #fafafa
-      padding: 12px 20px
-      border-left: 3px solid #000
+      background: none
+      padding: 20px 0 12px
+      border: none
+      border-top: 1px solid #d0d0d0
+      border-bottom: 1px solid #d0d0d0
       border-radius: 0
-      margin: 0 0 20px
+      margin: 1.5em 0
+      position: relative
+      font-size: 0.92em
+      color: #444
+      &::before
+        content: 'NOTE'
+        position: absolute
+        top: 0
+        left: 12px
+        transform: translateY(-50%)
+        background: #fff
+        padding: 0 8px
+        font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+        font-size: 0.7em
+        font-weight: 700
+        letter-spacing: 0.12em
+        color: #aaa
+      &[data-title]::before
+        content: attr(data-title)
       p
         padding: 0
         margin: 0
@@ -271,6 +317,117 @@ strong
         font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
         margin-bottom: -5px
         text-decoration: none !important
+
+// --- Sidebar: Monochrome Geek Style ---
+.sidebar
+  background: #fff
+  box-shadow: none !important
+  border-right: 1px solid #e0e0e0
+
+  a
+    color: #555
+    border-bottom: none
+    &:hover
+      color: #000
+      border-bottom: none
+
+.sidebar-dimmer
+  background: rgba(0, 0, 0, 0.3)
+
+// 侧边栏导航标签（目录 / 站点概览）
+.sidebar-nav
+  li
+    color: #999
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    font-size: 0.8em
+    letter-spacing: 0.04em
+    text-transform: lowercase
+    &:hover
+      color: #000
+
+.sidebar-toc-active .sidebar-nav-toc,
+.sidebar-overview-active .sidebar-nav-overview
+  color: #000
+  border-bottom-color: #000
+  &:hover
+    color: #000
+
+// TOC 目录
+.post-toc
+  ol
+    a
+      color: #666
+      border-bottom: none
+      font-size: 0.85em
+      transition: color 0.15s ease
+      &:hover
+        color: #000
+
+  .nav
+    .active > a
+      color: #000
+      border-bottom-color: #000
+      font-weight: 600
+
+    .active-current > a
+      color: #000
+      &:hover
+        color: #000
+
+// 站点概览
+.site-author-image
+  border-color: #e0e0e0 !important
+
+.site-author-name
+  color: #000
+  font-weight: 800
+
+.site-description
+  color: #999
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+  font-size: 0.8em
+  letter-spacing: 0.02em
+
+// 文章/分类/标签计数
+.site-state
+  border: none
+
+  a
+    color: #666
+    &:hover
+      color: #000
+
+  .site-state-item
+    border: none
+    padding: 0 12px
+
+  .site-state-item-count
+    color: #000
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    font-weight: 700
+
+  .site-state-item-name
+    color: #999
+    font-size: 0.8em
+
+// 社交链接
+.links-of-author
+  a
+    color: #666
+    border-bottom: none !important
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    &:hover
+      color: #000
+
+    &::before
+      background: #000 !important
+
+// 侧边栏切换按钮
+.sidebar-toggle
+  .toggle-line
+    background: #666
+  &:hover .toggle-line
+    background: #000
 
 // --- Book Cover ---
 .book-cover

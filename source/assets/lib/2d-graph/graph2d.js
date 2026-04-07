@@ -35,7 +35,7 @@ class Graph2D {
         // 内边距（像素），给坐标轴标签留空间
         padding: 40,
         // 坐标轴
-        axisColor: '#333',
+        axisColor: '#1a1a1a',
         axisWidth: 1.5,
         // 网格
         showGrid: false,
@@ -43,26 +43,26 @@ class Graph2D {
         gridWidth: 0.5,
         // 刻度
         tickSize: 5,
-        tickColor: '#333',
-        tickFont: '11px -apple-system, "Noto Serif SC", sans-serif',
-        tickLabelColor: '#555',
+        tickColor: '#1a1a1a',
+        tickFont: '11px "JetBrains Mono", "Fira Code", "SF Mono", monospace',
+        tickLabelColor: '#666',
         // 自动刻度间距（数学坐标单位），null = 自动计算
         xTickStep: null,
         yTickStep: null,
         // 默认绘图样式
-        defaultStroke: '#4a90d9',
-        defaultFill: 'rgba(74, 144, 217, 0.1)',
+        defaultStroke: '#333',
+        defaultFill: 'rgba(0, 0, 0, 0.04)',
         defaultLineWidth: 1.5,
         // 默认点样式
         pointRadius: 4,
-        pointColor: '#e74c3c',
+        pointColor: '#000',
         // 标签样式
         labelFont: '12px -apple-system, "Noto Serif SC", sans-serif',
-        labelColor: '#333',
+        labelColor: '#1a1a1a',
         // 响应式全宽
         fullWidth: false,
         // 背景色
-        background: '#fafbfc',
+        background: '#fff',
       },
       options
     )
