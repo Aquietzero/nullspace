@@ -255,6 +255,44 @@ class Graph2D {
     return this
   }
 
+  // ========== 映射图专用 ==========
+
+  /**
+   * 画带箭头的直线（从一点指向另一点）
+   * @param {number} x1,y1 - 起点（数学坐标）
+   * @param {number} x2,y2 - 终点（数学坐标）
+   * @param {Object} [opts] - { stroke, lineWidth, dash, headSize, label, labelOffset, labelColor, labelFont, shrinkStart, shrinkEnd }
+   *   shrinkStart/shrinkEnd: 像素，箭头两端回缩距离（避免覆盖端点标签）
+   */
+  arrow(x1, y1, x2, y2, opts = {}) {
+    this._commands.push({ type: 'arrow', x1, y1, x2, y2, opts })
+    return this
+  }
+
+  /**
+   * 画带箭头的二次贝塞尔曲线
+   * @param {number} x1,y1 - 起点
+   * @param {number} cx,cy - 控制点
+   * @param {number} x2,y2 - 终点
+   * @param {Object} [opts] - { stroke, lineWidth, dash, headSize, shrinkStart, shrinkEnd, label, labelOffset, labelColor, labelFont }
+   */
+  curvedArrow(x1, y1, cx, cy, x2, y2, opts = {}) {
+    this._commands.push({ type: 'curvedArrow', x1, y1, cx, cy, x2, y2, opts })
+    return this
+  }
+
+  /**
+   * 画椭圆区域（表示集合/群），不使用坐标轴，以像素比例绘制
+   * @param {number} cx,cy - 中心（数学坐标）
+   * @param {number} rx - x 方向半径（数学坐标单位）
+   * @param {number} ry - y 方向半径（数学坐标单位）
+   * @param {Object} [opts] - { stroke, fill, lineWidth, dash, label, labelOffset, labelColor, labelFont }
+   */
+  ellipseShape(cx, cy, rx, ry, opts = {}) {
+    this._commands.push({ type: 'ellipseShape', cx, cy, rx, ry, opts })
+    return this
+  }
+
   // ========== 渲染 ==========
 
   /** 执行所有绘图命令 */
@@ -358,6 +396,9 @@ class Graph2D {
       case 'parametric': return this._drawParametric(cmd)
       case 'point':   return this._drawPoint(cmd)
       case 'label':   return this._drawLabel(cmd)
+      case 'arrow':   return this._drawArrowLine(cmd)
+      case 'curvedArrow': return this._drawCurvedArrow(cmd)
+      case 'ellipseShape': return this._drawEllipseShape(cmd)
     }
   }
 
@@ -742,6 +783,138 @@ class Graph2D {
     el.innerHTML = this._texToHTML(text)
     this._labelLayer.appendChild(el)
     this._labels.push(el)
+  }
+
+  // ---------- 带箭头直线 ----------
+  _drawArrowLine(cmd) {
+    const ctx = this.ctx
+    let [p1x, p1y] = this.toPixel(cmd.x1, cmd.y1)
+    let [p2x, p2y] = this.toPixel(cmd.x2, cmd.y2)
+    const opts = cmd.opts
+    const headSize = opts.headSize || 8
+
+    // shrink：箭头端点回缩
+    const dx = p2x - p1x, dy = p2y - p1y
+    const len = Math.sqrt(dx * dx + dy * dy)
+    if (len === 0) return
+    const ux = dx / len, uy = dy / len
+    const ss = opts.shrinkStart || 0
+    const se = opts.shrinkEnd || 0
+    p1x += ux * ss; p1y += uy * ss
+    p2x -= ux * se; p2y -= uy * se
+
+    ctx.save()
+    this._applyStyle(ctx, opts)
+    ctx.beginPath()
+    ctx.moveTo(p1x, p1y)
+    ctx.lineTo(p2x, p2y)
+    ctx.stroke()
+
+    // 箭头
+    const angle = Math.atan2(p2y - p1y, p2x - p1x)
+    ctx.fillStyle = opts.stroke || this.options.defaultStroke
+    ctx.beginPath()
+    ctx.moveTo(p2x, p2y)
+    ctx.lineTo(p2x - headSize * Math.cos(angle - 0.35), p2y - headSize * Math.sin(angle - 0.35))
+    ctx.lineTo(p2x - headSize * Math.cos(angle + 0.35), p2y - headSize * Math.sin(angle + 0.35))
+    ctx.closePath()
+    ctx.fill()
+    ctx.restore()
+
+    // 标签
+    if (opts.label) {
+      const mx = (p1x + p2x) / 2
+      const my = (p1y + p2y) / 2
+      const offset = opts.labelOffset || [0, -12]
+      this._addLabel(mx + offset[0], my + offset[1], opts.label, {
+        color: opts.labelColor || this.options.labelColor,
+        font: opts.labelFont || this.options.labelFont,
+      })
+    }
+  }
+
+  // ---------- 带箭头的贝塞尔曲线 ----------
+  _drawCurvedArrow(cmd) {
+    const ctx = this.ctx
+    let [p1x, p1y] = this.toPixel(cmd.x1, cmd.y1)
+    const [cpx, cpy] = this.toPixel(cmd.cx, cmd.cy)
+    let [p2x, p2y] = this.toPixel(cmd.x2, cmd.y2)
+    const opts = cmd.opts
+    const headSize = opts.headSize || 8
+
+    // shrink start
+    if (opts.shrinkStart) {
+      const dx = 2 * (cpx - p1x), dy = 2 * (cpy - p1y) // 贝塞尔切线 at t=0
+      const dl = Math.sqrt(dx * dx + dy * dy)
+      if (dl > 0) { p1x += dx / dl * opts.shrinkStart; p1y += dy / dl * opts.shrinkStart }
+    }
+    // shrink end
+    if (opts.shrinkEnd) {
+      const dx = 2 * (p2x - cpx), dy = 2 * (p2y - cpy) // 贝塞尔切线 at t=1
+      const dl = Math.sqrt(dx * dx + dy * dy)
+      if (dl > 0) { p2x -= dx / dl * opts.shrinkEnd; p2y -= dy / dl * opts.shrinkEnd }
+    }
+
+    ctx.save()
+    this._applyStyle(ctx, opts)
+    ctx.beginPath()
+    ctx.moveTo(p1x, p1y)
+    ctx.quadraticCurveTo(cpx, cpy, p2x, p2y)
+    ctx.stroke()
+
+    // 箭头方向 = 贝塞尔终点切线
+    const tangentX = 2 * (p2x - cpx)
+    const tangentY = 2 * (p2y - cpy)
+    const angle = Math.atan2(tangentY, tangentX)
+    ctx.fillStyle = opts.stroke || this.options.defaultStroke
+    ctx.beginPath()
+    ctx.moveTo(p2x, p2y)
+    ctx.lineTo(p2x - headSize * Math.cos(angle - 0.35), p2y - headSize * Math.sin(angle - 0.35))
+    ctx.lineTo(p2x - headSize * Math.cos(angle + 0.35), p2y - headSize * Math.sin(angle + 0.35))
+    ctx.closePath()
+    ctx.fill()
+    ctx.restore()
+
+    // 标签
+    if (opts.label) {
+      // 贝塞尔中点 at t=0.5
+      const mx = 0.25 * p1x + 0.5 * cpx + 0.25 * p2x
+      const my = 0.25 * p1y + 0.5 * cpy + 0.25 * p2y
+      const offset = opts.labelOffset || [0, -12]
+      this._addLabel(mx + offset[0], my + offset[1], opts.label, {
+        color: opts.labelColor || this.options.labelColor,
+        font: opts.labelFont || this.options.labelFont,
+      })
+    }
+  }
+
+  // ---------- 椭圆区域 ----------
+  _drawEllipseShape(cmd) {
+    const ctx = this.ctx
+    const [px, py] = this.toPixel(cmd.cx, cmd.cy)
+    const rx = Math.abs(this.toPixelLenX(cmd.rx))
+    const ry = Math.abs(this.toPixelLenY(cmd.ry))
+    const opts = cmd.opts
+
+    ctx.save()
+    this._applyStyle(ctx, opts)
+    ctx.beginPath()
+    ctx.ellipse(px, py, rx, ry, 0, 0, Math.PI * 2)
+    if (opts.fill) {
+      ctx.fillStyle = opts.fill
+      ctx.fill()
+    }
+    ctx.stroke()
+    ctx.restore()
+
+    // 标签（默认显示在椭圆顶部）
+    if (opts.label) {
+      const offset = opts.labelOffset || [0, -ry - 14]
+      this._addLabel(px + offset[0], py + offset[1], opts.label, {
+        color: opts.labelColor || this.options.labelColor,
+        font: opts.labelFont || '14px -apple-system, "Inter", sans-serif',
+      })
+    }
   }
 
   // ---------- 工具方法 ----------
