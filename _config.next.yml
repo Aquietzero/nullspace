@@ -209,11 +209,11 @@ footer:
   # Icon between year and copyright info.
   icon:
     # Icon name in Font Awesome. See: https://fontawesome.com/icons
-    name: fa fa-heart
+    name: fa fa-terminal
     # If you want to animate the icon, set it to true.
     animated: false
     # Change the color of icon, using Hex Code.
-    color: "#ff0000"
+    color: "#000"
 
   # If not defined, `author` from Hexo `_config.yml` will be used.
   # Set to `false` to disable the copyright statement.
@@ -364,16 +364,14 @@ codeblock:
   # Code Highlight theme
   # All available themes: https://theme-next.js.org/highlight/
   theme:
-    #light: default
-    #dark: stackoverflow-dark
-    light: github 
-    dark: github
+    light: github
+    dark: stackoverflow-dark
   prism:
     light: prism
     dark: prism-dark
   # Add copy button on codeblock
   copy_button:
-    enable: false
+    enable: true
     # Available values: default | flat | mac
     style:
   # Fold code block
@@ -390,14 +388,14 @@ back2top:
 
 # Reading progress bar
 reading_progress:
-  enable: false
+  enable: true
   # Available values: left | right
   start_at: left
   # Available values: top | bottom
   position: top
   reversed: false
-  color: "#B35588"
-  height: 3px
+  color: "#000"
+  height: 2px
 
 # Bookmark Support
 bookmark:
@@ -430,7 +428,7 @@ font:
   enable: true
 
   # Uri of fonts host, e.g. https://fonts.googleapis.com (Default).
-  host: https://fonts.loli.net
+  host: https://fonts.googleapis.com
 
 
   # Font options:
@@ -441,31 +439,30 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external: true
-    # family: PT Serif
-    family: Noto Serif SC
-    size: 1.2
+    family: Inter
+    size: 1.05
 
   # Font settings for site title (.site-title).
   title:
     external: true
-    family: Agbalumo
+    family: JetBrains Mono
     size: 1.5
 
   # Font settings for headlines (<h1> to <h6>).
   headings:
     external: true
-    family:
+    family: Inter
     size:
 
   # Font settings for posts (.post-body).
   posts:
     external: true
-    family:
+    family: Inter
 
   # Font settings for <code> and code blocks.
   codes:
     external: true
-    family:
+    family: JetBrains Mono
 
 
 # ---------------------------------------------------------------

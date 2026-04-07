@@ -1,84 +1,210 @@
-pink = #B35588
-pinkBg = #F9F2F5
+// ============================================================
+// NullSpace — Monochrome Geek Theme
+// 黑白为主，极简留白，等宽字体点缀极客感
+// ============================================================
+
+// --- Color Palette ---
+accent = #000
+accentLight = #444
+accentBg = #f5f5f5
+borderColor = #e0e0e0
+codeBg = #f7f7f7
+codeColor = #333
+
+// Per-post theme color overrides (keep for existing posts)
 blue = #477DA5
 blueBg = #E9F3F7
-green = #548064 
+green = #548064
 greenBg = #EEF3ED
 purple = #A48BBE
 purpleBg = #F6F3F8
-themeColor = pink
-themeColorBg = pinkBg
 
+themeColor = accent
+themeColorBg = accentBg
+
+// --- Base ---
 body
-  color: black
-  line-height: 1.5
+  color: #1a1a1a
+  line-height: 1.75
+  letter-spacing: 0.01em
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+::selection
+  background: #000
+  color: #fff
+
+a
+  color: #1a1a1a
+  text-decoration-color: #ccc
+  text-underline-offset: 3px
+  transition: all 0.15s ease
+  &:hover
+    color: #000
+    text-decoration-color: #000
 
 strong
-  color: themeColor
-  font-weight: bold
+  color: #000
+  font-weight: 700
 
-// site meta
+// --- Site Header / Brand ---
 .site-title
-  font-weight: bold
+  font-weight: 900
+  letter-spacing: 0.04em
 
 .brand
-  background: white
-  color: black
+  background: transparent
+  color: #000
   font-size: 1.5em
-  text-decoration: underline
+  text-decoration: none
+  border-bottom: 2px solid #000
+  padding-bottom: 2px
   &:hover
-    color: themeColor
+    color: #555
 
+.site-subtitle
+  color: #999
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+  font-size: 0.75em
+  letter-spacing: 0.08em
+  text-transform: uppercase
+
+// --- Navigation ---
+.menu
+  .menu-item
+    a
+      color: #666
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+      font-size: 0.85em
+      letter-spacing: 0.04em
+      text-transform: lowercase
+      border-bottom: none
+      &:hover
+        color: #000
+      &.active,
+      &:active
+        color: #000
+        font-weight: 700
+
+// --- Pagination ---
 .pagination
   border: none
   .page-number
     border: none
+    color: #999
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    &.current
+      background: #000
+      color: #fff
+      border-radius: 0
   .extend
     border: none
 
-// archieve list styles
+// --- Archive List ---
 .collection-title
   display: none
+
 .posts-collapse .post-content
   .collection-year
-    margin: 30px 0 10px 0
+    margin: 40px 0 15px 0
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    font-weight: 700
 
   .post-header
-    color: black
-    margin: 10px 2px 0
+    color: #1a1a1a
+    margin: 12px 2px 0
 
-// post styles
+// --- Post ---
 .post-block
   h1.post-title
     font-size: 2em
-    font-weight: bold !important
+    font-weight: 900 !important
+    letter-spacing: -0.02em
+    line-height: 1.2
+
+  .post-meta
+    color: #999
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    font-size: 0.8em
 
   .post-body
     text-align: left
 
+    h1, h2, h3, h4, h5, h6
+      font-weight: 800
+      color: #000
+      letter-spacing: -0.01em
+
+    h2
+      margin-top: 2.5em
+      padding-bottom: 0.3em
+      border-bottom: 1px solid borderColor
+
+    h3
+      margin-top: 1.8em
+
+    p
+      margin-bottom: 1.2em
+
     table
-      font-size: 0.8em
+      font-size: 0.85em
+      border-collapse: collapse
+      th
+        background: #fafafa
+        font-weight: 700
+        border-bottom: 2px solid #000
+      td, th
+        padding: 8px 12px
+        border: 1px solid borderColor
 
     aside
-      background: #F1F1EF
-      padding: 10px 20px
-      border-radius: 5px
+      background: #fafafa
+      padding: 12px 20px
+      border-left: 3px solid #000
+      border-radius: 0
       margin: 0 0 20px
       p
         padding: 0
         margin: 0
 
+    // Inline code: bare monospace, no box
     code
-      color: themeColor
-      background: themeColorBg
+      color: #000
+      background: none
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+      font-size: 0.86em
+      padding: 0
+      border: none
+      border-radius: 0
       text-decoration: none !important
 
     em
       font-style: normal
-      border-bottom: solid 1px black
+      border-bottom: solid 1px #999
 
+    // Code blocks: clean, no bg, top/bottom dividers only
     .highlight
-      border-radius: 5px
+      background: none
+      border: none
+      border-top: 1px solid #e0e0e0
+      border-bottom: 1px solid #e0e0e0
+      border-radius: 0
+      margin: 1.5em 0
+      padding: 4px 0
+      overflow-x: auto
+      table
+        border: none
+        background: none
+        td
+          border: none
+          background: none
+        tr
+          border: none
+          background: none
+        .gutter
+          border-right: none
+          pre
+            color: #ccc
 
     figcaption
       font-weight: normal !important
@@ -88,21 +214,46 @@ strong
         color: #999 !important
 
     .code
-      font-size: 0.95em
+      font-size: 0.9em
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
 
-  // copyright
+    // Blockquote
+    blockquote
+      border-left: 3px solid #000
+      color: #555
+      padding-left: 1em
+      margin-left: 0
+
+    // Horizontal rule
+    hr
+      border: none
+      border-top: 1px solid borderColor
+      margin: 2em 0
+
+    // Images
+    img
+      border-radius: 2px
+
+  // Copyright
   .post-copyright
     ul
-      border-left: solid 3px themeColor
+      border-left: solid 3px #000
+    font-size: 0.8em
 
-// related posts
+// --- Related Posts ---
 .posts-related
   margin: 50px 0
+  border-top: 1px solid borderColor
+  padding-top: 30px
   .popular-posts-title
-    font-size: 1.2em
+    font-size: 1em
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    color: #999
   .popular-posts
     list-style-type: none
-    padding-left: 0 
+    padding-left: 0
     .popular-posts-item
       line-height: 1.6
       margin-bottom: 10px
@@ -111,23 +262,33 @@ strong
         border-bottom: none
         display: flex
         flex-direction: column
+        &:hover .popular-posts-title
+          color: #000
       .popular-posts-title
         font-size: 1em
+        color: #333
       .popular-posts-time
         opacity: 0.5
         font-size: 0.8em
+        font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
         margin-bottom: -5px
         text-decoration: none !important
 
+// --- Book Cover ---
 .book-cover
   margin: 0 auto
   width: 40%
   img
-    border-radius: 5px
-    box-shadow: 0 0 15px #eee
+    border-radius: 2px
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08)
   .book-authors
     font-size: 0.8em
 
+// --- Footer ---
+.with-love
+  color: #000
+
+// --- Responsive ---
 @media (max-width: 991px)
   .math.display
     font-size: 0.8em
@@ -136,7 +297,7 @@ strong
     .post-body
       img
         width: 95% !important
-      figure 
+      figure
         margin-inline-start: 10px !important
         margin-inline-end: 10px !important
         &.book-cover
@@ -145,30 +306,21 @@ strong
       .code
         font-size: 0.7em
 
-.pagination
-  .page-number.current
-    background: themeColor
-
-.with-love
-  color: themeColor
-
+// --- Per-post Color Themes (backward compat) ---
 .theme-color-blue
   code
     color: blue !important
-    background: blueBg !important
+    background: none !important
     text-decoration: none !important
 
 .theme-color-green
   code
     color: green !important
-    background: greenBg !important
+    background: none !important
     text-decoration: none !important
 
 .theme-color-purple
   code
     color: purple !important
-    background: purpleBg !important
+    background: none !important
     text-decoration: none !important
-
-.post-copyright
-  font-size: 0.8em
