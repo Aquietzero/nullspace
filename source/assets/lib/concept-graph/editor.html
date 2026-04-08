@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConceptGraph Editor</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #fafafa;
+  --surface: #fff;
+  --border: #e0e0e0;
+  --border-focus: #888;
+  --text: #1a1a1a;
+  --text-muted: #888;
+  --accent: #333;
+  --accent-hover: #555;
+  --danger: #c0392b;
+  --pin-color: #e67e22;
+  --select-stroke: #2980b9;
+  --grid-color: #f0f0f0;
+  --toolbar-bg: #f5f5f5;
+  --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --sans: -apple-system, 'Helvetica Neue', 'PingFang SC', sans-serif;
+  --node-groups: blue, orange, green, purple, red, gray, pink;
+}
+
+body {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ========== Top Toolbar ========== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-sep {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.toolbar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button {
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+button:hover { border-color: var(--border-focus); background: #f0f0f0; }
+button:active { background: #e8e8e8; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+button.danger { color: var(--danger); }
+button.danger:hover { background: #fde8e8; border-color: var(--danger); }
+
+/* ========== Main Layout ========== */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ========== Canvas Area ========== */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.canvas-area svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Grid pattern */
+.grid-line {
+  stroke: var(--grid-color);
+  stroke-width: 1;
+}
+
+/* Editor node styles */
+.ed-node { cursor: grab; }
+.ed-node:active { cursor: grabbing; }
+.ed-node.selected .ed-node-shape { stroke: var(--select-stroke) !important; stroke-width: 3 !important; }
+.ed-node .ed-pin-badge {
+  display: none;
+  font-size: 10px;
+  fill: var(--pin-color);
+}
+.ed-node.pinned .ed-pin-badge { display: block; }
+
+.ed-edge { cursor: pointer; }
+.ed-edge.selected .ed-edge-line { stroke: var(--select-stroke) !important; stroke-width: 3 !important; }
+.ed-edge-line { stroke: #888; stroke-width: 1.5; fill: none; opacity: 0.6; }
+.ed-edge-hit { stroke: transparent; stroke-width: 12; fill: none; pointer-events: stroke; }
+.ed-edge-label-text { font-size: 11px; fill: #666; text-anchor: middle; pointer-events: none; }
+
+.ed-node-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; text-anchor: middle; pointer-events: none; }
+.ed-node-note { font-size: 10px; fill: #666; text-anchor: middle; pointer-events: none; }
+
+/* TeX foreignObject labels */
+.ed-node-fo {
+  overflow: visible;
+  pointer-events: none;
+}
+.ed-node-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+.ed-node-label-html {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.ed-node-note-html {
+  font-size: 10px;
+  color: #666;
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.ed-edge-label-fo {
+  overflow: visible;
+  pointer-events: none;
+}
+.ed-edge-label-html {
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ========== Right Panel ========== */
+.panel {
+  width: 280px;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.panel-section {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.panel-row label {
+  width: 60px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.panel-row input, .panel-row select {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.panel-row input:focus, .panel-row select:focus {
+  border-color: var(--border-focus);
+}
+
+.panel-row input[type="number"] { width: 70px; flex: none; }
+
+.panel-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.panel-actions button { flex: 1; font-size: 11px; padding: 4px 8px; }
+
+/* ========== Status Bar ========== */
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 12px;
+  background: var(--toolbar-bg);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.statusbar .mode-badge {
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 3px;
+  background: #e8e8e8;
+  color: var(--text);
+}
+
+.statusbar .mode-badge.force { background: #e8f4e8; color: #27ae60; }
+.statusbar .mode-badge.manual { background: #e8ecf4; color: #2980b9; }
+
+/* ========== Hidden file input ========== */
+#file-input { display: none; }
+
+/* ========== Node group color swatches ========== */
+.group-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
+.group-swatch.selected { border: 2px solid var(--accent); }
+
+/* ========== Empty state ========== */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.empty-state p {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ========== Checkbox ========== */
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-label input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Top Toolbar ===== -->
+<div class="toolbar">
+  <div class="toolbar-group">
+    <button id="btn-open" title="打开 JSON 文件">📂 打开</button>
+    <button id="btn-new" title="新建空白图">📄 新建</button>
+    <button id="btn-export" title="导出 JSON" disabled>💾 导出</button>
+  </div>
+
+  <div class="toolbar-sep"></div>
+
+  <div class="toolbar-group">
+    <span class="toolbar-label">布局</span>
+    <button id="btn-force" title="运行力导图布局（锚定已固定节点）" disabled>▶ 力导图</button>
+    <button id="btn-freeze" title="固化所有节点坐标，进入手动精调" disabled>⏹ 固化布局</button>
+    <button id="btn-reset-force" title="清除所有坐标，从零开始力导图" disabled>↺ 重置</button>
+  </div>
+
+  <div class="toolbar-sep"></div>
+
+  <div class="toolbar-group">
+    <label class="check-label">
+      <input type="checkbox" id="chk-grid"> 网格吸附
+    </label>
+    <button id="btn-undo" title="撤销 (⌘Z)" disabled>↩ 撤销</button>
+    <button id="btn-redo" title="重做 (⌘⇧Z)" disabled>↪ 重做</button>
+  </div>
+
+  <div class="toolbar-sep"></div>
+
+  <div class="toolbar-group">
+    <button id="btn-add-node" title="添加新节点" disabled>+ 节点</button>
+    <button id="btn-add-edge" title="添加新边（先选源节点，再选目标节点）" disabled>+ 边</button>
+    <button id="btn-delete" title="删除选中的节点或边 (Delete)" disabled>🗑 删除</button>
+  </div>
+</div>
+
+<input type="file" id="file-input" accept=".json">
+
+<!-- ===== Main ===== -->
+<div class="main">
+  <!-- Canvas -->
+  <div class="canvas-area" id="canvas-area">
+    <div class="empty-state" id="empty-state">
+      <h2>ConceptGraph Editor</h2>
+      <p>打开已有 JSON 文件，或新建空白图开始编辑</p>
+      <button id="btn-empty-open" style="margin-right: 8px;">📂 打开 JSON</button>
+      <button id="btn-empty-new">📄 新建空白图</button>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel" id="panel">
+    <!-- Graph Info -->
+    <div class="panel-section">
+      <div class="panel-section-title">图信息</div>
+      <div class="panel-row">
+        <label>标题</label>
+        <input type="text" id="inp-title" placeholder="图的标题">
+      </div>
+      <div class="panel-row">
+        <label>nodeRadius</label>
+        <input type="number" id="inp-radius" value="30" min="10" max="60">
+      </div>
+      <div class="panel-row">
+        <label>fullWidth</label>
+        <select id="sel-fullwidth">
+          <option value="true">true</option>
+          <option value="false">false</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Node Properties -->
+    <div class="panel-section" id="sec-node" style="display:none;">
+      <div class="panel-section-title">节点属性</div>
+      <div class="panel-row">
+        <label>id</label>
+        <input type="text" id="inp-node-id" readonly>
+      </div>
+      <div class="panel-row">
+        <label>label</label>
+        <input type="text" id="inp-node-label">
+      </div>
+      <div class="panel-row">
+        <label>group</label>
+        <div id="node-group-swatches"></div>
+      </div>
+      <div class="panel-row">
+        <label>shape</label>
+        <select id="sel-node-shape">
+          <option value="circle">circle</option>
+          <option value="rect">rect</option>
+          <option value="diamond">diamond</option>
+        </select>
+      </div>
+      <div class="panel-row">
+        <label>note</label>
+        <input type="text" id="inp-node-note" placeholder="$\\text{TeX}$ 可用">
+      </div>
+      <div class="panel-row">
+        <label>x</label>
+        <input type="number" id="inp-node-x" step="1">
+        <label style="width:auto;">y</label>
+        <input type="number" id="inp-node-y" step="1">
+      </div>
+      <div class="panel-row">
+        <label>📌 固定</label>
+        <input type="checkbox" id="chk-node-pin" style="width:auto;">
+      </div>
+      <div class="panel-actions">
+        <button id="btn-apply-node">应用</button>
+        <button id="btn-delete-node" class="danger">删除节点</button>
+      </div>
+    </div>
+
+    <!-- Edge Properties -->
+    <div class="panel-section" id="sec-edge" style="display:none;">
+      <div class="panel-section-title">边属性</div>
+      <div class="panel-row">
+        <label>source</label>
+        <input type="text" id="inp-edge-source" readonly>
+      </div>
+      <div class="panel-row">
+        <label>target</label>
+        <input type="text" id="inp-edge-target" readonly>
+      </div>
+      <div class="panel-row">
+        <label>label</label>
+        <input type="text" id="inp-edge-label">
+      </div>
+      <div class="panel-row">
+        <label>style</label>
+        <select id="sel-edge-style">
+          <option value="solid">solid</option>
+          <option value="dashed">dashed</option>
+          <option value="dotted">dotted</option>
+        </select>
+      </div>
+      <div class="panel-row">
+        <label>color</label>
+        <input type="text" id="inp-edge-color" placeholder="默认 #888">
+      </div>
+      <div class="panel-actions">
+        <button id="btn-apply-edge">应用</button>
+        <button id="btn-delete-edge" class="danger">删除边</button>
+      </div>
+    </div>
+
+    <!-- Node List -->
+    <div class="panel-section" style="flex:1; overflow-y:auto;">
+      <div class="panel-section-title">节点列表 <span id="node-count"></span></div>
+      <div id="node-list" style="font-size: 11px; font-family: var(--mono);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Status Bar ===== -->
+<div class="statusbar">
+  <span>模式: <span class="mode-badge" id="mode-badge">无</span></span>
+  <span id="stat-nodes">节点: 0</span>
+  <span id="stat-pinned">(📌 0)</span>
+  <span id="stat-edges">边: 0</span>
+  <span id="stat-file" style="margin-left:auto; font-family: var(--mono);"></span>
+</div>
+
+<script>
+// ============================================================
+//  ConceptGraph Editor — 可视化编辑器
+// ============================================================
+;(function () {
+  'use strict'
+
+  // ---- Constants ----
+  const GROUPS = {
+    blue:   { fill: '#f0f0f0', stroke: '#999' },
+    orange: { fill: '#e8e8e8', stroke: '#888' },
+    green:  { fill: '#f5f5f5', stroke: '#aaa' },
+    purple: { fill: '#eaeaea', stroke: '#999' },
+    red:    { fill: '#e0e0e0', stroke: '#888' },
+    gray:   { fill: '#f2f2f2', stroke: '#bbb' },
+    pink:   { fill: '#ebebeb', stroke: '#999' },
+  }
+  const GRID_SIZE = 20
+  const ARROW_MARKER_ID = 'ed-arrow'
+
+  // ---- State ----
+  let graphData = null       // { title, options, nodes: [], edges: [] }
+  let mode = 'none'          // 'none' | 'force' | 'manual'
+  let simulation = null
+  let selectedNode = null
+  let selectedEdge = null
+  let gridSnap = false
+  let fileName = ''
+  let addingEdge = false
+  let edgeSourceId = null
+
+  // Undo/Redo stacks
+  let undoStack = []
+  let redoStack = []
+  const MAX_UNDO = 80
+
+  // ---- DOM refs ----
+  const $ = (s) => document.querySelector(s)
+  const $$ = (s) => document.querySelectorAll(s)
+
+  const canvasArea = $('#canvas-area')
+  const emptyState = $('#empty-state')
+  const fileInput = $('#file-input')
+
+  const btnOpen = $('#btn-open')
+  const btnNew = $('#btn-new')
+  const btnExport = $('#btn-export')
+  const btnForce = $('#btn-force')
+  const btnFreeze = $('#btn-freeze')
+  const btnResetForce = $('#btn-reset-force')
+  const btnUndo = $('#btn-undo')
+  const btnRedo = $('#btn-redo')
+  const btnAddNode = $('#btn-add-node')
+  const btnAddEdge = $('#btn-add-edge')
+  const btnDelete = $('#btn-delete')
+  const chkGrid = $('#chk-grid')
+
+  const inpTitle = $('#inp-title')
+  const inpRadius = $('#inp-radius')
+  const selFullwidth = $('#sel-fullwidth')
+
+  const secNode = $('#sec-node')
+  const secEdge = $('#sec-edge')
+  const inpNodeId = $('#inp-node-id')
+  const inpNodeLabel = $('#inp-node-label')
+  const selNodeShape = $('#sel-node-shape')
+  const inpNodeNote = $('#inp-node-note')
+  const inpNodeX = $('#inp-node-x')
+  const inpNodeY = $('#inp-node-y')
+  const chkNodePin = $('#chk-node-pin')
+  const btnApplyNode = $('#btn-apply-node')
+  const btnDeleteNode = $('#btn-delete-node')
+
+  const inpEdgeSource = $('#inp-edge-source')
+  const inpEdgeTarget = $('#inp-edge-target')
+  const inpEdgeLabel = $('#inp-edge-label')
+  const selEdgeStyle = $('#sel-edge-style')
+  const inpEdgeColor = $('#inp-edge-color')
+  const btnApplyEdge = $('#btn-apply-edge')
+  const btnDeleteEdge = $('#btn-delete-edge')
+
+  const modeBadge = $('#mode-badge')
+  const statNodes = $('#stat-nodes')
+  const statPinned = $('#stat-pinned')
+  const statEdges = $('#stat-edges')
+  const statFile = $('#stat-file')
+  const nodeListEl = $('#node-list')
+  const nodeCountEl = $('#node-count')
+
+  // ---- SVG setup ----
+  let svgEl, svgG, gridG, edgesG, nodesG, zoom
+
+  function initSVG() {
+    d3.select(canvasArea).selectAll('svg').remove()
+    svgEl = d3.select(canvasArea)
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+
+    // Arrow marker
+    svgEl.append('defs').append('marker')
+      .attr('id', ARROW_MARKER_ID)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 20).attr('refY', 0)
+      .attr('markerWidth', 8).attr('markerHeight', 8)
+      .attr('orient', 'auto')
+      .append('path').attr('d', 'M0,-5L10,0L0,5').attr('fill', '#888')
+
+    svgG = svgEl.append('g').attr('class', 'canvas-root')
+    gridG = svgG.append('g').attr('class', 'grid-layer')
+    edgesG = svgG.append('g').attr('class', 'edges-layer')
+    nodesG = svgG.append('g').attr('class', 'nodes-layer')
+
+    // Zoom + pan
+    zoom = d3.zoom()
+      .scaleExtent([0.1, 5])
+      .on('zoom', (e) => svgG.attr('transform', e.transform))
+    svgEl.call(zoom)
+
+    // Click on empty space → deselect
+    svgEl.on('click', (e) => {
+      if (e.target === svgEl.node()) {
+        deselectAll()
+        if (addingEdge) cancelAddEdge()
+      }
+    })
+
+    drawGrid()
+  }
+
+  function drawGrid() {
+    gridG.selectAll('*').remove()
+    if (!gridSnap) return
+    const w = canvasArea.clientWidth * 5
+    const h = canvasArea.clientHeight * 5
+    for (let x = -w; x <= w; x += GRID_SIZE) {
+      gridG.append('line').attr('class', 'grid-line')
+        .attr('x1', x).attr('y1', -h).attr('x2', x).attr('y2', h)
+    }
+    for (let y = -h; y <= h; y += GRID_SIZE) {
+      gridG.append('line').attr('class', 'grid-line')
+        .attr('x1', -w).attr('y1', y).attr('x2', w).attr('y2', y)
+    }
+  }
+
+  function snapToGrid(val) {
+    return gridSnap ? Math.round(val / GRID_SIZE) * GRID_SIZE : val
+  }
+
+  // ---- Undo / Redo ----
+  function pushUndo() {
+    undoStack.push(JSON.stringify(graphData))
+    if (undoStack.length > MAX_UNDO) undoStack.shift()
+    redoStack = []
+    updateUndoRedoButtons()
+  }
+
+  function undo() {
+    if (undoStack.length === 0) return
+    redoStack.push(JSON.stringify(graphData))
+    graphData = JSON.parse(undoStack.pop())
+    deselectAll()
+    renderGraph()
+    updateUndoRedoButtons()
+  }
+
+  function redo() {
+    if (redoStack.length === 0) return
+    undoStack.push(JSON.stringify(graphData))
+    graphData = JSON.parse(redoStack.pop())
+    deselectAll()
+    renderGraph()
+    updateUndoRedoButtons()
+  }
+
+  function updateUndoRedoButtons() {
+    btnUndo.disabled = undoStack.length === 0
+    btnRedo.disabled = redoStack.length === 0
+  }
+
+  // ---- Graph Data Management ----
+  function newGraph() {
+    graphData = {
+      title: '新建概念图',
+      options: { nodeRadius: 30, fullWidth: true },
+      nodes: [],
+      edges: [],
+    }
+    fileName = ''
+    mode = 'manual'
+    undoStack = []
+    redoStack = []
+    deselectAll()
+    emptyState.style.display = 'none'
+    initSVG()
+    enableButtons()
+    renderGraph()
+    updateInfoPanel()
+  }
+
+  function loadJSON(data, name) {
+    graphData = JSON.parse(JSON.stringify(data)) // deep clone
+    fileName = name || ''
+    // Determine mode: if nodes have x,y → manual; else → need force
+    const hasCoords = graphData.nodes.every(n => n.x != null && n.y != null)
+    mode = hasCoords ? 'manual' : 'force'
+    undoStack = []
+    redoStack = []
+    deselectAll()
+    emptyState.style.display = 'none'
+    initSVG()
+    enableButtons()
+
+    if (mode === 'force' && !hasCoords) {
+      // Assign random initial positions
+      const cx = canvasArea.clientWidth / 2
+      const cy = canvasArea.clientHeight / 2
+      graphData.nodes.forEach(n => {
+        if (n.x == null) n.x = cx + (Math.random() - 0.5) * 400
+        if (n.y == null) n.y = cy + (Math.random() - 0.5) * 400
+      })
+    }
+
+    renderGraph()
+    updateInfoPanel()
+
+    // Fit view
+    fitView()
+  }
+
+  function exportJSON() {
+    if (!graphData) return
+    // Build clean output
+    const out = {
+      title: graphData.title,
+      options: { ...graphData.options },
+      nodes: graphData.nodes.map(n => {
+        const clean = { id: n.id, label: n.label, group: n.group }
+        if (n.shape && n.shape !== 'circle') clean.shape = n.shape
+        if (n.note) clean.note = n.note
+        clean.x = Math.round(n.x)
+        clean.y = Math.round(n.y)
+        return clean
+      }),
+      edges: graphData.edges.map(e => {
+        const clean = { source: e.source, target: e.target }
+        if (e.label) clean.label = e.label
+        if (e.style && e.style !== 'solid') clean.style = e.style
+        if (e.color) clean.color = e.color
+        return clean
+      }),
+    }
+    const json = JSON.stringify(out, null, 2)
+    const blob = new Blob([json + '\n'], { type: 'application/json' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = fileName || 'concept-graph.json'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  function enableButtons() {
+    btnExport.disabled = false
+    btnForce.disabled = false
+    btnFreeze.disabled = false
+    btnResetForce.disabled = false
+    btnAddNode.disabled = false
+    btnAddEdge.disabled = false
+    updateUndoRedoButtons()
+  }
+
+  // ---- Rendering ----
+  function renderGraph() {
+    if (!graphData) return
+    stopSimulation()
+    edgesG.selectAll('*').remove()
+    nodesG.selectAll('*').remove()
+
+    const nodeMap = {}
+    graphData.nodes.forEach(n => nodeMap[n.id] = n)
+
+    // ---- Edges ----
+    const edgeSel = edgesG.selectAll('g.ed-edge')
+      .data(graphData.edges, d => d.source + '->' + d.target)
+      .join('g')
+      .attr('class', d => {
+        let cls = 'ed-edge'
+        if (selectedEdge && selectedEdge.source === d.source && selectedEdge.target === d.target) cls += ' selected'
+        return cls
+      })
+
+    // Hit area (wider invisible path for click)
+    edgeSel.append('path')
+      .attr('class', 'ed-edge-hit')
+      .attr('d', d => edgePath(nodeMap[d.source], nodeMap[d.target]))
+
+    // Visible line
+    edgeSel.append('path')
+      .attr('class', 'ed-edge-line')
+      .attr('stroke', d => d.color || '#888')
+      .attr('stroke-dasharray', d => {
+        if (d.style === 'dashed') return '6,4'
+        if (d.style === 'dotted') return '2,3'
+        return null
+      })
+      .attr('marker-end', `url(#${ARROW_MARKER_ID})`)
+      .attr('d', d => edgePath(nodeMap[d.source], nodeMap[d.target]))
+
+    // Edge label via foreignObject (supports TeX)
+    edgeSel.each(function (d) {
+      const g = d3.select(this)
+      const labelText = d.label || ''
+      if (!labelText) return
+      const s = nodeMap[d.source], t = nodeMap[d.target]
+      const mx = s && t ? (s.x + t.x) / 2 : 0
+      const my = s && t ? (s.y + t.y) / 2 : 0
+      const foW = 140
+      const foH = 28
+
+      g.append('foreignObject')
+        .attr('class', 'ed-edge-label-fo')
+        .attr('width', foW).attr('height', foH)
+        .attr('x', mx - foW / 2).attr('y', my - foH - 2)
+        .append('xhtml:div')
+        .attr('class', 'ed-edge-label-html')
+        .html(hasTex(labelText) ? texToHTML(labelText) : labelText)
+    })
+
+    edgeSel.on('click', (e, d) => {
+      e.stopPropagation()
+      selectEdge(d)
+    })
+
+    // ---- Nodes ----
+    const r = graphData.options.nodeRadius || 30
+    const nodeSel = nodesG.selectAll('g.ed-node')
+      .data(graphData.nodes, d => d.id)
+      .join('g')
+      .attr('class', d => {
+        let cls = 'ed-node'
+        if (d._pinned) cls += ' pinned'
+        if (selectedNode && selectedNode.id === d.id) cls += ' selected'
+        return cls
+      })
+      .attr('transform', d => `translate(${d.x},${d.y})`)
+
+    // Shape
+    nodeSel.each(function (d) {
+      const el = d3.select(this)
+      const colors = GROUPS[d.group] || GROUPS.blue
+
+      if (d.shape === 'rect') {
+        const textLen = (d.label || '').length
+        const w = Math.max(r * 2, textLen * 12 + 40)
+        const h = d.note ? r * 2.0 : r * 1.4
+        el.append('rect')
+          .attr('class', 'ed-node-shape')
+          .attr('x', -w / 2).attr('y', -h / 2)
+          .attr('width', w).attr('height', h)
+          .attr('rx', 6).attr('ry', 6)
+          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+      } else if (d.shape === 'diamond') {
+        const s = r * 1.4
+        el.append('polygon')
+          .attr('class', 'ed-node-shape')
+          .attr('points', `0,${-s} ${s},0 0,${s} ${-s},0`)
+          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+      } else {
+        el.append('circle')
+          .attr('class', 'ed-node-shape')
+          .attr('r', r)
+          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+      }
+    })
+
+    // Label + Note via foreignObject (supports TeX)
+    nodeSel.each(function (d) {
+      const el = d3.select(this)
+      const r = graphData.options.nodeRadius || 30
+      const labelText = d.label || ''
+      const noteText = d.note || ''
+      const needTex = hasTex(labelText) || hasTex(noteText)
+
+      if (d.shape === 'rect') {
+        const textLen = labelText.length
+        const w = Math.max(r * 2, textLen * 12 + 40) + 20
+        const h = noteText ? r * 2.0 + 10 : r * 1.4 + 10
+
+        const fo = el.append('foreignObject')
+          .attr('class', 'ed-node-fo')
+          .attr('width', w).attr('height', h)
+          .attr('x', -w / 2).attr('y', -h / 2)
+
+        const wrapper = fo.append('xhtml:div')
+          .attr('class', 'ed-node-content')
+
+        wrapper.append('xhtml:div')
+          .attr('class', 'ed-node-label-html')
+          .html(needTex ? texToHTML(labelText) : labelText)
+
+        if (noteText) {
+          wrapper.append('xhtml:div')
+            .attr('class', 'ed-node-note-html')
+            .html(hasTex(noteText) ? texToHTML(noteText) : noteText)
+        }
+      } else {
+        // Circle / diamond: label inside, note below
+        const foW = r * 2 + 60
+        const foH = r * 2 + 10
+
+        const fo = el.append('foreignObject')
+          .attr('class', 'ed-node-fo')
+          .attr('width', foW).attr('height', foH)
+          .attr('x', -foW / 2).attr('y', -foH / 2)
+
+        fo.append('xhtml:div')
+          .attr('class', 'ed-node-content')
+          .append('xhtml:div')
+          .attr('class', 'ed-node-label-html')
+          .html(needTex ? texToHTML(labelText) : labelText)
+
+        // Note below the node shape
+        if (noteText) {
+          const noteW = 160
+          const noteH = 26
+          const noteY = d.shape === 'diamond' ? r * 1.4 + 4 : r + 4
+
+          const noteFo = el.append('foreignObject')
+            .attr('class', 'ed-node-fo')
+            .attr('width', noteW).attr('height', noteH)
+            .attr('x', -noteW / 2).attr('y', noteY)
+
+          noteFo.append('xhtml:div')
+            .attr('class', 'ed-node-note-html')
+            .style('text-align', 'center')
+            .html(hasTex(noteText) ? texToHTML(noteText) : noteText)
+        }
+      }
+    })
+
+    // Pin badge
+    nodeSel.append('text')
+      .attr('class', 'ed-pin-badge')
+      .attr('x', r - 2).attr('y', -r + 2)
+      .text('📌')
+
+    // Click → select
+    nodeSel.on('click', (e, d) => {
+      e.stopPropagation()
+      if (addingEdge) {
+        handleEdgeTarget(d)
+      } else {
+        selectNode(d)
+      }
+    })
+
+    // Drag
+    nodeSel.call(d3.drag()
+      .on('start', dragStarted)
+      .on('drag', dragged)
+      .on('end', dragEnded))
+
+    updateStatus()
+    updateNodeList()
+
+    // Trigger MathJax rendering for TeX formulas
+    typesetMath()
+  }
+
+  function edgePath(src, tgt) {
+    if (!src || !tgt) return 'M0,0L0,0'
+    const dx = tgt.x - src.x
+    const dy = tgt.y - src.y
+    const dr = Math.sqrt(dx * dx + dy * dy) * 2
+    return `M${src.x},${src.y}A${dr},${dr} 0 0,1 ${tgt.x},${tgt.y}`
+  }
+
+  function hasTex(text) {
+    return text && /\$.+?\$/.test(text)
+  }
+
+  function texToHTML(text) {
+    if (!text) return ''
+    // Convert $...$ to \(...\) for MathJax inline rendering
+    return text.replace(/\$(.+?)\$/g, '\\($1\\)')
+  }
+
+  function stripTex(text) {
+    if (!text) return ''
+    return text.replace(/\$(.+?)\$/g, '$1')
+  }
+
+  function typesetMath() {
+    if (window.MathJax && MathJax.typesetPromise) {
+      // Clear MathJax's internal cache for re-rendered elements
+      MathJax.startup.document.clear()
+      MathJax.startup.document.updateDocument()
+      MathJax.typesetPromise([canvasArea, nodeListEl]).catch(() => {})
+    }
+  }
+
+  // ---- Node Drag ----
+  let dragStartPos = null
+
+  function dragStarted(event, d) {
+    dragStartPos = { x: d.x, y: d.y }
+    if (mode === 'force' && simulation) {
+      if (!event.active) simulation.alphaTarget(0.3).restart()
+      d.fx = d.x
+      d.fy = d.y
+    }
+  }
+
+  function dragged(event, d) {
+    const nx = snapToGrid(event.x)
+    const ny = snapToGrid(event.y)
+
+    if (mode === 'force' && simulation) {
+      d.fx = nx
+      d.fy = ny
+      d._pinned = true
+    } else {
+      d.x = nx
+      d.y = ny
+    }
+
+    // Update visual position immediately
+    d3.select(this).attr('transform', `translate(${d.x},${d.y})`)
+    updateEdgePositions()
+
+    // Update panel if selected
+    if (selectedNode && selectedNode.id === d.id) {
+      inpNodeX.value = Math.round(d.x)
+      inpNodeY.value = Math.round(d.y)
+    }
+  }
+
+  function dragEnded(event, d) {
+    if (mode === 'force' && simulation) {
+      if (!event.active) simulation.alphaTarget(0)
+      if (d._pinned) {
+        d.fx = d.x
+        d.fy = d.y
+      } else {
+        d.fx = null
+        d.fy = null
+      }
+    }
+
+    // Push undo if moved significantly
+    if (dragStartPos && (Math.abs(d.x - dragStartPos.x) > 1 || Math.abs(d.y - dragStartPos.y) > 1)) {
+      // We need to push the *before* state
+      const beforeState = JSON.parse(undoStack.length > 0 ? undoStack[undoStack.length - 1] : JSON.stringify(graphData))
+      pushUndo()
+    }
+    dragStartPos = null
+    updateStatus()
+  }
+
+  function updateEdgePositions() {
+    const nodeMap = {}
+    graphData.nodes.forEach(n => nodeMap[n.id] = n)
+
+    edgesG.selectAll('g.ed-edge').each(function (d) {
+      const g = d3.select(this)
+      const src = nodeMap[d.source], tgt = nodeMap[d.target]
+      const path = edgePath(src, tgt)
+      g.select('.ed-edge-line').attr('d', path)
+      g.select('.ed-edge-hit').attr('d', path)
+      // Update foreignObject edge label position
+      const fo = g.select('.ed-edge-label-fo')
+      if (!fo.empty() && src && tgt) {
+        const mx = (src.x + tgt.x) / 2
+        const my = (src.y + tgt.y) / 2
+        const foW = parseFloat(fo.attr('width')) || 140
+        const foH = parseFloat(fo.attr('height')) || 28
+        fo.attr('x', mx - foW / 2).attr('y', my - foH - 2)
+      }
+    })
+  }
+
+  // ---- Force Layout ----
+  function startForceLayout() {
+    if (!graphData) return
+    pushUndo()
+    mode = 'force'
+    stopSimulation()
+
+    const nodeMap = {}
+    graphData.nodes.forEach(n => nodeMap[n.id] = n)
+
+    // Build link references
+    const links = graphData.edges.map(e => ({
+      source: nodeMap[e.source],
+      target: nodeMap[e.target],
+    })).filter(l => l.source && l.target)
+
+    const cx = canvasArea.clientWidth / 2
+    const cy = canvasArea.clientHeight / 2
+
+    simulation = d3.forceSimulation(graphData.nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(130))
+      .force('charge', d3.forceManyBody().strength(-500))
+      .force('center', d3.forceCenter(cx, cy))
+      .force('collide', d3.forceCollide(55))
+      .on('tick', () => {
+        // Fix pinned nodes
+        graphData.nodes.forEach(n => {
+          if (n._pinned) {
+            n.fx = n.x
+            n.fy = n.y
+          }
+        })
+
+        nodesG.selectAll('g.ed-node')
+          .attr('transform', d => `translate(${d.x},${d.y})`)
+        updateEdgePositions()
+      })
+
+    // Apply pinned positions
+    graphData.nodes.forEach(n => {
+      if (n._pinned) {
+        n.fx = n.x
+        n.fy = n.y
+      } else {
+        n.fx = null
+        n.fy = null
+      }
+    })
+
+    updateStatus()
+  }
+
+  function stopSimulation() {
+    if (simulation) {
+      simulation.stop()
+      simulation = null
+    }
+  }
+
+  function freezeLayout() {
+    if (!graphData) return
+    pushUndo()
+    stopSimulation()
+    mode = 'manual'
+
+    // Save current positions, clear force-related props
+    graphData.nodes.forEach(n => {
+      n.x = n.fx != null ? n.fx : n.x
+      n.y = n.fy != null ? n.fy : n.y
+      n.fx = null
+      n.fy = null
+      n.vx = 0
+      n.vy = 0
+      // Keep _pinned for visual reference but clear fx/fy
+    })
+
+    renderGraph()
+    updateStatus()
+  }
+
+  function resetForce() {
+    if (!graphData) return
+    pushUndo()
+    stopSimulation()
+
+    const cx = canvasArea.clientWidth / 2
+    const cy = canvasArea.clientHeight / 2
+
+    graphData.nodes.forEach(n => {
+      n.x = cx + (Math.random() - 0.5) * 400
+      n.y = cy + (Math.random() - 0.5) * 400
+      n.fx = null
+      n.fy = null
+      n.vx = 0
+      n.vy = 0
+      n._pinned = false
+    })
+
+    mode = 'force'
+    renderGraph()
+    startForceLayout()
+  }
+
+  // ---- Fit view ----
+  function fitView() {
+    if (!graphData || graphData.nodes.length === 0) return
+    const pad = 100
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    graphData.nodes.forEach(n => {
+      minX = Math.min(minX, n.x)
+      minY = Math.min(minY, n.y)
+      maxX = Math.max(maxX, n.x)
+      maxY = Math.max(maxY, n.y)
+    })
+    minX -= pad; minY -= pad; maxX += pad; maxY += pad
+    const gw = maxX - minX, gh = maxY - minY
+    const cw = canvasArea.clientWidth, ch = canvasArea.clientHeight
+    const scale = Math.min(cw / gw, ch / gh, 2)
+    const tx = cw / 2 - (minX + gw / 2) * scale
+    const ty = ch / 2 - (minY + gh / 2) * scale
+
+    svgEl.transition().duration(500).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(tx, ty).scale(scale)
+    )
+  }
+
+  // ---- Selection ----
+  function selectNode(node) {
+    deselectAll()
+    selectedNode = node
+    secNode.style.display = ''
+    btnDelete.disabled = false
+
+    // Update panel
+    inpNodeId.value = node.id
+    inpNodeLabel.value = node.label || ''
+    selNodeShape.value = node.shape || 'circle'
+    inpNodeNote.value = node.note || ''
+    inpNodeX.value = Math.round(node.x)
+    inpNodeY.value = Math.round(node.y)
+    chkNodePin.checked = !!node._pinned
+
+    // Highlight group swatch
+    updateGroupSwatches(node.group || 'blue')
+
+    // Visual
+    nodesG.selectAll('g.ed-node')
+      .classed('selected', d => d.id === node.id)
+  }
+
+  function selectEdge(edge) {
+    deselectAll()
+    selectedEdge = edge
+    secEdge.style.display = ''
+    btnDelete.disabled = false
+
+    inpEdgeSource.value = edge.source
+    inpEdgeTarget.value = edge.target
+    inpEdgeLabel.value = edge.label || ''
+    selEdgeStyle.value = edge.style || 'solid'
+    inpEdgeColor.value = edge.color || ''
+
+    edgesG.selectAll('g.ed-edge')
+      .classed('selected', d => d.source === edge.source && d.target === edge.target)
+  }
+
+  function deselectAll() {
+    selectedNode = null
+    selectedEdge = null
+    secNode.style.display = 'none'
+    secEdge.style.display = 'none'
+    btnDelete.disabled = true
+    nodesG && nodesG.selectAll('g.ed-node').classed('selected', false)
+    edgesG && edgesG.selectAll('g.ed-edge').classed('selected', false)
+  }
+
+  // ---- Group Swatches ----
+  const swatchContainer = $('#node-group-swatches')
+  let currentGroup = 'blue'
+
+  function initGroupSwatches() {
+    swatchContainer.innerHTML = ''
+    Object.keys(GROUPS).forEach(name => {
+      const el = document.createElement('span')
+      el.className = 'group-swatch'
+      el.style.background = GROUPS[name].fill
+      el.style.borderColor = GROUPS[name].stroke
+      el.dataset.group = name
+      el.title = name
+      el.addEventListener('click', () => {
+        currentGroup = name
+        updateGroupSwatches(name)
+      })
+      swatchContainer.appendChild(el)
+    })
+  }
+
+  function updateGroupSwatches(active) {
+    currentGroup = active
+    swatchContainer.querySelectorAll('.group-swatch').forEach(el => {
+      el.classList.toggle('selected', el.dataset.group === active)
+    })
+  }
+
+  initGroupSwatches()
+
+  // ---- Add Node ----
+  function addNode() {
+    if (!graphData) return
+    pushUndo()
+    const cx = canvasArea.clientWidth / 2
+    const cy = canvasArea.clientHeight / 2
+
+    // Generate unique id
+    let idx = graphData.nodes.length + 1
+    while (graphData.nodes.some(n => n.id === `node${idx}`)) idx++
+    const id = `node${idx}`
+
+    // Get current view center via zoom transform
+    const transform = d3.zoomTransform(svgEl.node())
+    const x = snapToGrid((cx - transform.x) / transform.k)
+    const y = snapToGrid((cy - transform.y) / transform.k)
+
+    const node = {
+      id,
+      label: id,
+      group: currentGroup,
+      shape: 'circle',
+      note: null,
+      x, y,
+      _pinned: false,
+    }
+    graphData.nodes.push(node)
+    renderGraph()
+    selectNode(node)
+  }
+
+  // ---- Add Edge (two-click) ----
+  function startAddEdge() {
+    if (!graphData) return
+    addingEdge = true
+    edgeSourceId = null
+    btnAddEdge.classList.add('active')
+    btnAddEdge.textContent = '⏎ 选源节点...'
+  }
+
+  function handleEdgeTarget(node) {
+    if (!addingEdge) return
+    if (!edgeSourceId) {
+      edgeSourceId = node.id
+      btnAddEdge.textContent = '⏎ 选目标节点...'
+      selectNode(node)
+      return
+    }
+    if (edgeSourceId === node.id) return // no self-loop
+
+    // Check duplicate
+    const exists = graphData.edges.some(e => e.source === edgeSourceId && e.target === node.id)
+    if (exists) {
+      cancelAddEdge()
+      return
+    }
+
+    pushUndo()
+    const edge = {
+      source: edgeSourceId,
+      target: node.id,
+      label: '',
+      style: 'solid',
+      color: null,
+    }
+    graphData.edges.push(edge)
+    cancelAddEdge()
+    renderGraph()
+    selectEdge(edge)
+  }
+
+  function cancelAddEdge() {
+    addingEdge = false
+    edgeSourceId = null
+    btnAddEdge.classList.remove('active')
+    btnAddEdge.textContent = '+ 边'
+  }
+
+  // ---- Delete ----
+  function deleteSelected() {
+    if (!graphData) return
+    if (selectedNode) {
+      pushUndo()
+      const id = selectedNode.id
+      graphData.nodes = graphData.nodes.filter(n => n.id !== id)
+      graphData.edges = graphData.edges.filter(e => e.source !== id && e.target !== id)
+      deselectAll()
+      renderGraph()
+    } else if (selectedEdge) {
+      pushUndo()
+      graphData.edges = graphData.edges.filter(e =>
+        !(e.source === selectedEdge.source && e.target === selectedEdge.target))
+      deselectAll()
+      renderGraph()
+    }
+  }
+
+  // ---- Apply Panel Changes ----
+  function applyNodeChanges() {
+    if (!selectedNode || !graphData) return
+    pushUndo()
+    const node = graphData.nodes.find(n => n.id === selectedNode.id)
+    if (!node) return
+
+    node.label = inpNodeLabel.value
+    node.group = currentGroup
+    node.shape = selNodeShape.value
+    node.note = inpNodeNote.value || null
+    node.x = parseFloat(inpNodeX.value) || node.x
+    node.y = parseFloat(inpNodeY.value) || node.y
+    node._pinned = chkNodePin.checked
+
+    if (mode === 'force' && simulation) {
+      if (node._pinned) {
+        node.fx = node.x
+        node.fy = node.y
+      } else {
+        node.fx = null
+        node.fy = null
+      }
+    }
+
+    renderGraph()
+    selectNode(node)
+  }
+
+  function applyEdgeChanges() {
+    if (!selectedEdge || !graphData) return
+    pushUndo()
+    const edge = graphData.edges.find(e =>
+      e.source === selectedEdge.source && e.target === selectedEdge.target)
+    if (!edge) return
+
+    edge.label = inpEdgeLabel.value
+    edge.style = selEdgeStyle.value
+    edge.color = inpEdgeColor.value || null
+
+    renderGraph()
+    selectEdge(edge)
+  }
+
+  // ---- Info Panel ----
+  function updateInfoPanel() {
+    if (!graphData) return
+    inpTitle.value = graphData.title || ''
+    inpRadius.value = graphData.options.nodeRadius || 30
+    selFullwidth.value = graphData.options.fullWidth ? 'true' : 'false'
+  }
+
+  inpTitle.addEventListener('change', () => {
+    if (graphData) graphData.title = inpTitle.value
+  })
+  inpRadius.addEventListener('change', () => {
+    if (graphData) {
+      graphData.options.nodeRadius = parseInt(inpRadius.value) || 30
+      renderGraph()
+    }
+  })
+  selFullwidth.addEventListener('change', () => {
+    if (graphData) graphData.options.fullWidth = selFullwidth.value === 'true'
+  })
+
+  // ---- Status Bar ----
+  function updateStatus() {
+    if (!graphData) {
+      modeBadge.textContent = '无'
+      modeBadge.className = 'mode-badge'
+      statNodes.textContent = '节点: 0'
+      statPinned.textContent = '(📌 0)'
+      statEdges.textContent = '边: 0'
+      statFile.textContent = ''
+      return
+    }
+
+    modeBadge.textContent = mode === 'force' ? '力导图布局' : '手动精调'
+    modeBadge.className = 'mode-badge ' + mode
+    statNodes.textContent = `节点: ${graphData.nodes.length}`
+    statPinned.textContent = `(📌 ${graphData.nodes.filter(n => n._pinned).length})`
+    statEdges.textContent = `边: ${graphData.edges.length}`
+    statFile.textContent = fileName
+  }
+
+  function updateNodeList() {
+    if (!graphData) {
+      nodeListEl.innerHTML = ''
+      nodeCountEl.textContent = ''
+      return
+    }
+    nodeCountEl.textContent = `(${graphData.nodes.length})`
+    const html = graphData.nodes.map(n => {
+      const pin = n._pinned ? '📌 ' : ''
+      const sel = selectedNode && selectedNode.id === n.id ? ' style="font-weight:700;color:#2980b9;"' : ''
+      const labelDisplay = hasTex(n.label) ? texToHTML(n.label) : (n.label || '')
+      return `<div${sel} data-nid="${n.id}" class="node-list-item" style="padding:2px 4px;cursor:pointer;border-radius:2px;">${pin}${n.id} <span style="color:#888;">${labelDisplay}</span></div>`
+    }).join('')
+    nodeListEl.innerHTML = html
+
+    // Click handler for node list items
+    nodeListEl.querySelectorAll('.node-list-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const nid = el.dataset.nid
+        const node = graphData.nodes.find(n => n.id === nid)
+        if (node) selectNode(node)
+      })
+    })
+  }
+
+  // ---- Event Bindings ----
+  btnOpen.addEventListener('click', () => fileInput.click())
+  $('#btn-empty-open').addEventListener('click', () => fileInput.click())
+  btnNew.addEventListener('click', newGraph)
+  $('#btn-empty-new').addEventListener('click', newGraph)
+  btnExport.addEventListener('click', exportJSON)
+  btnForce.addEventListener('click', startForceLayout)
+  btnFreeze.addEventListener('click', freezeLayout)
+  btnResetForce.addEventListener('click', resetForce)
+  btnUndo.addEventListener('click', undo)
+  btnRedo.addEventListener('click', redo)
+  btnAddNode.addEventListener('click', addNode)
+  btnAddEdge.addEventListener('click', () => {
+    if (addingEdge) cancelAddEdge()
+    else startAddEdge()
+  })
+  btnDelete.addEventListener('click', deleteSelected)
+  btnApplyNode.addEventListener('click', applyNodeChanges)
+  btnDeleteNode.addEventListener('click', deleteSelected)
+  btnApplyEdge.addEventListener('click', applyEdgeChanges)
+  btnDeleteEdge.addEventListener('click', deleteSelected)
+
+  chkGrid.addEventListener('change', () => {
+    gridSnap = chkGrid.checked
+    drawGrid()
+  })
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result)
+        loadJSON(data, file.name)
+      } catch (err) {
+        alert('JSON 解析失败: ' + err.message)
+      }
+    }
+    reader.readAsText(file)
+    fileInput.value = '' // reset so same file can be re-opened
+  })
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // ⌘Z / Ctrl+Z → undo
+    if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault()
+      undo()
+    }
+    // ⌘⇧Z / Ctrl+Shift+Z → redo
+    if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
+      e.preventDefault()
+      redo()
+    }
+    // ⌘Y / Ctrl+Y → redo
+    if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
+      e.preventDefault()
+      redo()
+    }
+    // Delete / Backspace → delete selected (but not if in input)
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !isInputFocused()) {
+      e.preventDefault()
+      deleteSelected()
+    }
+    // Escape → deselect / cancel add-edge
+    if (e.key === 'Escape') {
+      if (addingEdge) cancelAddEdge()
+      else deselectAll()
+    }
+    // ⌘S / Ctrl+S → export
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault()
+      exportJSON()
+    }
+  })
+
+  function isInputFocused() {
+    const el = document.activeElement
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT')
+  }
+
+  // Drag & drop JSON files onto canvas
+  canvasArea.addEventListener('dragover', (e) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+  })
+  canvasArea.addEventListener('drop', (e) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (!file || !file.name.endsWith('.json')) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        loadJSON(JSON.parse(reader.result), file.name)
+      } catch (err) {
+        alert('JSON 解析失败: ' + err.message)
+      }
+    }
+    reader.readAsText(file)
+  })
+
+  // Init
+  updateStatus()
+
+  // When MathJax finishes loading (async), re-typeset if graph is already loaded
+  if (window.MathJax && MathJax.startup) {
+    MathJax.startup.promise.then(() => {
+      if (graphData) typesetMath()
+    }).catch(() => {})
+  }
+})()
+</script>
+</body>
+</html>
