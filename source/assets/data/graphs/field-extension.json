@@ -1,0 +1,51 @@
+{
+  "title": "域扩张",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    { "id": "ext", "label": "域扩张", "group": "blue", "shape": "rect", "note": "$K/F$：$F \\subseteq K$", "x": 400, "y": 50 },
+    { "id": "degree", "label": "扩张次数", "group": "blue", "note": "$[K:F] = \\dim_F K$", "x": 250, "y": 160 },
+    { "id": "vecspace", "label": "向量空间", "group": "blue", "note": "$K$ 是 $F$ 上的线性空间", "x": 550, "y": 160 },
+
+    { "id": "tower", "label": "塔定理", "group": "orange", "shape": "rect", "note": "$[K:F] = [K:E] \\cdot [E:F]$", "x": 120, "y": 290 },
+    { "id": "ruler", "label": "尺规作图", "group": "orange", "note": "次数须为 $2$ 的幂", "x": 120, "y": 410 },
+
+    { "id": "algebraic", "label": "代数元", "group": "green", "shape": "rect", "note": "$f(\\alpha) = 0$", "x": 500, "y": 290 },
+    { "id": "transcend", "label": "超越元", "group": "green", "note": "不满足任何多项式", "x": 700, "y": 290 },
+    { "id": "minpoly", "label": "最小多项式", "group": "green", "shape": "rect", "note": "$m_\\alpha(x)$：首一不可约", "x": 350, "y": 400 },
+
+    { "id": "simple", "label": "单扩张", "group": "purple", "shape": "rect", "note": "$K = F(\\alpha)$", "x": 550, "y": 420 },
+    { "id": "struct", "label": "结构定理", "group": "purple", "shape": "rect", "note": "$F(\\alpha) \\cong F[x]/(m_\\alpha(x))$", "x": 450, "y": 530 },
+    { "id": "qsqrt2", "label": "$\\mathbb{Q}(\\sqrt{2})$", "group": "purple", "note": "基 $\\{1, \\sqrt{2}\\}$", "x": 350, "y": 640 },
+    { "id": "f4", "label": "$\\mathbb{F}_4$", "group": "purple", "note": "$\\mathbb{F}_2[x]/(x^2+x+1)$", "x": 540, "y": 640 },
+
+    { "id": "split", "label": "分裂域", "group": "red", "shape": "rect", "note": "多项式完全分解的最小域", "x": 750, "y": 420 },
+    { "id": "closure", "label": "代数闭包", "group": "red", "note": "$\\bar{F}$：所有代数数", "x": 750, "y": 530 },
+    { "id": "algclosed", "label": "代数闭域", "group": "red", "note": "所有多项式有根", "x": 750, "y": 640 }
+  ],
+  "edges": [
+    { "source": "ext", "target": "degree", "label": "度量" },
+    { "source": "ext", "target": "vecspace", "label": "结构" },
+    { "source": "degree", "target": "tower", "label": "可乘性" },
+    { "source": "tower", "target": "ruler", "label": "应用", "style": "dashed" },
+
+    { "source": "ext", "target": "algebraic", "label": "元素分类" },
+    { "source": "ext", "target": "transcend", "label": "元素分类" },
+    { "source": "algebraic", "target": "minpoly", "label": "刻画" },
+
+    { "source": "algebraic", "target": "simple", "label": "生成" },
+    { "source": "simple", "target": "struct", "label": "核心定理" },
+    { "source": "minpoly", "target": "struct", "label": "决定结构" },
+    { "source": "struct", "target": "qsqrt2", "label": "例", "style": "dashed" },
+    { "source": "struct", "target": "f4", "label": "例", "style": "dashed" },
+
+    { "source": "ext", "target": "split", "label": "特殊类型" },
+    { "source": "split", "target": "closure", "label": "极限" },
+    { "source": "closure", "target": "algclosed", "label": "性质" },
+
+    { "source": "degree", "target": "minpoly", "label": "$[F(\\alpha):F] = \\deg m_\\alpha$", "style": "dashed" },
+    { "source": "simple", "target": "split", "label": "逐步添加根", "style": "dashed" }
+  ]
+}

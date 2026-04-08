@@ -1,0 +1,50 @@
+{
+  "title": "置换群与对称群",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    { "id": "perm", "label": "置换", "group": "blue", "shape": "rect", "note": "$\\{1,\\ldots,n\\}$ 到自身的双射", "x": 400, "y": 50 },
+
+    { "id": "cycle",    "label": "循环记号",     "group": "blue", "note": "$(a_1 a_2 \\cdots a_k)$", "x": 200, "y": 160 },
+    { "id": "decomp",   "label": "不相交循环分解", "group": "blue", "shape": "rect", "note": "唯一分解", "x": 400, "y": 160 },
+    { "id": "transp",   "label": "对换",         "group": "blue", "note": "$2$-循环 $(ij)$", "x": 400, "y": 280 },
+
+    { "id": "parity",   "label": "奇偶性",   "group": "orange", "shape": "rect", "x": 400, "y": 400 },
+    { "id": "even",     "label": "偶置换",   "group": "orange", "note": "偶数个对换", "x": 300, "y": 500 },
+    { "id": "odd",      "label": "奇置换",   "group": "orange", "note": "奇数个对换", "x": 500, "y": 500 },
+
+    { "id": "Sn", "label": "$S_n$", "group": "green", "shape": "rect", "note": "对称群，$|S_n|=n!$", "x": 650, "y": 160 },
+    { "id": "An", "label": "$A_n$", "group": "green", "shape": "rect", "note": "交错群，$|A_n|=n!/2$", "x": 200, "y": 500 },
+
+    { "id": "Dn",  "label": "$D_n$",  "group": "purple", "note": "二面体群，$|D_n|=2n$", "x": 750, "y": 300 },
+    { "id": "V4",  "label": "$V_4$",  "group": "purple", "note": "克莱因四元群", "x": 100, "y": 580 },
+
+    { "id": "cayley",  "label": "凯莱定理",  "group": "red", "shape": "rect", "note": "任意有限群 $\\hookrightarrow S_n$", "x": 700, "y": 420 },
+    { "id": "leftmul", "label": "左乘映射",  "group": "red", "note": "$L_g(h) = gh$", "x": 700, "y": 530 },
+    { "id": "anyG",    "label": "任意有限群", "group": "red", "x": 830, "y": 420 }
+  ],
+  "edges": [
+    { "source": "perm",   "target": "cycle",   "label": "记作" },
+    { "source": "perm",   "target": "decomp",  "label": "可分解为" },
+    { "source": "decomp", "target": "transp",  "label": "进一步拆为" },
+
+    { "source": "transp", "target": "parity",  "label": "数个数定" },
+    { "source": "parity", "target": "even" },
+    { "source": "parity", "target": "odd" },
+
+    { "source": "perm", "target": "Sn", "label": "全体构成" },
+
+    { "source": "even", "target": "An", "label": "全体构成" },
+
+    { "source": "An", "target": "Sn", "label": "子群，指数 $2$", "style": "dashed" },
+
+    { "source": "Dn", "target": "Sn", "label": "子群", "style": "dashed" },
+    { "source": "V4", "target": "An", "label": "正规子群", "style": "dashed" },
+
+    { "source": "anyG",    "target": "cayley",  "label": "应用" },
+    { "source": "cayley",  "target": "leftmul", "label": "构造" },
+    { "source": "leftmul", "target": "Sn",      "label": "嵌入" }
+  ]
+}

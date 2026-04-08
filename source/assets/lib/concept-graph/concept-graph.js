@@ -568,4 +568,333 @@ class ConceptGraph {
         d.fy = null
       })
   }
+
+  // ========== 静态渲染（数据驱动，不启动力模拟） ==========
+
+  /**
+   * 使用预设坐标直接渲染图形（无力模拟）
+   * 节点数据中必须包含 x, y 坐标
+   */
+  renderStatic() {
+    // ---------- 自动生成说明节点 + 透明连边 ----------
+    this._generateNoteNodes()
+
+    // 为说明节点计算默认坐标（相对父节点偏移）
+    this.nodes.forEach((n) => {
+      if (n._isNote && (n.x == null || n.y == null)) {
+        const parent = this._nodeMap[n._parentId]
+        if (parent) {
+          n.x = parent.x
+          n.y = (parent.y || 0) + 50
+        }
+      }
+    })
+
+    // ---------- 自动计算 viewBox ----------
+    const padding = 80
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    this.nodes.forEach((n) => {
+      if (n.x != null && n.y != null) {
+        const r = n.radius || this.options.nodeRadius || 30
+        minX = Math.min(minX, n.x - r)
+        minY = Math.min(minY, n.y - r)
+        maxX = Math.max(maxX, n.x + r)
+        maxY = Math.max(maxY, n.y + r)
+      }
+    })
+    minX -= padding; minY -= padding
+    maxX += padding; maxY += padding
+    const vw = maxX - minX
+    const vh = maxY - minY
+
+    // 更新 SVG viewBox
+    this.svg
+      .attr('viewBox', `${minX} ${minY} ${vw} ${vh}`)
+      .attr('height', null)
+      .style('aspect-ratio', `${vw} / ${vh}`)
+
+    // 清除旧内容
+    this.svg.selectAll('g.graph-content').remove()
+
+    // 构建主容器
+    const g = this.svg.append('g').attr('class', 'graph-content')
+
+    if (this.options.zoomable) {
+      const zoom = d3
+        .zoom()
+        .scaleExtent([0.3, 3])
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform)
+        })
+      this.svg.call(zoom)
+    }
+
+    // ---------- 箭头 marker ----------
+    const defs = this.svg.select('defs')
+    const markerColors = new Set()
+    markerColors.add(this.options.edgeColor)
+    this.edges.forEach((e) => {
+      if (e.color) markerColors.add(e.color)
+    })
+    markerColors.forEach((color) => {
+      const markerId = 'arrow-' + color.replace('#', '')
+      defs
+        .append('marker')
+        .attr('id', markerId)
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 20)
+        .attr('refY', 0)
+        .attr('markerWidth', 8)
+        .attr('markerHeight', 8)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', color)
+    })
+
+    // ---------- 边 ----------
+    const edgeG = g.append('g').attr('class', 'cg-edges')
+
+    const normalEdges = this.edges.filter((e) => !e._noteLink)
+    const noteEdges = this.edges.filter((e) => e._noteLink)
+
+    // 说明连边（透明）
+    edgeG
+      .selectAll('g.cg-note-edge')
+      .data(noteEdges)
+      .join('g')
+      .attr('class', 'cg-note-edge')
+      .append('line')
+      .attr('class', 'cg-note-edge-line')
+      .attr('stroke', 'transparent')
+      .attr('stroke-width', 0)
+      .attr('x1', (d) => this._nodeMap[d.source] ? this._nodeMap[d.source].x : 0)
+      .attr('y1', (d) => this._nodeMap[d.source] ? this._nodeMap[d.source].y : 0)
+      .attr('x2', (d) => this._nodeMap[d.target] ? this._nodeMap[d.target].x : 0)
+      .attr('y2', (d) => this._nodeMap[d.target] ? this._nodeMap[d.target].y : 0)
+
+    // 普通边
+    const link = edgeG
+      .selectAll('g.cg-edge')
+      .data(normalEdges)
+      .join('g')
+      .attr('class', 'cg-edge')
+
+    link
+      .append('path')
+      .attr('class', 'cg-edge-line')
+      .attr('fill', 'none')
+      .attr('stroke', (d) => d.color || this.options.edgeColor)
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', (d) => {
+        if (d.style === 'dashed') return '6,4'
+        if (d.style === 'dotted') return '2,3'
+        return this.options.edgeDashArray
+      })
+      .attr('marker-end', (d) => {
+        const c = d.color || this.options.edgeColor
+        return `url(#arrow-${c.replace('#', '')})`
+      })
+      .attr('d', (d) => {
+        const src = this._nodeMap[d.source] || d.source
+        const tgt = this._nodeMap[d.target] || d.target
+        const dx = tgt.x - src.x
+        const dy = tgt.y - src.y
+        const dr = Math.sqrt(dx * dx + dy * dy) * 2
+        return `M${src.x},${src.y}A${dr},${dr} 0 0,1 ${tgt.x},${tgt.y}`
+      })
+
+    // 边标签
+    link
+      .append('foreignObject')
+      .attr('class', 'cg-edge-label-fo')
+      .attr('width', 120)
+      .attr('height', 30)
+      .attr('x', -60)
+      .attr('y', -20)
+      .attr('transform', (d) => {
+        const src = this._nodeMap[d.source] || d.source
+        const tgt = this._nodeMap[d.target] || d.target
+        const mx = (src.x + tgt.x) / 2
+        const my = (src.y + tgt.y) / 2
+        return `translate(${mx},${my})`
+      })
+      .append('xhtml:div')
+      .attr('class', 'cg-edge-label')
+      .html((d) => this._texToHTML(d.label, '#666'))
+
+    // ---------- 节点 ----------
+    const nodeG = g.append('g').attr('class', 'cg-nodes')
+
+    const normalNodes = this.nodes.filter((n) => !n._isNote)
+    const noteNodes = this.nodes.filter((n) => n._isNote)
+
+    // 普通节点
+    const node = nodeG
+      .selectAll('g.cg-node')
+      .data(normalNodes)
+      .join('g')
+      .attr('class', 'cg-node')
+      .attr('transform', (d) => `translate(${d.x},${d.y})`)
+
+    // 形状
+    node.each((d, i, nodes) => {
+      const el = d3.select(nodes[i])
+      const colors =
+        this.options.groups[d.group] ||
+        this.options.groups[this.options.defaultGroup]
+      const r = d.radius || this.options.nodeRadius
+
+      if (d.shape === 'rect') {
+        const textLen = (d.label || '').length
+        const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
+        const contentLen = Math.max(textLen, noteLen)
+        const w = Math.max(r * 2, contentLen * 14 + 48)
+        const hasNote = !!d.note
+        const h = hasNote ? r * 2.0 : r * 1.4
+        el.append('rect')
+          .attr('class', 'cg-node-shape')
+          .attr('x', -w / 2)
+          .attr('y', -h / 2)
+          .attr('width', w)
+          .attr('height', h)
+          .attr('rx', 6)
+          .attr('ry', 6)
+          .attr('fill', colors.fill)
+          .attr('stroke', colors.stroke)
+          .attr('stroke-width', 2)
+      } else if (d.shape === 'diamond') {
+        const s = r * 1.4
+        el.append('polygon')
+          .attr('class', 'cg-node-shape')
+          .attr('points', `0,${-s} ${s},0 0,${s} ${-s},0`)
+          .attr('fill', colors.fill)
+          .attr('stroke', colors.stroke)
+          .attr('stroke-width', 2)
+      } else {
+        el.append('circle')
+          .attr('class', 'cg-node-shape')
+          .attr('r', r)
+          .attr('fill', colors.fill)
+          .attr('stroke', colors.stroke)
+          .attr('stroke-width', 2)
+      }
+    })
+
+    // 标签
+    node.each((d, i, nodes) => {
+      const el = d3.select(nodes[i])
+      const colors =
+        this.options.groups[d.group] ||
+        this.options.groups[this.options.defaultGroup]
+      const r = d.radius || this.options.nodeRadius
+
+      const hasNote = d.shape === 'rect' && !!d.note
+      const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
+      const foW = d.shape === 'rect'
+        ? Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48) + 20
+        : r * 2 + 40
+      const foH = hasNote ? r * 2.0 + 10 : (d.shape === 'rect' ? r * 1.4 + 10 : r * 1.6 + 10)
+
+      const fo = el
+        .append('foreignObject')
+        .attr('class', 'cg-node-fo')
+        .attr('width', foW)
+        .attr('height', foH)
+        .attr('x', -foW / 2)
+        .attr('y', -foH / 2)
+
+      const wrapper = fo
+        .append('xhtml:div')
+        .attr('class', 'cg-node-content')
+
+      wrapper
+        .append('xhtml:div')
+        .attr('class', 'cg-node-label')
+        .style('color', colors.text)
+        .html(this._texToHTML(d.label, colors.text))
+
+      if (hasNote) {
+        wrapper
+          .append('xhtml:div')
+          .attr('class', 'cg-node-note-inline')
+          .style('color', colors.text)
+          .html(this._texToHTML(d.note, colors.text))
+      }
+    })
+
+    // 说明节点
+    const noteNode = nodeG
+      .selectAll('g.cg-note-node')
+      .data(noteNodes)
+      .join('g')
+      .attr('class', 'cg-note-node')
+      .attr('transform', (d) => `translate(${d.x},${d.y})`)
+
+    noteNode.each((d, i, nodes) => {
+      const el = d3.select(nodes[i])
+      const parentNode = this._nodeMap[d._parentId]
+      const colors =
+        this.options.groups[(parentNode && parentNode.group) || this.options.defaultGroup] ||
+        this.options.groups[this.options.defaultGroup]
+
+      const foW = 160
+      const foH = 30
+
+      const fo = el
+        .append('foreignObject')
+        .attr('class', 'cg-note-fo')
+        .attr('width', foW)
+        .attr('height', foH)
+        .attr('x', -foW / 2)
+        .attr('y', -foH / 2)
+
+      fo.append('xhtml:div')
+        .attr('class', 'cg-note-label')
+        .style('color', colors.text)
+        .html(this._texToHTML(d.label, colors.text))
+    })
+
+    // 保存引用
+    this._g = g
+
+    // 触发 MathJax 渲染
+    this._typesetMath()
+
+    return this
+  }
+
+  // ========== 静态工厂方法 ==========
+
+  /**
+   * 从 JSON 数据对象直接渲染图形（静态模式）
+   * @param {string|HTMLElement} container - CSS 选择器或 DOM 元素
+   * @param {Object} data - JSON 数据 { title, options, nodes, edges }
+   * @returns {ConceptGraph}
+   */
+  static fromData(container, data) {
+    const options = Object.assign({}, data.options || {})
+    // 静态模式不需要固定 width/height，由 viewBox 自动适配
+    if (!options.width) options.width = 800
+    if (!options.height) options.height = 600
+
+    const graph = new ConceptGraph(container, options)
+    graph.addNodes(data.nodes || [])
+    graph.addEdges(data.edges || [])
+    graph.renderStatic()
+    return graph
+  }
+
+  /**
+   * 从 URL 加载 JSON 并渲染图形（静态模式）
+   * @param {string|HTMLElement} container - CSS 选择器或 DOM 元素
+   * @param {string} url - JSON 文件 URL
+   * @returns {Promise<ConceptGraph>}
+   */
+  static async load(container, url) {
+    const resp = await fetch(url)
+    if (!resp.ok) throw new Error(`Failed to load graph data: ${url} (${resp.status})`)
+    const data = await resp.json()
+    return ConceptGraph.fromData(container, data)
+  }
 }

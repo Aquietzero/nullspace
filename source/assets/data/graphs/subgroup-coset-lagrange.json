@@ -1,0 +1,62 @@
+{
+  "title": "子群·陪集·拉格朗日定理",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    { "id": "subgrp", "label": "子群", "group": "blue", "shape": "rect", "note": "$H \\leq G$", "x": 400, "y": 60 },
+
+    { "id": "test",    "label": "判定",     "group": "blue", "shape": "rect", "x": 150, "y": 180 },
+    { "id": "two",     "label": "两步法",   "group": "blue", "note": "封闭性 + 逆元", "x": 80, "y": 300 },
+    { "id": "one",     "label": "一步法",   "group": "blue", "note": "$ab^{-1} \\in H$", "x": 220, "y": 300 },
+
+    { "id": "exam",    "label": "例子",       "group": "green", "shape": "rect", "x": 680, "y": 180 },
+    { "id": "nZ",      "label": "$n\\mathbb{Z}$",   "group": "green", "note": "$\\mathbb{Z}$ 的子群", "x": 600, "y": 300 },
+    { "id": "SLn",     "label": "$SL_n$",            "group": "green", "note": "$\\det = 1$", "x": 700, "y": 300 },
+    { "id": "trivial", "label": "平凡子群",          "group": "green", "note": "$\\{e\\}$ 和 $G$", "x": 800, "y": 300 },
+    { "id": "cyclic",  "label": "循环子群",          "group": "green", "note": "$\\langle a \\rangle$", "x": 730, "y": 400 },
+
+    { "id": "coset",   "label": "陪集",     "group": "orange", "shape": "rect", "note": "$aH$", "x": 400, "y": 200 },
+    { "id": "left",    "label": "左陪集",   "group": "orange", "note": "$aH = \\{ah \\mid h \\in H\\}$", "x": 280, "y": 350 },
+    { "id": "right",   "label": "右陪集",   "group": "orange", "note": "$Ha = \\{ha \\mid h \\in H\\}$", "x": 400, "y": 350 },
+    { "id": "rep",     "label": "代表元",   "group": "orange", "x": 510, "y": 350 },
+    { "id": "eqsize",  "label": "等大",     "group": "orange", "note": "$|aH| = |H|$", "x": 340, "y": 470 },
+    { "id": "partition","label": "划分 $G$", "group": "orange", "note": "不重不漏", "x": 460, "y": 470 },
+
+    { "id": "lagrange", "label": "拉格朗日定理", "group": "purple", "shape": "rect", "note": "$|G| = [G:H] \\cdot |H|$", "x": 400, "y": 570 },
+    { "id": "index",    "label": "指数",         "group": "purple", "shape": "rect", "note": "$[G:H]$ = 陪集个数", "x": 260, "y": 650 },
+    { "id": "corol",    "label": "推论",         "group": "purple", "shape": "rect", "x": 540, "y": 650 },
+    { "id": "divides",  "label": "$|H|$ 整除 $|G|$",  "group": "purple", "shape": "rect", "x": 420, "y": 740 },
+    { "id": "prime",    "label": "素数阶群是循环群",    "group": "purple", "shape": "rect", "x": 580, "y": 740 },
+    { "id": "ordDiv",   "label": "元素阶整除群阶",      "group": "purple", "shape": "rect", "x": 740, "y": 740 }
+  ],
+  "edges": [
+    { "source": "subgrp", "target": "test", "label": "如何判定" },
+    { "source": "subgrp", "target": "exam", "label": "包括" },
+    { "source": "subgrp", "target": "coset", "label": "平移得到" },
+
+    { "source": "test", "target": "two" },
+    { "source": "test", "target": "one" },
+
+    { "source": "exam", "target": "nZ" },
+    { "source": "exam", "target": "SLn" },
+    { "source": "exam", "target": "trivial" },
+    { "source": "exam", "target": "cyclic" },
+
+    { "source": "coset", "target": "left" },
+    { "source": "coset", "target": "right" },
+    { "source": "coset", "target": "rep",    "label": "选取" },
+    { "source": "coset", "target": "eqsize", "label": "性质" },
+    { "source": "coset", "target": "partition", "label": "性质" },
+
+    { "source": "partition", "target": "lagrange", "label": "推出" },
+    { "source": "eqsize",   "target": "lagrange", "label": "推出" },
+
+    { "source": "lagrange", "target": "index" },
+    { "source": "lagrange", "target": "corol", "style": "dashed" },
+    { "source": "corol",    "target": "divides" },
+    { "source": "corol",    "target": "prime" },
+    { "source": "corol",    "target": "ordDiv" }
+  ]
+}

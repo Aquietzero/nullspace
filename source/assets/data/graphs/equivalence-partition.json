@@ -1,0 +1,61 @@
+{
+  "title": "等价关系与划分",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    { "id": "equiv", "label": "等价关系", "group": "blue", "shape": "rect", "note": "$\\sim$", "x": 400, "y": 60 },
+
+    { "id": "cond",    "label": "条件",   "group": "blue", "shape": "rect", "x": 150, "y": 180 },
+    { "id": "refl",    "label": "自反性", "group": "blue", "note": "$a \\sim a$", "x": 50, "y": 300 },
+    { "id": "sym",     "label": "对称性", "group": "blue", "note": "$a \\sim b \\Rightarrow b \\sim a$", "x": 150, "y": 300 },
+    { "id": "trans",   "label": "传递性", "group": "blue", "note": "$a \\sim b, b \\sim c \\Rightarrow a \\sim c$", "x": 260, "y": 300 },
+
+    { "id": "exam",    "label": "例子",         "group": "purple", "shape": "rect", "x": 650, "y": 180 },
+    { "id": "modN",    "label": "模 $n$ 同余",  "group": "purple", "note": "$a \\equiv b \\pmod{n}$", "x": 550, "y": 300 },
+    { "id": "ZnZ",     "label": "$\\mathbb{Z}/n\\mathbb{Z}$", "group": "purple", "x": 550, "y": 420 },
+    { "id": "cong",    "label": "三角形全等",    "group": "purple", "x": 680, "y": 300 },
+    { "id": "card",    "label": "集合等势",      "group": "purple", "note": "存在双射", "x": 800, "y": 300 },
+
+    { "id": "class",   "label": "等价类", "group": "orange", "shape": "rect", "note": "$[a] = \\{x \\mid x \\sim a\\}$", "x": 400, "y": 200 },
+    { "id": "rep",     "label": "代表元", "group": "orange", "x": 290, "y": 400 },
+    { "id": "prop",    "label": "性质",   "group": "orange", "shape": "rect", "x": 460, "y": 350 },
+    { "id": "nonempty","label": "非空",     "group": "orange", "x": 370, "y": 460 },
+    { "id": "disjoint","label": "互不相交", "group": "orange", "x": 470, "y": 460 },
+    { "id": "cover",   "label": "覆盖全域", "group": "orange", "x": 570, "y": 460 },
+    { "id": "part",    "label": "划分",     "group": "orange", "shape": "rect", "x": 250, "y": 500 },
+
+    { "id": "quotient", "label": "商集",     "group": "green", "shape": "rect", "note": "$A/\\!\\sim$", "x": 400, "y": 570 },
+    { "id": "compat",   "label": "兼容性",   "group": "green", "note": "运算与 $\\sim$ 兼容", "x": 560, "y": 600 },
+    { "id": "quotop",   "label": "商集运算", "group": "green", "note": "$[a] \\circ [b] = [a \\circ b]$", "x": 700, "y": 600 }
+  ],
+  "edges": [
+    { "source": "equiv", "target": "cond", "label": "满足" },
+    { "source": "cond",  "target": "refl" },
+    { "source": "cond",  "target": "sym" },
+    { "source": "cond",  "target": "trans" },
+
+    { "source": "equiv", "target": "exam", "label": "包括" },
+    { "source": "exam",  "target": "modN" },
+    { "source": "exam",  "target": "cong" },
+    { "source": "exam",  "target": "card" },
+    { "source": "modN",  "target": "ZnZ", "label": "商集为" },
+
+    { "source": "equiv", "target": "class", "label": "确定" },
+    { "source": "class", "target": "rep",   "label": "选取" },
+
+    { "source": "class", "target": "prop", "label": "具有" },
+    { "source": "prop",  "target": "nonempty" },
+    { "source": "prop",  "target": "disjoint" },
+    { "source": "prop",  "target": "cover" },
+
+    { "source": "class", "target": "part", "label": "构成" },
+    { "source": "part",  "target": "equiv", "label": "反过来确定", "style": "dashed" },
+
+    { "source": "class", "target": "quotient", "label": "组成" },
+
+    { "source": "quotient", "target": "compat", "label": "需要" },
+    { "source": "compat",   "target": "quotop", "label": "保证良定义" }
+  ]
+}
