@@ -289,14 +289,19 @@ class ConceptGraph {
         this.options.groups[d.group] ||
         this.options.groups[this.options.defaultGroup]
       const r = d.radius || this.options.nodeRadius
+      // style 字段覆盖 group 默认颜色
+      const fill = (d.style && d.style.fill) || colors.fill
+      const stroke = (d.style && d.style.stroke) || colors.stroke
+      const sw = (d.style && d.style.strokeWidth) || 2
 
       if (d.shape === 'rect') {
         const textLen = (d.label || '').length
         const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
         const contentLen = Math.max(textLen, noteLen)
-        const w = Math.max(r * 2, contentLen * 14 + 48)
+        // rectWidth/rectHeight 覆盖自动计算尺寸
+        const w = d.rectWidth || Math.max(r * 2, contentLen * 14 + 48)
         const hasNote = !!d.note
-        const h = hasNote ? r * 2.0 : r * 1.4
+        const h = d.rectHeight || (hasNote ? r * 2.0 : r * 1.4)
         el.append('rect')
           .attr('class', 'cg-node-shape')
           .attr('x', -w / 2)
@@ -305,24 +310,24 @@ class ConceptGraph {
           .attr('height', h)
           .attr('rx', 6)
           .attr('ry', 6)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       } else if (d.shape === 'diamond') {
         const s = r * 1.4
         el.append('polygon')
           .attr('class', 'cg-node-shape')
           .attr('points', `0,${-s} ${s},0 0,${s} ${-s},0`)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       } else {
         el.append('circle')
           .attr('class', 'cg-node-shape')
           .attr('r', r)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       }
     })
 
@@ -336,10 +341,12 @@ class ConceptGraph {
 
       const hasNote = d.shape === 'rect' && !!d.note
       const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
+      const autoW = Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48)
       const foW = d.shape === 'rect'
-        ? Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48) + 20
+        ? (d.rectWidth || autoW) + 20
         : r * 2 + 40
-      const foH = hasNote ? r * 2.0 + 10 : (d.shape === 'rect' ? r * 1.4 + 10 : r * 1.6 + 10)
+      const autoH = hasNote ? r * 2.0 : (d.shape === 'rect' ? r * 1.4 : r * 1.6)
+      const foH = (d.shape === 'rect' ? (d.rectHeight || autoH) : autoH) + 10
 
       const fo = el
         .append('foreignObject')
@@ -596,10 +603,13 @@ class ConceptGraph {
     this.nodes.forEach((n) => {
       if (n.x != null && n.y != null) {
         const r = n.radius || this.options.nodeRadius || 30
-        minX = Math.min(minX, n.x - r)
-        minY = Math.min(minY, n.y - r)
-        maxX = Math.max(maxX, n.x + r)
-        maxY = Math.max(maxY, n.y + r)
+        // 矩形节点用 rectWidth/rectHeight 计算边界
+        const hw = n.shape === 'rect' && n.rectWidth ? n.rectWidth / 2 : r
+        const hh = n.shape === 'rect' && n.rectHeight ? n.rectHeight / 2 : r
+        minX = Math.min(minX, n.x - hw)
+        minY = Math.min(minY, n.y - hh)
+        maxX = Math.max(maxX, n.x + hw)
+        maxY = Math.max(maxY, n.y + hh)
       }
     })
     minX -= padding; minY -= padding
@@ -744,14 +754,19 @@ class ConceptGraph {
         this.options.groups[d.group] ||
         this.options.groups[this.options.defaultGroup]
       const r = d.radius || this.options.nodeRadius
+      // style 字段覆盖 group 默认颜色
+      const fill = (d.style && d.style.fill) || colors.fill
+      const stroke = (d.style && d.style.stroke) || colors.stroke
+      const sw = (d.style && d.style.strokeWidth) || 2
 
       if (d.shape === 'rect') {
         const textLen = (d.label || '').length
         const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
         const contentLen = Math.max(textLen, noteLen)
-        const w = Math.max(r * 2, contentLen * 14 + 48)
+        // rectWidth/rectHeight 覆盖自动计算尺寸
+        const w = d.rectWidth || Math.max(r * 2, contentLen * 14 + 48)
         const hasNote = !!d.note
-        const h = hasNote ? r * 2.0 : r * 1.4
+        const h = d.rectHeight || (hasNote ? r * 2.0 : r * 1.4)
         el.append('rect')
           .attr('class', 'cg-node-shape')
           .attr('x', -w / 2)
@@ -760,24 +775,24 @@ class ConceptGraph {
           .attr('height', h)
           .attr('rx', 6)
           .attr('ry', 6)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       } else if (d.shape === 'diamond') {
         const s = r * 1.4
         el.append('polygon')
           .attr('class', 'cg-node-shape')
           .attr('points', `0,${-s} ${s},0 0,${s} ${-s},0`)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       } else {
         el.append('circle')
           .attr('class', 'cg-node-shape')
           .attr('r', r)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 2)
+          .attr('fill', fill)
+          .attr('stroke', stroke)
+          .attr('stroke-width', sw)
       }
     })
 
@@ -791,10 +806,12 @@ class ConceptGraph {
 
       const hasNote = d.shape === 'rect' && !!d.note
       const noteLen = d.note ? d.note.replace(/\$[^$]*\$/g, '@@').length : 0
+      const autoW = Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48)
       const foW = d.shape === 'rect'
-        ? Math.max(r * 2, Math.max((d.label || '').length, noteLen) * 14 + 48) + 20
+        ? (d.rectWidth || autoW) + 20
         : r * 2 + 40
-      const foH = hasNote ? r * 2.0 + 10 : (d.shape === 'rect' ? r * 1.4 + 10 : r * 1.6 + 10)
+      const autoH = hasNote ? r * 2.0 : (d.shape === 'rect' ? r * 1.4 : r * 1.6)
+      const foH = (d.shape === 'rect' ? (d.rectHeight || autoH) : autoH) + 10
 
       const fo = el
         .append('foreignObject')

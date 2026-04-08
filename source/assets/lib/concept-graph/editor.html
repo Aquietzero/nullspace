@@ -33,7 +33,7 @@
   --toolbar-bg: #f5f5f5;
   --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
   --sans: -apple-system, 'Helvetica Neue', 'PingFang SC', sans-serif;
-  --node-groups: blue, orange, green, purple, red, gray, pink;
+  --sidebar-width: 200px;
 }
 
 body {
@@ -100,11 +100,107 @@ button.active { background: var(--accent); color: #fff; border-color: var(--acce
 button.danger { color: var(--danger); }
 button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
-/* ========== Main Layout ========== */
+/* ========== Main Layout (三栏) ========== */
 .main {
   display: flex;
   flex: 1;
   overflow: hidden;
+}
+
+/* ========== Left Sidebar - Graph List ========== */
+.sidebar {
+  width: var(--sidebar-width);
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.graph-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.graph-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.graph-item:hover { background: #f5f5f5; }
+.graph-item.active {
+  background: #f0f4ff;
+  border-left-color: var(--select-stroke);
+}
+
+.graph-item-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.graph-item-file {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.graph-item .dirty-dot {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e67e22;
+}
+
+.graph-item.dirty .dirty-dot { display: block; }
+
+.sidebar-footer {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-footer button {
+  width: 100%;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+/* No server mode */
+.sidebar.no-server .graph-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: center;
+  padding: 20px;
 }
 
 /* ========== Canvas Area ========== */
@@ -187,6 +283,19 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   white-space: nowrap;
 }
 
+/* Resize handles */
+.resize-handle {
+  fill: var(--surface);
+  stroke: var(--select-stroke);
+  stroke-width: 1.5;
+  cursor: nwse-resize;
+  pointer-events: all;
+}
+.resize-handle.n, .resize-handle.s { cursor: ns-resize; }
+.resize-handle.e, .resize-handle.w { cursor: ew-resize; }
+.resize-handle.ne, .resize-handle.sw { cursor: nesw-resize; }
+.resize-handle.nw, .resize-handle.se { cursor: nwse-resize; }
+
 /* ========== Right Panel ========== */
 .panel {
   width: 280px;
@@ -244,6 +353,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 }
 
 .panel-row input[type="number"] { width: 70px; flex: none; }
+.panel-row input[type="color"] { width: 32px; height: 24px; flex: none; padding: 0; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; }
 
 .panel-actions {
   display: flex;
@@ -252,6 +362,45 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 }
 
 .panel-actions button { flex: 1; font-size: 11px; padding: 4px 8px; }
+
+/* ========== Style Presets ========== */
+.style-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.style-preset {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.style-preset:hover { transform: scale(1.15); }
+.style-preset.selected { border-color: var(--accent); }
+
+.style-preset-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+  z-index: 100;
+}
+
+.style-preset:hover .style-preset-tooltip { display: block; }
 
 /* ========== Status Bar ========== */
 .statusbar {
@@ -276,6 +425,12 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
 .statusbar .mode-badge.force { background: #e8f4e8; color: #27ae60; }
 .statusbar .mode-badge.manual { background: #e8ecf4; color: #2980b9; }
+
+.statusbar .save-status {
+  color: #27ae60;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
 
 /* ========== Hidden file input ========== */
 #file-input { display: none; }
@@ -340,7 +495,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   <div class="toolbar-group">
     <button id="btn-open" title="打开 JSON 文件">📂 打开</button>
     <button id="btn-new" title="新建空白图">📄 新建</button>
-    <button id="btn-export" title="导出 JSON" disabled>💾 导出</button>
+    <button id="btn-save" title="保存 (⌘S)" disabled>💾 保存</button>
   </div>
 
   <div class="toolbar-sep"></div>
@@ -373,13 +528,22 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
 <input type="file" id="file-input" accept=".json">
 
-<!-- ===== Main ===== -->
+<!-- ===== Main (三栏) ===== -->
 <div class="main">
+  <!-- Left Sidebar: Graph List -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">图文件列表</div>
+    <div class="graph-list" id="graph-list"></div>
+    <div class="sidebar-footer">
+      <button id="btn-new-graph">+ 新建图</button>
+    </div>
+  </div>
+
   <!-- Canvas -->
   <div class="canvas-area" id="canvas-area">
     <div class="empty-state" id="empty-state">
       <h2>ConceptGraph Editor</h2>
-      <p>打开已有 JSON 文件，或新建空白图开始编辑</p>
+      <p>从左侧列表选择图文件，或新建空白图开始编辑</p>
       <button id="btn-empty-open" style="margin-right: 8px;">📂 打开 JSON</button>
       <button id="btn-empty-new">📄 新建空白图</button>
     </div>
@@ -432,7 +596,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       </div>
       <div class="panel-row">
         <label>note</label>
-        <input type="text" id="inp-node-note" placeholder="$\\text{TeX}$ 可用">
+        <input type="text" id="inp-node-note" placeholder="$\text{TeX}$ 可用">
       </div>
       <div class="panel-row">
         <label>x</label>
@@ -444,6 +608,57 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         <label>📌 固定</label>
         <input type="checkbox" id="chk-node-pin" style="width:auto;">
       </div>
+
+      <!-- Rect Size -->
+      <div id="sec-rect-size" style="display:none;">
+        <div class="panel-row" style="margin-top:8px;">
+          <label>矩形宽</label>
+          <input type="number" id="inp-rect-w" step="10" min="60">
+          <label style="width:auto;">高</label>
+          <input type="number" id="inp-rect-h" step="10" min="30">
+        </div>
+        <div class="panel-actions" style="margin-top:4px;">
+          <button id="btn-rect-auto" style="font-size:10px;">自动尺寸</button>
+        </div>
+      </div>
+
+      <!-- Circle Radius -->
+      <div id="sec-circle-size" style="display:none;">
+        <div class="panel-row" style="margin-top:8px;">
+          <label>半径</label>
+          <input type="number" id="inp-circle-r" step="5" min="15">
+        </div>
+        <div class="panel-actions" style="margin-top:4px;">
+          <button id="btn-circle-auto" style="font-size:10px;">自动尺寸</button>
+        </div>
+      </div>
+
+      <!-- Node Style -->
+      <div style="margin-top:8px;">
+        <div class="panel-section-title" style="margin-bottom:4px;">节点样式</div>
+        <div class="panel-row">
+          <label>填充色</label>
+          <input type="color" id="inp-style-fill" value="#f0f0f0">
+          <input type="text" id="inp-style-fill-text" placeholder="#f0f0f0" style="flex:1;">
+        </div>
+        <div class="panel-row">
+          <label>边框色</label>
+          <input type="color" id="inp-style-stroke" value="#999999">
+          <input type="text" id="inp-style-stroke-text" placeholder="#999" style="flex:1;">
+        </div>
+        <div class="panel-row">
+          <label>边框粗细</label>
+          <input type="number" id="inp-style-stroke-width" value="2" min="1" max="6" step="0.5">
+        </div>
+        <div style="margin-top:4px;">
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">预设风格:</div>
+          <div class="style-presets" id="style-presets"></div>
+        </div>
+        <div class="panel-actions" style="margin-top:6px;">
+          <button id="btn-clear-style" style="font-size:10px;">清除自定义样式</button>
+        </div>
+      </div>
+
       <div class="panel-actions">
         <button id="btn-apply-node">应用</button>
         <button id="btn-delete-node" class="danger">删除节点</button>
@@ -497,12 +712,13 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   <span id="stat-nodes">节点: 0</span>
   <span id="stat-pinned">(📌 0)</span>
   <span id="stat-edges">边: 0</span>
+  <span id="save-status" class="save-status" style="display:none;"></span>
   <span id="stat-file" style="margin-left:auto; font-family: var(--mono);"></span>
 </div>
 
 <script>
 // ============================================================
-//  ConceptGraph Editor — 可视化编辑器
+//  ConceptGraph Editor — 可视化编辑器 (v2 升级版)
 // ============================================================
 ;(function () {
   'use strict'
@@ -517,8 +733,23 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     gray:   { fill: '#f2f2f2', stroke: '#bbb' },
     pink:   { fill: '#ebebeb', stroke: '#999' },
   }
+
+  const STYLE_PRESETS = [
+    { name: 'Default',  fill: '#f0f0f0', stroke: '#999' },
+    { name: 'Ocean',    fill: '#E3F2FD', stroke: '#1565C0' },
+    { name: 'Forest',   fill: '#E8F5E9', stroke: '#2E7D32' },
+    { name: 'Sunset',   fill: '#FFF3E0', stroke: '#E65100' },
+    { name: 'Lavender', fill: '#F3E5F5', stroke: '#7B1FA2' },
+    { name: 'Rose',     fill: '#FCE4EC', stroke: '#C62828' },
+    { name: 'Slate',    fill: '#ECEFF1', stroke: '#37474F' },
+    { name: 'Sand',     fill: '#FFF8E1', stroke: '#F57F17' },
+    { name: 'Mint',     fill: '#E0F2F1', stroke: '#00695C' },
+    { name: 'Charcoal', fill: '#E0E0E0', stroke: '#212121' },
+  ]
+
   const GRID_SIZE = 20
   const ARROW_MARKER_ID = 'ed-arrow'
+  const HANDLE_SIZE = 6
 
   // ---- State ----
   let graphData = null       // { title, options, nodes: [], edges: [] }
@@ -530,6 +761,9 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   let fileName = ''
   let addingEdge = false
   let edgeSourceId = null
+  let isDirty = false
+  let serverAvailable = false
+  let graphList = []         // [{ name, title }]
 
   // Undo/Redo stacks
   let undoStack = []
@@ -543,10 +777,12 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const canvasArea = $('#canvas-area')
   const emptyState = $('#empty-state')
   const fileInput = $('#file-input')
+  const sidebar = $('#sidebar')
+  const graphListEl = $('#graph-list')
 
   const btnOpen = $('#btn-open')
   const btnNew = $('#btn-new')
-  const btnExport = $('#btn-export')
+  const btnSave = $('#btn-save')
   const btnForce = $('#btn-force')
   const btnFreeze = $('#btn-freeze')
   const btnResetForce = $('#btn-reset-force')
@@ -556,6 +792,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const btnAddEdge = $('#btn-add-edge')
   const btnDelete = $('#btn-delete')
   const chkGrid = $('#chk-grid')
+  const btnNewGraph = $('#btn-new-graph')
 
   const inpTitle = $('#inp-title')
   const inpRadius = $('#inp-radius')
@@ -573,6 +810,26 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const btnApplyNode = $('#btn-apply-node')
   const btnDeleteNode = $('#btn-delete-node')
 
+  // Rect size
+  const secRectSize = $('#sec-rect-size')
+  const inpRectW = $('#inp-rect-w')
+  const inpRectH = $('#inp-rect-h')
+  const btnRectAuto = $('#btn-rect-auto')
+
+  // Circle radius
+  const secCircleSize = $('#sec-circle-size')
+  const inpCircleR = $('#inp-circle-r')
+  const btnCircleAuto = $('#btn-circle-auto')
+
+  // Node style
+  const inpStyleFill = $('#inp-style-fill')
+  const inpStyleFillText = $('#inp-style-fill-text')
+  const inpStyleStroke = $('#inp-style-stroke')
+  const inpStyleStrokeText = $('#inp-style-stroke-text')
+  const inpStyleStrokeWidth = $('#inp-style-stroke-width')
+  const stylePresetsEl = $('#style-presets')
+  const btnClearStyle = $('#btn-clear-style')
+
   const inpEdgeSource = $('#inp-edge-source')
   const inpEdgeTarget = $('#inp-edge-target')
   const inpEdgeLabel = $('#inp-edge-label')
@@ -586,11 +843,12 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const statPinned = $('#stat-pinned')
   const statEdges = $('#stat-edges')
   const statFile = $('#stat-file')
+  const saveStatusEl = $('#save-status')
   const nodeListEl = $('#node-list')
   const nodeCountEl = $('#node-count')
 
   // ---- SVG setup ----
-  let svgEl, svgG, gridG, edgesG, nodesG, zoom
+  let svgEl, svgG, gridG, edgesG, nodesG, handlesG, zoom
 
   function initSVG() {
     d3.select(canvasArea).selectAll('svg').remove()
@@ -612,6 +870,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     gridG = svgG.append('g').attr('class', 'grid-layer')
     edgesG = svgG.append('g').attr('class', 'edges-layer')
     nodesG = svgG.append('g').attr('class', 'nodes-layer')
+    handlesG = svgG.append('g').attr('class', 'handles-layer')
 
     // Zoom + pan
     zoom = d3.zoom()
@@ -649,12 +908,26 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     return gridSnap ? Math.round(val / GRID_SIZE) * GRID_SIZE : val
   }
 
+  // ---- Dirty tracking ----
+  function markDirty() {
+    if (!isDirty) {
+      isDirty = true
+      updateGraphListHighlight()
+    }
+  }
+
+  function clearDirty() {
+    isDirty = false
+    updateGraphListHighlight()
+  }
+
   // ---- Undo / Redo ----
   function pushUndo() {
     undoStack.push(JSON.stringify(graphData))
     if (undoStack.length > MAX_UNDO) undoStack.shift()
     redoStack = []
     updateUndoRedoButtons()
+    markDirty()
   }
 
   function undo() {
@@ -680,8 +953,155 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     btnRedo.disabled = redoStack.length === 0
   }
 
+  // ---- Server Communication ----
+  async function checkServer() {
+    try {
+      const resp = await fetch('/api/graphs', { signal: AbortSignal.timeout(2000) })
+      if (resp.ok) {
+        serverAvailable = true
+        graphList = await resp.json()
+        sidebar.classList.remove('no-server')
+        renderGraphList()
+        return true
+      }
+    } catch {}
+    serverAvailable = false
+    sidebar.classList.add('no-server')
+    graphListEl.innerHTML = '<div>无服务端连接<br>使用「打开」按钮手动加载 JSON</div>'
+    btnSave.textContent = '💾 导出'
+    return false
+  }
+
+  function renderGraphList() {
+    graphListEl.innerHTML = ''
+    graphList.forEach(g => {
+      const el = document.createElement('div')
+      el.className = 'graph-item'
+      if (g.name === fileName) {
+        el.classList.add('active')
+        if (isDirty) el.classList.add('dirty')
+      }
+      el.innerHTML = `
+        <div class="graph-item-title">${escapeHtml(g.title)}</div>
+        <div class="graph-item-file">${escapeHtml(g.name)}</div>
+        <span class="dirty-dot"></span>
+      `
+      el.addEventListener('click', () => loadGraphFromServer(g.name))
+      graphListEl.appendChild(el)
+    })
+  }
+
+  function updateGraphListHighlight() {
+    graphListEl.querySelectorAll('.graph-item').forEach(el => {
+      const file = el.querySelector('.graph-item-file').textContent
+      el.classList.toggle('active', file === fileName)
+      el.classList.toggle('dirty', file === fileName && isDirty)
+    })
+  }
+
+  async function loadGraphFromServer(name) {
+    if (isDirty && fileName) {
+      if (!confirm('当前图有未保存的修改，是否丢弃？')) return
+    }
+    try {
+      const resp = await fetch(`/api/graphs/${encodeURIComponent(name)}`)
+      if (!resp.ok) throw new Error('Failed to load')
+      const data = await resp.json()
+      loadJSON(data, name)
+      clearDirty()
+    } catch (err) {
+      alert('加载失败: ' + err.message)
+    }
+  }
+
+  async function saveToServer() {
+    if (!graphData) return
+    const json = buildExportJSON()
+
+    if (serverAvailable) {
+      // 新建图：第一次保存需要输入文件名
+      if (!fileName) {
+        const name = prompt('请输入文件名（不含 .json 后缀）:', 'new-graph')
+        if (!name) return
+        const cleanName = name.replace(/[^a-zA-Z0-9_-]/g, '-') + '.json'
+        fileName = cleanName
+      }
+
+      try {
+        const resp = await fetch(`/api/graphs/${encodeURIComponent(fileName)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: json,
+        })
+        if (!resp.ok) throw new Error('Save failed')
+        clearDirty()
+        showSaveStatus('✓ 已保存')
+        // Refresh graph list
+        await checkServer()
+        updateGraphListHighlight()
+      } catch (err) {
+        alert('保存失败: ' + err.message)
+      }
+    } else {
+      // Fallback: 导出下载
+      const blob = new Blob([json + '\n'], { type: 'application/json' })
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = fileName || 'concept-graph.json'
+      a.click()
+      URL.revokeObjectURL(a.href)
+      showSaveStatus('✓ 已导出')
+    }
+  }
+
+  function buildExportJSON() {
+    if (!graphData) return ''
+    const out = {
+      title: graphData.title,
+      options: { ...graphData.options },
+      nodes: graphData.nodes.map(n => {
+        const clean = { id: n.id, label: n.label, group: n.group }
+        if (n.shape && n.shape !== 'circle') clean.shape = n.shape
+        if (n.note) clean.note = n.note
+        clean.x = Math.round(n.x)
+        clean.y = Math.round(n.y)
+        if (n.radius && n.radius !== (graphData.options.nodeRadius || 30)) clean.radius = n.radius
+        if (n.rectWidth) clean.rectWidth = n.rectWidth
+        if (n.rectHeight) clean.rectHeight = n.rectHeight
+        if (n.style && (n.style.fill || n.style.stroke)) {
+          clean.style = {}
+          if (n.style.fill) clean.style.fill = n.style.fill
+          if (n.style.stroke) clean.style.stroke = n.style.stroke
+          if (n.style.strokeWidth && n.style.strokeWidth !== 2) clean.style.strokeWidth = n.style.strokeWidth
+        }
+        return clean
+      }),
+      edges: graphData.edges.map(e => {
+        const clean = { source: e.source, target: e.target }
+        if (e.label) clean.label = e.label
+        if (e.style && e.style !== 'solid') clean.style = e.style
+        if (e.color) clean.color = e.color
+        return clean
+      }),
+    }
+    return JSON.stringify(out, null, 2)
+  }
+
+  function showSaveStatus(msg) {
+    saveStatusEl.textContent = msg
+    saveStatusEl.style.display = ''
+    saveStatusEl.style.opacity = '1'
+    setTimeout(() => {
+      saveStatusEl.style.opacity = '0'
+      setTimeout(() => { saveStatusEl.style.display = 'none' }, 300)
+    }, 3000)
+  }
+
   // ---- Graph Data Management ----
   function newGraph() {
+    if (isDirty && graphData) {
+      if (!confirm('当前图有未保存的修改，是否丢弃？')) return
+    }
     graphData = {
       title: '新建概念图',
       options: { nodeRadius: 30, fullWidth: true },
@@ -692,12 +1112,14 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     mode = 'manual'
     undoStack = []
     redoStack = []
+    isDirty = false
     deselectAll()
     emptyState.style.display = 'none'
     initSVG()
     enableButtons()
     renderGraph()
     updateInfoPanel()
+    updateGraphListHighlight()
   }
 
   function loadJSON(data, name) {
@@ -714,7 +1136,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     enableButtons()
 
     if (mode === 'force' && !hasCoords) {
-      // Assign random initial positions
       const cx = canvasArea.clientWidth / 2
       const cy = canvasArea.clientHeight / 2
       graphData.nodes.forEach(n => {
@@ -725,50 +1146,52 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
     renderGraph()
     updateInfoPanel()
+    updateGraphListHighlight()
 
     // Fit view
     fitView()
   }
 
-  function exportJSON() {
-    if (!graphData) return
-    // Build clean output
-    const out = {
-      title: graphData.title,
-      options: { ...graphData.options },
-      nodes: graphData.nodes.map(n => {
-        const clean = { id: n.id, label: n.label, group: n.group }
-        if (n.shape && n.shape !== 'circle') clean.shape = n.shape
-        if (n.note) clean.note = n.note
-        clean.x = Math.round(n.x)
-        clean.y = Math.round(n.y)
-        return clean
-      }),
-      edges: graphData.edges.map(e => {
-        const clean = { source: e.source, target: e.target }
-        if (e.label) clean.label = e.label
-        if (e.style && e.style !== 'solid') clean.style = e.style
-        if (e.color) clean.color = e.color
-        return clean
-      }),
-    }
-    const json = JSON.stringify(out, null, 2)
-    const blob = new Blob([json + '\n'], { type: 'application/json' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = fileName || 'concept-graph.json'
-    a.click()
-    URL.revokeObjectURL(a.href)
-  }
-
   function enableButtons() {
-    btnExport.disabled = false
+    btnSave.disabled = false
     btnForce.disabled = false
     btnFreeze.disabled = false
     btnResetForce.disabled = false
     btnAddNode.disabled = false
     btnAddEdge.disabled = false
     updateUndoRedoButtons()
+    if (serverAvailable) {
+      btnSave.textContent = '💾 保存'
+    } else {
+      btnSave.textContent = '💾 导出'
+    }
+  }
+
+  // ---- Node dimensions helper ----
+  function getNodeRect(d) {
+    const r = graphData.options.nodeRadius || 30
+    if (d.rectWidth && d.rectHeight) {
+      return { w: d.rectWidth, h: d.rectHeight }
+    }
+    const textLen = (d.label || '').length
+    const w = Math.max(r * 2, textLen * 12 + 40)
+    const h = d.note ? r * 2.0 : r * 1.4
+    return { w, h }
+  }
+
+  function getNodeFill(d) {
+    if (d.style && d.style.fill) return d.style.fill
+    return (GROUPS[d.group] || GROUPS.blue).fill
+  }
+
+  function getNodeStroke(d) {
+    if (d.style && d.style.stroke) return d.style.stroke
+    return (GROUPS[d.group] || GROUPS.blue).stroke
+  }
+
+  function getNodeStrokeWidth(d) {
+    if (d.style && d.style.strokeWidth) return d.style.strokeWidth
+    return 2
   }
 
   // ---- Rendering ----
@@ -777,6 +1200,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     stopSimulation()
     edgesG.selectAll('*').remove()
     nodesG.selectAll('*').remove()
+    handlesG.selectAll('*').remove()
 
     const nodeMap = {}
     graphData.nodes.forEach(n => nodeMap[n.id] = n)
@@ -791,12 +1215,10 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         return cls
       })
 
-    // Hit area (wider invisible path for click)
     edgeSel.append('path')
       .attr('class', 'ed-edge-hit')
       .attr('d', d => edgePath(nodeMap[d.source], nodeMap[d.target]))
 
-    // Visible line
     edgeSel.append('path')
       .attr('class', 'ed-edge-line')
       .attr('stroke', d => d.color || '#888')
@@ -808,7 +1230,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       .attr('marker-end', `url(#${ARROW_MARKER_ID})`)
       .attr('d', d => edgePath(nodeMap[d.source], nodeMap[d.target]))
 
-    // Edge label via foreignObject (supports TeX)
     edgeSel.each(function (d) {
       const g = d3.select(this)
       const labelText = d.label || ''
@@ -849,33 +1270,35 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     // Shape
     nodeSel.each(function (d) {
       const el = d3.select(this)
-      const colors = GROUPS[d.group] || GROUPS.blue
+      const fill = getNodeFill(d)
+      const stroke = getNodeStroke(d)
+      const sw = getNodeStrokeWidth(d)
 
       if (d.shape === 'rect') {
-        const textLen = (d.label || '').length
-        const w = Math.max(r * 2, textLen * 12 + 40)
-        const h = d.note ? r * 2.0 : r * 1.4
+        const { w, h } = getNodeRect(d)
         el.append('rect')
           .attr('class', 'ed-node-shape')
           .attr('x', -w / 2).attr('y', -h / 2)
           .attr('width', w).attr('height', h)
           .attr('rx', 6).attr('ry', 6)
-          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+          .attr('fill', fill).attr('stroke', stroke).attr('stroke-width', sw)
       } else if (d.shape === 'diamond') {
-        const s = r * 1.4
+        const nr = d.radius || r
+        const s = nr * 1.4
         el.append('polygon')
           .attr('class', 'ed-node-shape')
           .attr('points', `0,${-s} ${s},0 0,${s} ${-s},0`)
-          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+          .attr('fill', fill).attr('stroke', stroke).attr('stroke-width', sw)
       } else {
+        const nr = d.radius || r
         el.append('circle')
           .attr('class', 'ed-node-shape')
-          .attr('r', r)
-          .attr('fill', colors.fill).attr('stroke', colors.stroke).attr('stroke-width', 2)
+          .attr('r', nr)
+          .attr('fill', fill).attr('stroke', stroke).attr('stroke-width', sw)
       }
     })
 
-    // Label + Note via foreignObject (supports TeX)
+    // Label + Note via foreignObject
     nodeSel.each(function (d) {
       const el = d3.select(this)
       const r = graphData.options.nodeRadius || 30
@@ -884,14 +1307,14 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       const needTex = hasTex(labelText) || hasTex(noteText)
 
       if (d.shape === 'rect') {
-        const textLen = labelText.length
-        const w = Math.max(r * 2, textLen * 12 + 40) + 20
-        const h = noteText ? r * 2.0 + 10 : r * 1.4 + 10
+        const { w, h } = getNodeRect(d)
+        const foW = w + 20
+        const foH = h + 10
 
         const fo = el.append('foreignObject')
           .attr('class', 'ed-node-fo')
-          .attr('width', w).attr('height', h)
-          .attr('x', -w / 2).attr('y', -h / 2)
+          .attr('width', foW).attr('height', foH)
+          .attr('x', -foW / 2).attr('y', -foH / 2)
 
         const wrapper = fo.append('xhtml:div')
           .attr('class', 'ed-node-content')
@@ -906,9 +1329,9 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
             .html(hasTex(noteText) ? texToHTML(noteText) : noteText)
         }
       } else {
-        // Circle / diamond: label inside, note below
-        const foW = r * 2 + 60
-        const foH = r * 2 + 10
+        const nr = d.radius || r
+        const foW = nr * 2 + 60
+        const foH = nr * 2 + 10
 
         const fo = el.append('foreignObject')
           .attr('class', 'ed-node-fo')
@@ -921,11 +1344,10 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
           .attr('class', 'ed-node-label-html')
           .html(needTex ? texToHTML(labelText) : labelText)
 
-        // Note below the node shape
         if (noteText) {
           const noteW = 160
           const noteH = 26
-          const noteY = d.shape === 'diamond' ? r * 1.4 + 4 : r + 4
+          const noteY = d.shape === 'diamond' ? nr * 1.4 + 4 : nr + 4
 
           const noteFo = el.append('foreignObject')
             .attr('class', 'ed-node-fo')
@@ -941,10 +1363,13 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     })
 
     // Pin badge
-    nodeSel.append('text')
-      .attr('class', 'ed-pin-badge')
-      .attr('x', r - 2).attr('y', -r + 2)
-      .text('📌')
+    nodeSel.each(function (d) {
+      const nr = d.radius || r
+      d3.select(this).append('text')
+        .attr('class', 'ed-pin-badge')
+        .attr('x', nr - 2).attr('y', -nr + 2)
+        .text('📌')
+    })
 
     // Click → select
     nodeSel.on('click', (e, d) => {
@@ -962,10 +1387,13 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       .on('drag', dragged)
       .on('end', dragEnded))
 
+    // Resize handles for selected rect node
+    drawResizeHandles()
+
     updateStatus()
     updateNodeList()
 
-    // Trigger MathJax rendering for TeX formulas
+    // Trigger MathJax rendering
     typesetMath()
   }
 
@@ -983,21 +1411,196 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
   function texToHTML(text) {
     if (!text) return ''
-    // Convert $...$ to \(...\) for MathJax inline rendering
     return text.replace(/\$(.+?)\$/g, '\\($1\\)')
-  }
-
-  function stripTex(text) {
-    if (!text) return ''
-    return text.replace(/\$(.+?)\$/g, '$1')
   }
 
   function typesetMath() {
     if (window.MathJax && MathJax.typesetPromise) {
-      // Clear MathJax's internal cache for re-rendered elements
       MathJax.startup.document.clear()
       MathJax.startup.document.updateDocument()
       MathJax.typesetPromise([canvasArea, nodeListEl]).catch(() => {})
+    }
+  }
+
+  // ---- Resize Handles ----
+  function drawResizeHandles() {
+    handlesG.selectAll('*').remove()
+    if (!selectedNode) return
+
+    const d = selectedNode
+    const hs = HANDLE_SIZE
+
+    if (d.shape === 'rect') {
+      const { w, h } = getNodeRect(d)
+      const hw = w / 2, hh = h / 2
+
+      const positions = [
+        { id: 'nw', cx: -hw, cy: -hh }, { id: 'n',  cx: 0,   cy: -hh },
+        { id: 'ne', cx: hw,  cy: -hh }, { id: 'e',  cx: hw,  cy: 0 },
+        { id: 'se', cx: hw,  cy: hh },  { id: 's',  cx: 0,   cy: hh },
+        { id: 'sw', cx: -hw, cy: hh },  { id: 'w',  cx: -hw, cy: 0 },
+      ]
+
+      const handleSel = handlesG.selectAll('rect.resize-handle')
+        .data(positions)
+        .join('rect')
+        .attr('class', d => `resize-handle ${d.id}`)
+        .attr('x', p => selectedNode.x + p.cx - hs / 2)
+        .attr('y', p => selectedNode.y + p.cy - hs / 2)
+        .attr('width', hs).attr('height', hs)
+
+      handleSel.call(d3.drag()
+        .on('start', resizeStarted)
+        .on('drag', resizeDragged)
+        .on('end', resizeEnded))
+
+    } else if (d.shape === 'circle' || !d.shape) {
+      // 圆形：4 个方向手柄
+      const r = d.radius || graphData.options.nodeRadius || 30
+
+      const positions = [
+        { id: 'n', cx: 0,  cy: -r },
+        { id: 'e', cx: r,  cy: 0 },
+        { id: 's', cx: 0,  cy: r },
+        { id: 'w', cx: -r, cy: 0 },
+      ]
+
+      const handleSel = handlesG.selectAll('rect.resize-handle')
+        .data(positions)
+        .join('rect')
+        .attr('class', d => `resize-handle ${d.id}`)
+        .attr('x', p => selectedNode.x + p.cx - hs / 2)
+        .attr('y', p => selectedNode.y + p.cy - hs / 2)
+        .attr('width', hs).attr('height', hs)
+
+      handleSel.call(d3.drag()
+        .on('start', resizeStarted)
+        .on('drag', resizeDragged)
+        .on('end', resizeEnded))
+    }
+    // diamond 暂不支持 resize 手柄
+  }
+
+  let resizeStartState = null
+
+  function resizeStarted(event, p) {
+    if (!selectedNode) return
+    event.sourceEvent && event.sourceEvent.stopPropagation() // prevent node drag from firing
+    if (selectedNode.shape === 'rect') {
+      const { w, h } = getNodeRect(selectedNode)
+      resizeStartState = { w, h, handleId: p.id, shapeType: 'rect', wasPinned: !!selectedNode._pinned }
+    } else {
+      // circle
+      const r = selectedNode.radius || graphData.options.nodeRadius || 30
+      resizeStartState = { r, handleId: p.id, shapeType: 'circle', wasPinned: !!selectedNode._pinned }
+    }
+    pushUndo()
+  }
+
+  function resizeDragged(event, p) {
+    if (!selectedNode || !resizeStartState) return
+    const d = selectedNode
+    const { handleId, shapeType } = resizeStartState
+
+    // Get delta in SVG coords
+    const transform = d3.zoomTransform(svgEl.node())
+    const dx = event.dx / transform.k
+    const dy = event.dy / transform.k
+
+    if (shapeType === 'rect') {
+      let cw = d.rectWidth || getNodeRect(d).w
+      let ch = d.rectHeight || getNodeRect(d).h
+
+      if (handleId.includes('e')) cw += dx
+      if (handleId.includes('w')) cw -= dx
+      if (handleId.includes('s')) ch += dy
+      if (handleId.includes('n')) ch -= dy
+
+      cw = Math.max(60, gridSnap ? Math.round(cw / GRID_SIZE) * GRID_SIZE : Math.round(cw))
+      ch = Math.max(30, gridSnap ? Math.round(ch / GRID_SIZE) * GRID_SIZE : Math.round(ch))
+
+      d.rectWidth = cw
+      d.rectHeight = ch
+    } else {
+      // circle：根据拖拽方向计算半径变化
+      let cr = d.radius || graphData.options.nodeRadius || 30
+      let delta = 0
+      if (handleId === 'e') delta = dx
+      else if (handleId === 'w') delta = -dx
+      else if (handleId === 's') delta = dy
+      else if (handleId === 'n') delta = -dy
+
+      cr = Math.max(15, gridSnap ? Math.round((cr + delta) / GRID_SIZE) * GRID_SIZE : Math.round(cr + delta))
+      d.radius = cr
+    }
+
+    // Lightweight update: only redraw the selected node shape + handles + panel
+    // (avoid full renderGraph which would stop simulation & rebind drags)
+    const nodeEl = nodesG.selectAll('g.ed-node').filter(n => n.id === d.id)
+    if (!nodeEl.empty()) {
+      // Update shape geometry
+      if (shapeType === 'rect') {
+        nodeEl.select('rect.ed-node-shape')
+          .attr('width', d.rectWidth).attr('height', d.rectHeight)
+          .attr('x', -d.rectWidth / 2).attr('y', -d.rectHeight / 2)
+        // Update foreignObject for label
+        const foLabel = nodeEl.select('.ed-node-fo')
+        if (!foLabel.empty()) {
+          foLabel.attr('width', d.rectWidth).attr('height', d.rectHeight)
+            .attr('x', -d.rectWidth / 2).attr('y', -d.rectHeight / 2)
+        }
+      } else {
+        const nr = d.radius || graphData.options.nodeRadius || 30
+        nodeEl.select('circle.ed-node-shape').attr('r', nr)
+        // Update foreignObject for label
+        const foW = nr * 2 + 60
+        const foH = nr * 2 + 10
+        const foLabel = nodeEl.select('.ed-node-fo')
+        if (!foLabel.empty()) {
+          foLabel.attr('width', foW).attr('height', foH)
+            .attr('x', -foW / 2).attr('y', -foH / 2)
+        }
+      }
+    }
+    drawResizeHandles()
+
+    // Update panel inputs
+    if (shapeType === 'rect') {
+      inpRectW.value = d.rectWidth
+      inpRectH.value = d.rectHeight
+    } else {
+      inpCircleR.value = d.radius || graphData.options.nodeRadius || 30
+    }
+  }
+
+  function resizeEnded() {
+    if (!selectedNode || !resizeStartState) {
+      resizeStartState = null
+      return
+    }
+    // Remember the original pinned state — resize should never change pin status
+    const wasPinned = resizeStartState.wasPinned
+    const node = selectedNode
+
+    resizeStartState = null
+
+    // Full re-render to sync everything
+    renderGraph()
+    selectNode(node)
+
+    // Restore original pinned state after renderGraph/selectNode
+    node._pinned = wasPinned
+    if (mode === 'force') {
+      if (wasPinned) {
+        node.fx = node.x
+        node.fy = node.y
+      } else {
+        node.fx = null
+        node.fy = null
+      }
+      // Restart force layout if we were in force mode
+      restartForceSimulation()
+      selectNode(node)
     }
   }
 
@@ -1018,22 +1621,22 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     const ny = snapToGrid(event.y)
 
     if (mode === 'force' && simulation) {
+      // Temporarily fix position during drag (so force layout doesn't fight the user),
+      // but do NOT set _pinned — pinning is only controlled via the panel checkbox.
       d.fx = nx
       d.fy = ny
-      d._pinned = true
     } else {
       d.x = nx
       d.y = ny
     }
 
-    // Update visual position immediately
     d3.select(this).attr('transform', `translate(${d.x},${d.y})`)
     updateEdgePositions()
 
-    // Update panel if selected
     if (selectedNode && selectedNode.id === d.id) {
       inpNodeX.value = Math.round(d.x)
       inpNodeY.value = Math.round(d.y)
+      drawResizeHandles()
     }
   }
 
@@ -1049,10 +1652,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       }
     }
 
-    // Push undo if moved significantly
     if (dragStartPos && (Math.abs(d.x - dragStartPos.x) > 1 || Math.abs(d.y - dragStartPos.y) > 1)) {
-      // We need to push the *before* state
-      const beforeState = JSON.parse(undoStack.length > 0 ? undoStack[undoStack.length - 1] : JSON.stringify(graphData))
       pushUndo()
     }
     dragStartPos = null
@@ -1069,7 +1669,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       const path = edgePath(src, tgt)
       g.select('.ed-edge-line').attr('d', path)
       g.select('.ed-edge-hit').attr('d', path)
-      // Update foreignObject edge label position
       const fo = g.select('.ed-edge-label-fo')
       if (!fo.empty() && src && tgt) {
         const mx = (src.x + tgt.x) / 2
@@ -1082,16 +1681,12 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   }
 
   // ---- Force Layout ----
-  function startForceLayout() {
-    if (!graphData) return
-    pushUndo()
-    mode = 'force'
+  function _setupForceSimulation() {
     stopSimulation()
 
     const nodeMap = {}
     graphData.nodes.forEach(n => nodeMap[n.id] = n)
 
-    // Build link references
     const links = graphData.edges.map(e => ({
       source: nodeMap[e.source],
       target: nodeMap[e.target],
@@ -1104,9 +1699,15 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       .force('link', d3.forceLink(links).id(d => d.id).distance(130))
       .force('charge', d3.forceManyBody().strength(-500))
       .force('center', d3.forceCenter(cx, cy))
-      .force('collide', d3.forceCollide(55))
+      .force('collide', d3.forceCollide(d => {
+        if (d.shape === 'rect') {
+          const w = d.rectWidth || 120
+          const h = d.rectHeight || 50
+          return Math.max(w, h) / 2 + 15
+        }
+        return (d.radius || (graphData.options.nodeRadius || 30)) + 25
+      }))
       .on('tick', () => {
-        // Fix pinned nodes
         graphData.nodes.forEach(n => {
           if (n._pinned) {
             n.fx = n.x
@@ -1117,9 +1718,9 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         nodesG.selectAll('g.ed-node')
           .attr('transform', d => `translate(${d.x},${d.y})`)
         updateEdgePositions()
+        drawResizeHandles()
       })
 
-    // Apply pinned positions
     graphData.nodes.forEach(n => {
       if (n._pinned) {
         n.fx = n.x
@@ -1131,6 +1732,20 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     })
 
     updateStatus()
+  }
+
+  function startForceLayout() {
+    if (!graphData) return
+    pushUndo()
+    mode = 'force'
+    _setupForceSimulation()
+  }
+
+  // Restart simulation without pushUndo (for internal use after renderGraph)
+  function restartForceSimulation() {
+    if (!graphData) return
+    mode = 'force'
+    _setupForceSimulation()
   }
 
   function stopSimulation() {
@@ -1146,7 +1761,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     stopSimulation()
     mode = 'manual'
 
-    // Save current positions, clear force-related props
     graphData.nodes.forEach(n => {
       n.x = n.fx != null ? n.fx : n.x
       n.y = n.fy != null ? n.fy : n.y
@@ -1154,7 +1768,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       n.fy = null
       n.vx = 0
       n.vy = 0
-      // Keep _pinned for visual reference but clear fx/fy
     })
 
     renderGraph()
@@ -1215,7 +1828,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     secNode.style.display = ''
     btnDelete.disabled = false
 
-    // Update panel
     inpNodeId.value = node.id
     inpNodeLabel.value = node.label || ''
     selNodeShape.value = node.shape || 'circle'
@@ -1227,9 +1839,39 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     // Highlight group swatch
     updateGroupSwatches(node.group || 'blue')
 
+    // Rect size
+    if (node.shape === 'rect') {
+      secRectSize.style.display = ''
+      secCircleSize.style.display = 'none'
+      const { w, h } = getNodeRect(node)
+      inpRectW.value = node.rectWidth || Math.round(w)
+      inpRectH.value = node.rectHeight || Math.round(h)
+    } else if (node.shape === 'circle' || !node.shape) {
+      secRectSize.style.display = 'none'
+      secCircleSize.style.display = ''
+      inpCircleR.value = node.radius || graphData.options.nodeRadius || 30
+    } else {
+      secRectSize.style.display = 'none'
+      secCircleSize.style.display = 'none'
+    }
+
+    // Node style
+    const fill = getNodeFill(node)
+    const stroke = getNodeStroke(node)
+    const sw = getNodeStrokeWidth(node)
+    inpStyleFill.value = fill.length === 7 ? fill : '#f0f0f0'
+    inpStyleFillText.value = fill
+    inpStyleStroke.value = stroke.length === 7 ? stroke : '#999999'
+    inpStyleStrokeText.value = stroke
+    inpStyleStrokeWidth.value = sw
+
+    updateStylePresetHighlight()
+
     // Visual
     nodesG.selectAll('g.ed-node')
       .classed('selected', d => d.id === node.id)
+
+    drawResizeHandles()
   }
 
   function selectEdge(edge) {
@@ -1256,6 +1898,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     btnDelete.disabled = true
     nodesG && nodesG.selectAll('g.ed-node').classed('selected', false)
     edgesG && edgesG.selectAll('g.ed-edge').classed('selected', false)
+    handlesG && handlesG.selectAll('*').remove()
   }
 
   // ---- Group Swatches ----
@@ -1288,6 +1931,69 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
   initGroupSwatches()
 
+  // ---- Style Presets ----
+  function initStylePresets() {
+    stylePresetsEl.innerHTML = ''
+    STYLE_PRESETS.forEach((preset, i) => {
+      const el = document.createElement('div')
+      el.className = 'style-preset'
+      el.style.background = preset.fill
+      el.style.borderColor = preset.stroke
+      el.style.borderWidth = '2px'
+      el.style.borderStyle = 'solid'
+      el.dataset.index = i
+      el.title = preset.name
+      el.innerHTML = `<span class="style-preset-tooltip">${preset.name}</span>`
+      el.addEventListener('click', () => applyStylePreset(preset))
+      stylePresetsEl.appendChild(el)
+    })
+  }
+
+  function applyStylePreset(preset) {
+    if (!selectedNode) return
+    inpStyleFill.value = preset.fill
+    inpStyleFillText.value = preset.fill
+    inpStyleStroke.value = preset.stroke
+    inpStyleStrokeText.value = preset.stroke
+    updateStylePresetHighlight()
+  }
+
+  function updateStylePresetHighlight() {
+    const fill = inpStyleFillText.value.toLowerCase()
+    const stroke = inpStyleStrokeText.value.toLowerCase()
+    stylePresetsEl.querySelectorAll('.style-preset').forEach(el => {
+      const i = parseInt(el.dataset.index)
+      const p = STYLE_PRESETS[i]
+      el.classList.toggle('selected',
+        p.fill.toLowerCase() === fill && p.stroke.toLowerCase() === stroke)
+    })
+  }
+
+  initStylePresets()
+
+  // Sync color inputs
+  inpStyleFill.addEventListener('input', () => { inpStyleFillText.value = inpStyleFill.value })
+  inpStyleFillText.addEventListener('input', () => {
+    if (/^#[0-9a-fA-F]{6}$/.test(inpStyleFillText.value)) inpStyleFill.value = inpStyleFillText.value
+    updateStylePresetHighlight()
+  })
+  inpStyleStroke.addEventListener('input', () => { inpStyleStrokeText.value = inpStyleStroke.value })
+  inpStyleStrokeText.addEventListener('input', () => {
+    if (/^#[0-9a-fA-F]{6}$/.test(inpStyleStrokeText.value)) inpStyleStroke.value = inpStyleStrokeText.value
+    updateStylePresetHighlight()
+  })
+
+  btnClearStyle.addEventListener('click', () => {
+    if (!selectedNode) return
+    const colors = GROUPS[selectedNode.group] || GROUPS.blue
+    inpStyleFill.value = colors.fill.length === 7 ? colors.fill : '#f0f0f0'
+    inpStyleFillText.value = colors.fill
+    inpStyleStroke.value = colors.stroke.length === 7 ? colors.stroke : '#999999'
+    inpStyleStrokeText.value = colors.stroke
+    inpStyleStrokeWidth.value = 2
+    updateStylePresetHighlight()
+  })
+
   // ---- Add Node ----
   function addNode() {
     if (!graphData) return
@@ -1295,12 +2001,10 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     const cx = canvasArea.clientWidth / 2
     const cy = canvasArea.clientHeight / 2
 
-    // Generate unique id
     let idx = graphData.nodes.length + 1
     while (graphData.nodes.some(n => n.id === `node${idx}`)) idx++
     const id = `node${idx}`
 
-    // Get current view center via zoom transform
     const transform = d3.zoomTransform(svgEl.node())
     const x = snapToGrid((cx - transform.x) / transform.k)
     const y = snapToGrid((cy - transform.y) / transform.k)
@@ -1336,9 +2040,8 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       selectNode(node)
       return
     }
-    if (edgeSourceId === node.id) return // no self-loop
+    if (edgeSourceId === node.id) return
 
-    // Check duplicate
     const exists = graphData.edges.some(e => e.source === edgeSourceId && e.target === node.id)
     if (exists) {
       cancelAddEdge()
@@ -1400,7 +2103,41 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     node.y = parseFloat(inpNodeY.value) || node.y
     node._pinned = chkNodePin.checked
 
-    if (mode === 'force' && simulation) {
+    // Rect size
+    if (node.shape === 'rect' && inpRectW.value && inpRectH.value) {
+      const rw = parseInt(inpRectW.value)
+      const rh = parseInt(inpRectH.value)
+      if (rw >= 60) node.rectWidth = rw
+      if (rh >= 30) node.rectHeight = rh
+    }
+
+    // Circle radius
+    if ((node.shape === 'circle' || !node.shape) && inpCircleR.value) {
+      const cr = parseInt(inpCircleR.value)
+      if (cr >= 15) node.radius = cr
+    }
+
+    // Style
+    const fillVal = inpStyleFillText.value.trim()
+    const strokeVal = inpStyleStrokeText.value.trim()
+    const swVal = parseFloat(inpStyleStrokeWidth.value) || 2
+    const groupColors = GROUPS[node.group] || GROUPS.blue
+
+    // Only save style if different from group default
+    const hasCustomStyle = fillVal !== groupColors.fill || strokeVal !== groupColors.stroke || swVal !== 2
+    if (hasCustomStyle) {
+      node.style = {
+        fill: fillVal || undefined,
+        stroke: strokeVal || undefined,
+        strokeWidth: swVal !== 2 ? swVal : undefined,
+      }
+    } else {
+      delete node.style
+    }
+
+    const wasForce = mode === 'force'
+
+    if (wasForce && simulation) {
       if (node._pinned) {
         node.fx = node.x
         node.fy = node.y
@@ -1412,7 +2149,38 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
     renderGraph()
     selectNode(node)
+
+    // renderGraph() stops simulation; restart it if we were in force mode
+    if (wasForce) {
+      restartForceSimulation()
+      selectNode(node)
+    }
   }
+
+  // Rect auto size
+  btnRectAuto.addEventListener('click', () => {
+    if (!selectedNode) return
+    delete selectedNode.rectWidth
+    delete selectedNode.rectHeight
+    const wasForce = mode === 'force'
+    const node = selectedNode
+    pushUndo()
+    renderGraph()
+    selectNode(node)
+    if (wasForce) { restartForceSimulation(); selectNode(node) }
+  })
+
+  // Circle auto size
+  btnCircleAuto.addEventListener('click', () => {
+    if (!selectedNode) return
+    delete selectedNode.radius
+    const wasForce = mode === 'force'
+    const node = selectedNode
+    pushUndo()
+    renderGraph()
+    selectNode(node)
+    if (wasForce) { restartForceSimulation(); selectNode(node) }
+  })
 
   function applyEdgeChanges() {
     if (!selectedEdge || !graphData) return
@@ -1438,7 +2206,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   }
 
   inpTitle.addEventListener('change', () => {
-    if (graphData) graphData.title = inpTitle.value
+    if (graphData) { graphData.title = inpTitle.value; markDirty() }
   })
   inpRadius.addEventListener('change', () => {
     if (graphData) {
@@ -1467,7 +2235,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     statNodes.textContent = `节点: ${graphData.nodes.length}`
     statPinned.textContent = `(📌 ${graphData.nodes.filter(n => n._pinned).length})`
     statEdges.textContent = `边: ${graphData.edges.length}`
-    statFile.textContent = fileName
+    statFile.textContent = fileName + (isDirty ? ' ●' : '')
   }
 
   function updateNodeList() {
@@ -1485,7 +2253,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     }).join('')
     nodeListEl.innerHTML = html
 
-    // Click handler for node list items
     nodeListEl.querySelectorAll('.node-list-item').forEach(el => {
       el.addEventListener('click', () => {
         const nid = el.dataset.nid
@@ -1495,12 +2262,20 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     })
   }
 
+  // ---- Utility ----
+  function escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+  }
+
   // ---- Event Bindings ----
   btnOpen.addEventListener('click', () => fileInput.click())
   $('#btn-empty-open').addEventListener('click', () => fileInput.click())
   btnNew.addEventListener('click', newGraph)
   $('#btn-empty-new').addEventListener('click', newGraph)
-  btnExport.addEventListener('click', exportJSON)
+  btnNewGraph.addEventListener('click', newGraph)
+  btnSave.addEventListener('click', saveToServer)
   btnForce.addEventListener('click', startForceLayout)
   btnFreeze.addEventListener('click', freezeLayout)
   btnResetForce.addEventListener('click', resetForce)
@@ -1535,40 +2310,35 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       }
     }
     reader.readAsText(file)
-    fileInput.value = '' // reset so same file can be re-opened
+    fileInput.value = ''
   })
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    // ⌘Z / Ctrl+Z → undo
     if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
       e.preventDefault()
       undo()
     }
-    // ⌘⇧Z / Ctrl+Shift+Z → redo
     if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
       e.preventDefault()
       redo()
     }
-    // ⌘Y / Ctrl+Y → redo
     if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
       e.preventDefault()
       redo()
     }
-    // Delete / Backspace → delete selected (but not if in input)
     if ((e.key === 'Delete' || e.key === 'Backspace') && !isInputFocused()) {
       e.preventDefault()
       deleteSelected()
     }
-    // Escape → deselect / cancel add-edge
     if (e.key === 'Escape') {
       if (addingEdge) cancelAddEdge()
       else deselectAll()
     }
-    // ⌘S / Ctrl+S → export
+    // ⌘S / Ctrl+S → save (not export)
     if ((e.metaKey || e.ctrlKey) && e.key === 's') {
       e.preventDefault()
-      exportJSON()
+      saveToServer()
     }
   })
 
@@ -1597,8 +2367,11 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     reader.readAsText(file)
   })
 
-  // Init
+  // ---- Init ----
   updateStatus()
+
+  // Check server availability and load graph list
+  checkServer()
 
   // When MathJax finishes loading (async), re-typeset if graph is already loaded
   if (window.MathJax && MathJax.startup) {

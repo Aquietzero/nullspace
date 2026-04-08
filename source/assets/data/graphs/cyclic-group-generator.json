@@ -5,54 +5,262 @@
     "fullWidth": true
   },
   "nodes": [
-    { "id": "cyclic", "label": "循环群", "group": "blue", "shape": "rect", "note": "$G = \\langle a \\rangle$", "x": 400, "y": 50 },
-    { "id": "gen",    "label": "生成元", "group": "blue", "shape": "rect", "note": "$\\langle a \\rangle = \\{a^k \\mid k \\in \\mathbb{Z}\\}$", "x": 200, "y": 50 },
-
-    { "id": "struct", "label": "结构定理", "group": "orange", "shape": "rect", "note": "所有循环群只有两种", "x": 400, "y": 170 },
-
-    { "id": "infZ",   "label": "$\\mathbb{Z}$",    "group": "green", "shape": "rect", "note": "无限循环群的唯一模型", "x": 200, "y": 290 },
-    { "id": "genPM1", "label": "生成元 $\\pm 1$",   "group": "green", "note": "$\\mathbb{Z} = \\langle 1 \\rangle = \\langle -1 \\rangle$", "x": 80, "y": 400 },
-    { "id": "subZ",   "label": "子群 $= n\\mathbb{Z}$", "group": "green", "note": "$\\mathbb{Z}$ 的每个子群都是 $n\\mathbb{Z}$", "x": 240, "y": 400 },
-
-    { "id": "finZn",  "label": "$\\mathbb{Z}_n$",  "group": "purple", "shape": "rect", "note": "$n$ 阶循环群的唯一模型", "x": 600, "y": 290 },
-    { "id": "roots",  "label": "$n$ 次单位根",      "group": "purple", "note": "$\\mu_n \\cong \\mathbb{Z}_n$", "x": 480, "y": 400 },
-    { "id": "gcd",    "label": "生成元判定",         "group": "purple", "shape": "rect", "note": "$[a]$ 生成 $\\mathbb{Z}_n \\Leftrightarrow \\gcd(a,n)=1$", "x": 640, "y": 400 },
-    { "id": "euler",  "label": "欧拉函数 $\\varphi$", "group": "purple", "note": "生成元个数 $= \\varphi(n)$", "x": 640, "y": 510 },
-    { "id": "fermat", "label": "费马小定理",          "group": "purple", "note": "$a^{p-1} \\equiv 1 \\pmod{p}$", "x": 640, "y": 620 },
-
-    { "id": "subgrp",    "label": "子群定理",         "group": "red", "shape": "rect", "x": 800, "y": 400 },
-    { "id": "subCyclic", "label": "子群仍是循环群",    "group": "red", "x": 790, "y": 510 },
-    { "id": "uniqueD",   "label": "唯一 $d$ 阶子群",  "group": "red", "note": "对每个 $d \\mid n$", "x": 910, "y": 510 },
-    { "id": "z12",       "label": "$\\mathbb{Z}_{12}$ 例", "group": "red", "note": "因子 $1,2,3,4,6,12$", "x": 910, "y": 620 },
-
-    { "id": "crt",      "label": "中国剩余定理",       "group": "gray", "shape": "rect", "note": "$\\gcd(m,n)=1 \\Rightarrow \\mathbb{Z}_{mn} \\cong \\mathbb{Z}_m \\times \\mathbb{Z}_n$", "x": 480, "y": 510 },
-    { "id": "eulerMul", "label": "$\\varphi$ 乘法公式", "group": "gray", "note": "$\\varphi(mn) = \\varphi(m)\\varphi(n)$", "x": 480, "y": 620 }
+    {
+      "id": "cyclic",
+      "label": "循环群",
+      "group": "blue",
+      "shape": "rect",
+      "note": "$G = \\langle a \\rangle$",
+      "x": 321,
+      "y": 105
+    },
+    {
+      "id": "gen",
+      "label": "生成元",
+      "group": "blue",
+      "shape": "rect",
+      "note": "$\\langle a \\rangle = \\{a^k \\mid k \\in \\mathbb{Z}\\}$",
+      "x": 448,
+      "y": 36,
+      "rectWidth": 109,
+      "rectHeight": 60
+    },
+    {
+      "id": "struct",
+      "label": "结构定理",
+      "group": "orange",
+      "shape": "rect",
+      "note": "所有循环群只有两种",
+      "x": 250,
+      "y": 246,
+      "rectWidth": 102,
+      "rectHeight": 60
+    },
+    {
+      "id": "infZ",
+      "label": "$\\mathbb{Z}$",
+      "group": "green",
+      "shape": "rect",
+      "note": "无限循环群的唯一模型",
+      "x": 119,
+      "y": 134
+    },
+    {
+      "id": "genPM1",
+      "label": "生成元 $\\pm 1$",
+      "group": "green",
+      "note": "$\\mathbb{Z} = \\langle 1 \\rangle = \\langle -1 \\rangle$",
+      "x": 256,
+      "y": -8
+    },
+    {
+      "id": "subZ",
+      "label": "子群 $= n\\mathbb{Z}$",
+      "group": "green",
+      "note": "$\\mathbb{Z}$ 的每个子群都是 $n\\mathbb{Z}$",
+      "x": 86,
+      "y": 334,
+      "radius": 36
+    },
+    {
+      "id": "finZn",
+      "label": "$\\mathbb{Z}_n$",
+      "group": "purple",
+      "shape": "rect",
+      "note": "$n$ 阶循环群的唯一模型",
+      "x": 341,
+      "y": 419,
+      "rectWidth": 127,
+      "rectHeight": 60
+    },
+    {
+      "id": "roots",
+      "label": "$n$ 次单位根",
+      "group": "purple",
+      "note": "$\\mu_n \\cong \\mathbb{Z}_n$",
+      "x": 471,
+      "y": 483,
+      "radius": 42
+    },
+    {
+      "id": "gcd",
+      "label": "生成元判定",
+      "group": "purple",
+      "shape": "rect",
+      "note": "$[a]$ 生成 $\\mathbb{Z}_n \\Leftrightarrow \\gcd(a,n)=1$",
+      "x": 504,
+      "y": 249,
+      "rectWidth": 157,
+      "rectHeight": 60
+    },
+    {
+      "id": "euler",
+      "label": "欧拉函数 $\\varphi$",
+      "group": "purple",
+      "note": "生成元个数 $= \\varphi(n)$",
+      "x": 690,
+      "y": 261,
+      "radius": 42
+    },
+    {
+      "id": "fermat",
+      "label": "费马小定理",
+      "group": "purple",
+      "note": "$a^{p-1} \\equiv 1 \\pmod{p}$",
+      "x": 839,
+      "y": 284,
+      "radius": 45
+    },
+    {
+      "id": "subgrp",
+      "label": "子群定理",
+      "group": "red",
+      "shape": "rect",
+      "x": 160,
+      "y": 521
+    },
+    {
+      "id": "subCyclic",
+      "label": "子群仍是循环群",
+      "group": "red",
+      "x": -3,
+      "y": 514,
+      "radius": 63
+    },
+    {
+      "id": "uniqueD",
+      "label": "唯一 $d$ 阶子群",
+      "group": "red",
+      "note": "对每个 $d \\mid n$",
+      "x": 27,
+      "y": 675,
+      "radius": 51
+    },
+    {
+      "id": "z12",
+      "label": "$\\mathbb{Z}_{12}$ 例",
+      "group": "red",
+      "note": "因子 $1,2,3,4,6,12$",
+      "x": -107,
+      "y": 755
+    },
+    {
+      "id": "crt",
+      "label": "中国剩余定理",
+      "group": "gray",
+      "shape": "rect",
+      "note": "$\\gcd(m,n)=1 \\Rightarrow \\mathbb{Z}_{mn} \\cong \\mathbb{Z}_m \\times \\mathbb{Z}_n$",
+      "x": 347,
+      "y": 611,
+      "rectWidth": 193,
+      "rectHeight": 60
+    },
+    {
+      "id": "eulerMul",
+      "label": "$\\varphi$ 乘法公式",
+      "group": "gray",
+      "note": "$\\varphi(mn) = \\varphi(m)\\varphi(n)$",
+      "x": 351,
+      "y": 790,
+      "radius": 42
+    }
   ],
   "edges": [
-    { "source": "cyclic", "target": "gen",    "label": "核心概念" },
-    { "source": "cyclic", "target": "struct", "label": "分类" },
-
-    { "source": "struct", "target": "infZ",  "label": "无限 $\\cong$" },
-    { "source": "struct", "target": "finZn", "label": "有限 $\\cong$" },
-
-    { "source": "infZ", "target": "genPM1" },
-    { "source": "infZ", "target": "subZ" },
-
-    { "source": "finZn", "target": "roots",  "label": "典型例子" },
-    { "source": "finZn", "target": "gcd",    "label": "生成元" },
-    { "source": "gcd",   "target": "euler" },
-    { "source": "euler", "target": "fermat", "label": "推论", "style": "dashed" },
-
-    { "source": "finZn",  "target": "subgrp", "label": "子群" },
-    { "source": "subgrp", "target": "subCyclic" },
-    { "source": "subgrp", "target": "uniqueD" },
-    { "source": "uniqueD", "target": "z12", "label": "例", "style": "dashed" },
-
-    { "source": "finZn",  "target": "crt",      "label": "应用", "style": "dashed" },
-    { "source": "crt",    "target": "eulerMul", "label": "推论" },
-
-    { "source": "gen", "target": "gcd",    "label": "有限情形", "style": "dashed" },
-    { "source": "gen", "target": "genPM1", "label": "无限情形", "style": "dashed" },
-    { "source": "subZ", "target": "subgrp", "label": "类比", "style": "dashed" }
+    {
+      "source": "cyclic",
+      "target": "gen",
+      "label": "核心概念"
+    },
+    {
+      "source": "cyclic",
+      "target": "struct",
+      "label": "分类"
+    },
+    {
+      "source": "struct",
+      "target": "infZ",
+      "label": "无限 $\\cong$"
+    },
+    {
+      "source": "struct",
+      "target": "finZn",
+      "label": "有限 $\\cong$"
+    },
+    {
+      "source": "infZ",
+      "target": "genPM1"
+    },
+    {
+      "source": "infZ",
+      "target": "subZ"
+    },
+    {
+      "source": "finZn",
+      "target": "roots",
+      "label": "典型例子"
+    },
+    {
+      "source": "finZn",
+      "target": "gcd",
+      "label": "生成元"
+    },
+    {
+      "source": "gcd",
+      "target": "euler"
+    },
+    {
+      "source": "euler",
+      "target": "fermat",
+      "label": "推论",
+      "style": "dashed"
+    },
+    {
+      "source": "finZn",
+      "target": "subgrp",
+      "label": "子群"
+    },
+    {
+      "source": "subgrp",
+      "target": "subCyclic"
+    },
+    {
+      "source": "subgrp",
+      "target": "uniqueD"
+    },
+    {
+      "source": "uniqueD",
+      "target": "z12",
+      "label": "例",
+      "style": "dashed"
+    },
+    {
+      "source": "finZn",
+      "target": "crt",
+      "label": "应用",
+      "style": "dashed"
+    },
+    {
+      "source": "crt",
+      "target": "eulerMul",
+      "label": "推论"
+    },
+    {
+      "source": "gen",
+      "target": "gcd",
+      "label": "有限情形",
+      "style": "dashed"
+    },
+    {
+      "source": "gen",
+      "target": "genPM1",
+      "label": "无限情形",
+      "style": "dashed"
+    },
+    {
+      "source": "subZ",
+      "target": "subgrp",
+      "label": "类比",
+      "style": "dashed"
+    }
   ]
 }
