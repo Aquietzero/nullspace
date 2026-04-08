@@ -5,54 +5,268 @@
     "fullWidth": true
   },
   "nodes": [
-    { "id": "set",     "label": "集合",     "group": "blue", "shape": "rect", "x": 400, "y": 60 },
-    { "id": "subset",  "label": "子集",     "group": "blue", "note": "$A \\subseteq B$", "x": 250, "y": 160 },
-    { "id": "product", "label": "笛卡尔积", "group": "blue", "note": "$A \\times B$", "x": 550, "y": 160 },
-
-    { "id": "map",     "label": "映射",     "group": "orange", "shape": "rect", "note": "$f: A \\to B$", "x": 200, "y": 300 },
-    { "id": "domain",  "label": "定义域",   "group": "orange", "note": "$\\text{dom}(f)$", "x": 50, "y": 400 },
-    { "id": "codom",   "label": "陪域",     "group": "orange", "note": "$\\text{codom}(f)$", "x": 200, "y": 400 },
-    { "id": "image",   "label": "值域",     "group": "orange", "note": "$\\text{im}(f)$", "x": 130, "y": 500 },
-    { "id": "inj",     "label": "单射",     "group": "orange", "note": "$f(a_1)=f(a_2) \\Rightarrow a_1=a_2$", "x": 340, "y": 400 },
-    { "id": "surj",    "label": "满射",     "group": "orange", "note": "$\\text{im}(f)=B$", "x": 340, "y": 500 },
-    { "id": "bij",     "label": "双射",     "group": "orange", "note": "$\\text{inj} + \\text{surj}$", "x": 460, "y": 450 },
-    { "id": "comp",    "label": "复合映射", "group": "orange", "note": "$g \\circ f$", "x": 50, "y": 300 },
-    { "id": "inv",     "label": "逆映射",   "group": "orange", "note": "$f^{-1}$", "x": 530, "y": 530 },
-
-    { "id": "binop",   "label": "二元运算", "group": "green", "shape": "rect", "note": "$\\circ: A \\times A \\to A$", "x": 700, "y": 300 },
-    { "id": "assoc",   "label": "结合律",   "group": "green", "note": "$(a \\circ b) \\circ c = a \\circ (b \\circ c)$", "x": 600, "y": 420 },
-    { "id": "commut",  "label": "交换律",   "group": "green", "note": "$a \\circ b = b \\circ a$", "x": 720, "y": 420 },
-    { "id": "ident",   "label": "单位元",   "group": "green", "note": "$a \\circ e = a$", "x": 840, "y": 420 },
-    { "id": "invop",   "label": "逆元",     "group": "green", "note": "$a \\circ a^{-1} = e$", "x": 660, "y": 530 },
-    { "id": "distrib", "label": "分配律",   "group": "green", "note": "$a(b+c)=ab+ac$", "x": 810, "y": 530 }
+    {
+      "id": "set",
+      "label": "集合",
+      "group": "blue",
+      "shape": "rect",
+      "x": 286,
+      "y": 264
+    },
+    {
+      "id": "subset",
+      "label": "子集",
+      "group": "blue",
+      "note": "$A \\subseteq B$",
+      "x": 224,
+      "y": 125
+    },
+    {
+      "id": "product",
+      "label": "笛卡尔积",
+      "group": "blue",
+      "note": "$A \\times B$",
+      "x": 369,
+      "y": 365
+    },
+    {
+      "id": "map",
+      "label": "映射",
+      "group": "orange",
+      "shape": "rect",
+      "note": "$f: A \\to B$",
+      "x": 183,
+      "y": 497
+    },
+    {
+      "id": "domain",
+      "label": "定义域",
+      "group": "orange",
+      "note": "$\\text{dom}(f)$",
+      "x": 68,
+      "y": 403
+    },
+    {
+      "id": "codom",
+      "label": "陪域",
+      "group": "orange",
+      "note": "$\\text{codom}(f)$",
+      "x": 24,
+      "y": 581
+    },
+    {
+      "id": "image",
+      "label": "值域",
+      "group": "orange",
+      "note": "$\\text{im}(f)$",
+      "x": -13,
+      "y": 477
+    },
+    {
+      "id": "inj",
+      "label": "单射",
+      "group": "orange",
+      "note": "$f(a_1)=f(a_2) \\Rightarrow a_1=a_2$",
+      "x": 282,
+      "y": 623
+    },
+    {
+      "id": "surj",
+      "label": "满射",
+      "group": "orange",
+      "note": "$\\text{im}(f)=B$",
+      "x": 115,
+      "y": 643
+    },
+    {
+      "id": "bij",
+      "label": "双射",
+      "group": "orange",
+      "note": "$\\text{inj} + \\text{surj}$",
+      "x": 202,
+      "y": 732
+    },
+    {
+      "id": "comp",
+      "label": "复合映射",
+      "group": "orange",
+      "note": "$g \\circ f$",
+      "x": 168,
+      "y": 355
+    },
+    {
+      "id": "inv",
+      "label": "逆映射",
+      "group": "orange",
+      "note": "$f^{-1}$",
+      "x": 185,
+      "y": 881
+    },
+    {
+      "id": "binop",
+      "label": "二元运算",
+      "group": "green",
+      "shape": "rect",
+      "note": "$\\circ: A \\times A \\to A$",
+      "x": 485,
+      "y": 173
+    },
+    {
+      "id": "assoc",
+      "label": "结合律",
+      "group": "green",
+      "note": "$(a \\circ b) \\circ c = a \\circ (b \\circ c)$",
+      "x": 564,
+      "y": 295
+    },
+    {
+      "id": "commut",
+      "label": "交换律",
+      "group": "green",
+      "note": "$a \\circ b = b \\circ a$",
+      "x": 630,
+      "y": 103
+    },
+    {
+      "id": "ident",
+      "label": "单位元",
+      "group": "green",
+      "note": "$a \\circ e = a$",
+      "x": 440,
+      "y": 28
+    },
+    {
+      "id": "invop",
+      "label": "逆元",
+      "group": "green",
+      "note": "$a \\circ a^{-1} = e$",
+      "x": 637,
+      "y": 213
+    },
+    {
+      "id": "distrib",
+      "label": "分配律",
+      "group": "green",
+      "note": "$a(b+c)=ab+ac$",
+      "x": 550,
+      "y": 27
+    }
   ],
   "edges": [
-    { "source": "set", "target": "subset",  "label": "$\\subseteq$" },
-    { "source": "set", "target": "product", "label": "构造" },
-
-    { "source": "set", "target": "map",   "label": "定义在集合上" },
-    { "source": "set", "target": "binop", "label": "集合上的运算" },
-    { "source": "product", "target": "map",   "label": "$f \\subseteq A \\times B$", "style": "dashed" },
-    { "source": "product", "target": "binop", "label": "$\\circ: A \\times A \\to A$", "style": "dashed" },
-
-    { "source": "map", "target": "domain", "label": "输入" },
-    { "source": "map", "target": "codom",  "label": "输出" },
-    { "source": "map", "target": "image",  "label": "实际输出" },
-    { "source": "image", "target": "codom", "label": "$\\subseteq$", "style": "dashed" },
-
-    { "source": "map", "target": "inj",  "label": "类型" },
-    { "source": "map", "target": "surj", "label": "类型" },
-    { "source": "map", "target": "bij",  "label": "类型" },
-    { "source": "inj",  "target": "bij", "label": "$\\cap$", "style": "dashed" },
-    { "source": "surj", "target": "bij", "label": "$\\cap$", "style": "dashed" },
-
-    { "source": "map", "target": "comp", "label": "可复合" },
-    { "source": "bij", "target": "inv",  "label": "$\\exists$" },
-
-    { "source": "binop", "target": "assoc",   "label": "性质" },
-    { "source": "binop", "target": "commut",  "label": "性质" },
-    { "source": "binop", "target": "ident",   "label": "性质" },
-    { "source": "binop", "target": "invop",   "label": "性质" },
-    { "source": "binop", "target": "distrib", "label": "两个运算间" }
+    {
+      "source": "set",
+      "target": "subset",
+      "label": "$\\subseteq$"
+    },
+    {
+      "source": "set",
+      "target": "product",
+      "label": "构造"
+    },
+    {
+      "source": "set",
+      "target": "map",
+      "label": "定义在集合上"
+    },
+    {
+      "source": "set",
+      "target": "binop",
+      "label": "集合上的运算"
+    },
+    {
+      "source": "product",
+      "target": "map",
+      "label": "$f \\subseteq A \\times B$",
+      "style": "dashed"
+    },
+    {
+      "source": "product",
+      "target": "binop",
+      "label": "$\\circ: A \\times A \\to A$",
+      "style": "dashed"
+    },
+    {
+      "source": "map",
+      "target": "domain",
+      "label": "输入"
+    },
+    {
+      "source": "map",
+      "target": "codom",
+      "label": "输出"
+    },
+    {
+      "source": "map",
+      "target": "image",
+      "label": "实际输出"
+    },
+    {
+      "source": "image",
+      "target": "codom",
+      "label": "$\\subseteq$",
+      "style": "dashed"
+    },
+    {
+      "source": "map",
+      "target": "inj",
+      "label": "类型"
+    },
+    {
+      "source": "map",
+      "target": "surj",
+      "label": "类型"
+    },
+    {
+      "source": "map",
+      "target": "bij",
+      "label": "类型"
+    },
+    {
+      "source": "inj",
+      "target": "bij",
+      "label": "$\\cap$",
+      "style": "dashed"
+    },
+    {
+      "source": "surj",
+      "target": "bij",
+      "label": "$\\cap$",
+      "style": "dashed"
+    },
+    {
+      "source": "map",
+      "target": "comp",
+      "label": "可复合"
+    },
+    {
+      "source": "bij",
+      "target": "inv",
+      "label": "$\\exists$"
+    },
+    {
+      "source": "binop",
+      "target": "assoc",
+      "label": "性质"
+    },
+    {
+      "source": "binop",
+      "target": "commut",
+      "label": "性质"
+    },
+    {
+      "source": "binop",
+      "target": "ident",
+      "label": "性质"
+    },
+    {
+      "source": "binop",
+      "target": "invop",
+      "label": "性质"
+    },
+    {
+      "source": "binop",
+      "target": "distrib",
+      "label": "两个运算间"
+    }
   ]
 }

@@ -5,54 +5,250 @@
     "fullWidth": true
   },
   "nodes": [
-    { "id": "group", "label": "群", "group": "blue", "shape": "rect", "note": "$(G, \\circ)$", "x": 400, "y": 60 },
-
-    { "id": "cond",    "label": "条件",   "group": "blue", "shape": "rect", "x": 150, "y": 180 },
-    { "id": "close",   "label": "封闭性", "group": "blue", "note": "$a \\circ b \\in G$", "x": 50, "y": 310 },
-    { "id": "assoc",   "label": "结合律", "group": "blue", "note": "$(a \\circ b) \\circ c = a \\circ (b \\circ c)$", "x": 150, "y": 310 },
-    { "id": "ident",   "label": "单位元", "group": "blue", "note": "$e \\circ a = a$", "x": 250, "y": 310 },
-    { "id": "inv",     "label": "逆元",   "group": "blue", "note": "$a \\circ a^{-1} = e$", "x": 350, "y": 310 },
-    { "id": "abel",    "label": "阿贝尔群", "group": "blue", "note": "+ 交换律", "x": 250, "y": 430 },
-
-    { "id": "prop",     "label": "性质",       "group": "orange", "shape": "rect", "x": 400, "y": 180 },
-    { "id": "uniqE",    "label": "单位元唯一", "group": "orange", "x": 440, "y": 310 },
-    { "id": "uniqInv",  "label": "逆元唯一",   "group": "orange", "x": 540, "y": 310 },
-    { "id": "cancel",   "label": "消去律",     "group": "orange", "note": "$ab=ac \\Rightarrow b=c$", "x": 490, "y": 400 },
-    { "id": "ordG",     "label": "群的阶",     "group": "orange", "note": "$|G|$", "x": 360, "y": 400 },
-    { "id": "ordA",     "label": "元素的阶",   "group": "orange", "note": "$a^n = e$ 最小 $n$", "x": 360, "y": 500 },
-
-    { "id": "exam",    "label": "例子",   "group": "green", "shape": "rect", "x": 680, "y": 180 },
-    { "id": "Zadd",    "label": "$(\\mathbb{Z}, +)$",               "group": "green", "x": 600, "y": 310 },
-    { "id": "Qmul",    "label": "$(\\mathbb{Q}^\\times, \\times)$", "group": "green", "x": 700, "y": 310 },
-    { "id": "GLn",     "label": "$GL_n(\\mathbb{R})$",              "group": "green", "x": 800, "y": 310 },
-    { "id": "Dn",      "label": "$D_n$",              "group": "green", "note": "二面体群", "x": 650, "y": 420 },
-    { "id": "Zn",      "label": "$\\mathbb{Z}_n$",    "group": "green", "note": "模 $n$ 加法群", "x": 770, "y": 420 }
+    {
+      "id": "group",
+      "label": "群",
+      "group": "blue",
+      "shape": "rect",
+      "note": "$(G, \\circ)$",
+      "x": 369,
+      "y": 389
+    },
+    {
+      "id": "cond",
+      "label": "条件",
+      "group": "blue",
+      "shape": "rect",
+      "x": 229,
+      "y": 163
+    },
+    {
+      "id": "close",
+      "label": "封闭性",
+      "group": "blue",
+      "note": "$a \\circ b \\in G$",
+      "x": 178,
+      "y": 14
+    },
+    {
+      "id": "assoc",
+      "label": "结合律",
+      "group": "blue",
+      "note": "$(a \\circ b) \\circ c = a \\circ (b \\circ c)$",
+      "x": 91,
+      "y": 83
+    },
+    {
+      "id": "ident",
+      "label": "单位元",
+      "group": "blue",
+      "note": "$e \\circ a = a$",
+      "x": 84,
+      "y": 192
+    },
+    {
+      "id": "inv",
+      "label": "逆元",
+      "group": "blue",
+      "note": "$a \\circ a^{-1} = e$",
+      "x": 287,
+      "y": 25
+    },
+    {
+      "id": "abel",
+      "label": "阿贝尔群",
+      "group": "blue",
+      "note": "+ 交换律",
+      "x": 507,
+      "y": 610,
+      "radius": 38
+    },
+    {
+      "id": "prop",
+      "label": "性质",
+      "group": "orange",
+      "shape": "rect",
+      "x": 112,
+      "y": 437
+    },
+    {
+      "id": "uniqE",
+      "label": "单位元唯一",
+      "group": "orange",
+      "x": -26,
+      "y": 381,
+      "radius": 42
+    },
+    {
+      "id": "uniqInv",
+      "label": "逆元唯一",
+      "group": "orange",
+      "x": 156,
+      "y": 571
+    },
+    {
+      "id": "cancel",
+      "label": "消去律",
+      "group": "orange",
+      "note": "$ab=ac \\Rightarrow b=c$",
+      "x": 36,
+      "y": 559
+    },
+    {
+      "id": "ordG",
+      "label": "群的阶",
+      "group": "orange",
+      "note": "$|G|$",
+      "x": -67,
+      "y": 514
+    },
+    {
+      "id": "ordA",
+      "label": "元素的阶",
+      "group": "orange",
+      "note": "$a^n = e$ 最小 $n$",
+      "x": -187,
+      "y": 610
+    },
+    {
+      "id": "exam",
+      "label": "例子",
+      "group": "green",
+      "shape": "rect",
+      "x": 628,
+      "y": 395
+    },
+    {
+      "id": "Zadd",
+      "label": "$(\\mathbb{Z}, +)$",
+      "group": "green",
+      "x": 600,
+      "y": 526
+    },
+    {
+      "id": "Qmul",
+      "label": "$(\\mathbb{Q}^\\times, \\times)$",
+      "group": "green",
+      "x": 505,
+      "y": 470
+    },
+    {
+      "id": "GLn",
+      "label": "$GL_n(\\mathbb{R})$",
+      "group": "green",
+      "x": 716,
+      "y": 274
+    },
+    {
+      "id": "Dn",
+      "label": "$D_n$",
+      "group": "green",
+      "note": "二面体群",
+      "x": 777,
+      "y": 376
+    },
+    {
+      "id": "Zn",
+      "label": "$\\mathbb{Z}_n$",
+      "group": "green",
+      "note": "模 $n$ 加法群",
+      "x": 700,
+      "y": 574
+    }
   ],
   "edges": [
-    { "source": "group", "target": "cond", "label": "满足" },
-    { "source": "group", "target": "prop", "label": "具有" },
-    { "source": "group", "target": "exam", "label": "包括" },
-
-    { "source": "cond", "target": "close" },
-    { "source": "cond", "target": "assoc" },
-    { "source": "cond", "target": "ident" },
-    { "source": "cond", "target": "inv" },
-    { "source": "group", "target": "abel", "label": "+ 交换律", "style": "dashed" },
-
-    { "source": "prop", "target": "uniqE" },
-    { "source": "prop", "target": "uniqInv" },
-    { "source": "prop", "target": "cancel" },
-    { "source": "prop", "target": "ordG" },
-    { "source": "ordG", "target": "ordA", "label": "细化到元素" },
-
-    { "source": "exam", "target": "Zadd" },
-    { "source": "exam", "target": "Qmul" },
-    { "source": "exam", "target": "GLn" },
-    { "source": "exam", "target": "Dn" },
-    { "source": "exam", "target": "Zn" },
-
-    { "source": "abel", "target": "Zadd", "style": "dashed" },
-    { "source": "abel", "target": "Qmul", "style": "dashed" },
-    { "source": "abel", "target": "Zn",   "style": "dashed" }
+    {
+      "source": "group",
+      "target": "cond",
+      "label": "满足"
+    },
+    {
+      "source": "group",
+      "target": "prop",
+      "label": "具有"
+    },
+    {
+      "source": "group",
+      "target": "exam",
+      "label": "包括"
+    },
+    {
+      "source": "cond",
+      "target": "close"
+    },
+    {
+      "source": "cond",
+      "target": "assoc"
+    },
+    {
+      "source": "cond",
+      "target": "ident"
+    },
+    {
+      "source": "cond",
+      "target": "inv"
+    },
+    {
+      "source": "group",
+      "target": "abel",
+      "label": "+ 交换律",
+      "style": "dashed"
+    },
+    {
+      "source": "prop",
+      "target": "uniqE"
+    },
+    {
+      "source": "prop",
+      "target": "uniqInv"
+    },
+    {
+      "source": "prop",
+      "target": "cancel"
+    },
+    {
+      "source": "prop",
+      "target": "ordG"
+    },
+    {
+      "source": "ordG",
+      "target": "ordA",
+      "label": "细化到元素"
+    },
+    {
+      "source": "exam",
+      "target": "Zadd"
+    },
+    {
+      "source": "exam",
+      "target": "Qmul"
+    },
+    {
+      "source": "exam",
+      "target": "GLn"
+    },
+    {
+      "source": "exam",
+      "target": "Dn"
+    },
+    {
+      "source": "exam",
+      "target": "Zn"
+    },
+    {
+      "source": "abel",
+      "target": "Zadd",
+      "style": "dashed"
+    },
+    {
+      "source": "abel",
+      "target": "Qmul",
+      "style": "dashed"
+    },
+    {
+      "source": "abel",
+      "target": "Zn",
+      "style": "dashed"
+    }
   ]
 }

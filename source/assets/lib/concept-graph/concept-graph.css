@@ -10,6 +10,50 @@
   max-width: 100%;
 }
 
+/* ========== 容器限高 + 模糊遮罩 ========== */
+.concept-graph-clipped {
+  --cg-max-height: 420px;
+  max-height: var(--cg-max-height);
+  overflow: hidden;
+  position: relative;
+}
+
+.concept-graph-clipped .concept-graph-svg {
+  cursor: grab;
+}
+
+.concept-graph-clipped .concept-graph-svg:active {
+  cursor: grabbing;
+}
+
+/* 上下渐变遮罩（使用 ::before / ::after 伪元素） */
+.concept-graph-clipped::before,
+.concept-graph-clipped::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 48px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.concept-graph-clipped::before {
+  top: 0;
+  background: linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0) 100%);
+}
+
+.concept-graph-clipped::after {
+  bottom: 0;
+  background: linear-gradient(to top, #fff 0%, rgba(255,255,255,0) 100%);
+}
+
+/* Show fade edges when not scrolled to that edge */
+.concept-graph-clipped.cg-fade-top::before { opacity: 1; }
+.concept-graph-clipped.cg-fade-bottom::after { opacity: 1; }
+
 /* 全宽模式：突破文章容器限制，撑满视口 */
 .concept-graph-fullwidth {
   position: relative;
@@ -27,6 +71,11 @@
   border-radius: 0;
   border-left: none;
   border-right: none;
+}
+
+/* fullwidth + clipped: container already has overflow:hidden from fullwidth */
+.concept-graph-fullwidth.concept-graph-clipped {
+  max-height: var(--cg-max-height);
 }
 
 .concept-graph-svg:active {

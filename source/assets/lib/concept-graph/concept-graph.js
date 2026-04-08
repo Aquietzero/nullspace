@@ -52,6 +52,8 @@ class ConceptGraph {
         edgeDashArray: null,
         // 是否可缩放拖拽
         zoomable: true,
+        // 容器最大高度（px），超出部分裁剪 + 模糊遮罩，可拖拽查看
+        maxHeight: 420,
       },
       options
     )
@@ -164,29 +166,6 @@ class ConceptGraph {
       this.svg.call(zoom)
     }
 
-    // ---------- 箭头 marker ----------
-    const defs = this.svg.select('defs')
-    const markerColors = new Set()
-    markerColors.add(this.options.edgeColor)
-    this.edges.forEach((e) => {
-      if (e.color) markerColors.add(e.color)
-    })
-    markerColors.forEach((color) => {
-      const markerId = 'arrow-' + color.replace('#', '')
-      defs
-        .append('marker')
-        .attr('id', markerId)
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 20)
-        .attr('refY', 0)
-        .attr('markerWidth', 8)
-        .attr('markerHeight', 8)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', color)
-    })
-
     // ---------- 力模拟 ----------
     const simulation = d3
       .forceSimulation(this.nodes)
@@ -249,10 +228,6 @@ class ConceptGraph {
         if (d.style === 'dashed') return '6,4'
         if (d.style === 'dotted') return '2,3'
         return this.options.edgeDashArray
-      })
-      .attr('marker-end', (d) => {
-        const c = d.color || this.options.edgeColor
-        return `url(#arrow-${c.replace('#', '')})`
       })
 
     // 边标签：使用 foreignObject 以支持 TeX
@@ -533,6 +508,73 @@ class ConceptGraph {
     }
   }
 
+  /**
+   * 在容器层面设置拖拽平移，用于 clipped 模式
+   * 用户可以上下拖拽 SVG 来查看超出部分
+   * @param {number} naturalHeight - SVG 的自然高度（px）
+   * @param {number} maxH - 容器最大高度（px）
+   */
+  _setupContainerDrag(naturalHeight, maxH) {
+    const svgNode = this.svg.node()
+    const overflowY = naturalHeight - maxH
+
+    // Initial position: vertically centered
+    let currentY = -overflowY / 2
+    svgNode.style.transform = `translateY(${currentY}px)`
+    this._updateFadeMask(currentY, overflowY)
+
+    let isDragging = false
+    let startY = 0
+    let startTranslateY = 0
+
+    const onPointerDown = (e) => {
+      // Only respond to primary button (left click / single touch)
+      if (e.button && e.button !== 0) return
+      isDragging = true
+      startY = e.clientY || (e.touches && e.touches[0].clientY) || 0
+      startTranslateY = currentY
+      svgNode.style.cursor = 'grabbing'
+      e.preventDefault()
+    }
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0
+      const dy = clientY - startY
+      currentY = Math.min(0, Math.max(-overflowY, startTranslateY + dy))
+      svgNode.style.transform = `translateY(${currentY}px)`
+      this._updateFadeMask(currentY, overflowY)
+    }
+
+    const onPointerUp = () => {
+      if (!isDragging) return
+      isDragging = false
+      svgNode.style.cursor = 'grab'
+    }
+
+    svgNode.addEventListener('mousedown', onPointerDown)
+    svgNode.addEventListener('touchstart', onPointerDown, { passive: false })
+    document.addEventListener('mousemove', onPointerMove)
+    document.addEventListener('touchmove', onPointerMove, { passive: false })
+    document.addEventListener('mouseup', onPointerUp)
+    document.addEventListener('touchend', onPointerUp)
+  }
+
+  /**
+   * 根据当前垂直平移量更新容器的上下渐变遮罩
+   * @param {number} ty - 当前垂直平移量（负值表示向上滚动）
+   * @param {number} overflowY - 总溢出量
+   */
+  _updateFadeMask(ty, overflowY) {
+    const el = this.container
+    // ty ranges from 0 (at very top) to -overflowY (at very bottom)
+    const atTop = ty >= -2
+    const atBottom = ty <= -(overflowY - 2)
+
+    el.classList.toggle('cg-fade-top', !atTop)
+    el.classList.toggle('cg-fade-bottom', !atBottom)
+  }
+
   _initSVG() {
     const { width, height, fullWidth } = this.options
 
@@ -617,11 +659,29 @@ class ConceptGraph {
     const vw = maxX - minX
     const vh = maxY - minY
 
-    // 更新 SVG viewBox
+    // 更新 SVG viewBox — use the natural content dimensions
+    this.svg.attr('viewBox', `${minX} ${minY} ${vw} ${vh}`)
+
+    // ---------- Container height capping ----------
+    const maxH = this.options.maxHeight
+    const containerWidth = this.container.clientWidth || this.options.width
+    const naturalHeight = containerWidth * (vh / vw)
+    const needsClip = maxH && naturalHeight > maxH
+
+    // SVG keeps its natural aspect-ratio-based sizing
     this.svg
-      .attr('viewBox', `${minX} ${minY} ${vw} ${vh}`)
       .attr('height', null)
       .style('aspect-ratio', `${vw} / ${vh}`)
+
+    if (needsClip) {
+      // Mark container for CSS clipping + fade mask
+      this.container.classList.add('concept-graph-clipped')
+      this.container.style.setProperty('--cg-max-height', maxH + 'px')
+      // Setup drag-to-pan on the container
+      this._setupContainerDrag(naturalHeight, maxH)
+    } else {
+      this.container.classList.remove('concept-graph-clipped')
+    }
 
     // 清除旧内容
     this.svg.selectAll('g.graph-content').remove()
@@ -629,7 +689,9 @@ class ConceptGraph {
     // 构建主容器
     const g = this.svg.append('g').attr('class', 'graph-content')
 
-    if (this.options.zoomable) {
+    // In clipped mode: no D3 zoom at all (no scale, no wheel hijacking)
+    // In normal mode: allow full zoom+pan if zoomable
+    if (this.options.zoomable && !needsClip) {
       const zoom = d3
         .zoom()
         .scaleExtent([0.3, 3])
@@ -638,29 +700,6 @@ class ConceptGraph {
         })
       this.svg.call(zoom)
     }
-
-    // ---------- 箭头 marker ----------
-    const defs = this.svg.select('defs')
-    const markerColors = new Set()
-    markerColors.add(this.options.edgeColor)
-    this.edges.forEach((e) => {
-      if (e.color) markerColors.add(e.color)
-    })
-    markerColors.forEach((color) => {
-      const markerId = 'arrow-' + color.replace('#', '')
-      defs
-        .append('marker')
-        .attr('id', markerId)
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 20)
-        .attr('refY', 0)
-        .attr('markerWidth', 8)
-        .attr('markerHeight', 8)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', color)
-    })
 
     // ---------- 边 ----------
     const edgeG = g.append('g').attr('class', 'cg-edges')
@@ -700,10 +739,6 @@ class ConceptGraph {
         if (d.style === 'dashed') return '6,4'
         if (d.style === 'dotted') return '2,3'
         return this.options.edgeDashArray
-      })
-      .attr('marker-end', (d) => {
-        const c = d.color || this.options.edgeColor
-        return `url(#arrow-${c.replace('#', '')})`
       })
       .attr('d', (d) => {
         const src = this._nodeMap[d.source] || d.source

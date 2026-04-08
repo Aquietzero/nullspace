@@ -33,15 +33,13 @@ tags:
 All mathematical proofs MUST be wrapped in `<aside>` tags. Never use blockquotes or other containers for proofs.
 
 ```html
-<aside>
-**证明**：
-
+<aside data-title="证明">
 Proof content here using LaTeX...
 
 </aside>
 ```
 
-Tips and notes also use `<aside>`:
+Tips and notes also use `<aside data-title="NOTE 或者 TIPS">`:
 
 ```html
 <aside>
