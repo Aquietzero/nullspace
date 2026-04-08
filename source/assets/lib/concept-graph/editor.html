@@ -272,6 +272,17 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   margin-top: 2px;
   white-space: nowrap;
 }
+/* Floating note elements */
+.ed-note { cursor: grab; }
+.ed-note:active { cursor: grabbing; }
+.ed-note.note-selected .ed-node-note-html {
+  outline: 1px dashed var(--select-stroke);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.ed-note-fo {
+  overflow: visible;
+}
 .ed-edge-label-fo {
   overflow: visible;
   pointer-events: none;
@@ -290,6 +301,20 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   stroke-width: 1.5;
   cursor: nwse-resize;
   pointer-events: all;
+}
+
+/* Node action icons (delete / clear style) on selected node */
+.node-action-btn {
+  cursor: pointer;
+  pointer-events: all;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+.node-action-btn:hover { opacity: 1; }
+.node-action-btn text {
+  font-size: 13px;
+  text-anchor: middle;
+  dominant-baseline: central;
 }
 .resize-handle.n, .resize-handle.s { cursor: ns-resize; }
 .resize-handle.e, .resize-handle.w { cursor: ew-resize; }
@@ -654,15 +679,8 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
           <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">预设风格:</div>
           <div class="style-presets" id="style-presets"></div>
         </div>
-        <div class="panel-actions" style="margin-top:6px;">
-          <button id="btn-clear-style" style="font-size:10px;">清除自定义样式</button>
-        </div>
       </div>
 
-      <div class="panel-actions">
-        <button id="btn-apply-node">应用</button>
-        <button id="btn-delete-node" class="danger">删除节点</button>
-      </div>
     </div>
 
     <!-- Edge Properties -->
@@ -691,10 +709,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       <div class="panel-row">
         <label>color</label>
         <input type="text" id="inp-edge-color" placeholder="默认 #888">
-      </div>
-      <div class="panel-actions">
-        <button id="btn-apply-edge">应用</button>
-        <button id="btn-delete-edge" class="danger">删除边</button>
       </div>
     </div>
 
@@ -807,8 +821,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const inpNodeX = $('#inp-node-x')
   const inpNodeY = $('#inp-node-y')
   const chkNodePin = $('#chk-node-pin')
-  const btnApplyNode = $('#btn-apply-node')
-  const btnDeleteNode = $('#btn-delete-node')
 
   // Rect size
   const secRectSize = $('#sec-rect-size')
@@ -828,15 +840,12 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const inpStyleStrokeText = $('#inp-style-stroke-text')
   const inpStyleStrokeWidth = $('#inp-style-stroke-width')
   const stylePresetsEl = $('#style-presets')
-  const btnClearStyle = $('#btn-clear-style')
 
   const inpEdgeSource = $('#inp-edge-source')
   const inpEdgeTarget = $('#inp-edge-target')
   const inpEdgeLabel = $('#inp-edge-label')
   const selEdgeStyle = $('#sel-edge-style')
   const inpEdgeColor = $('#inp-edge-color')
-  const btnApplyEdge = $('#btn-apply-edge')
-  const btnDeleteEdge = $('#btn-delete-edge')
 
   const modeBadge = $('#mode-badge')
   const statNodes = $('#stat-nodes')
@@ -848,7 +857,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
   const nodeCountEl = $('#node-count')
 
   // ---- SVG setup ----
-  let svgEl, svgG, gridG, edgesG, nodesG, handlesG, zoom
+  let svgEl, svgG, gridG, edgesG, nodesG, notesG, handlesG, zoom
 
   function initSVG() {
     d3.select(canvasArea).selectAll('svg').remove()
@@ -870,6 +879,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     gridG = svgG.append('g').attr('class', 'grid-layer')
     edgesG = svgG.append('g').attr('class', 'edges-layer')
     nodesG = svgG.append('g').attr('class', 'nodes-layer')
+    notesG = svgG.append('g').attr('class', 'notes-layer')
     handlesG = svgG.append('g').attr('class', 'handles-layer')
 
     // Zoom + pan
@@ -1063,6 +1073,8 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         const clean = { id: n.id, label: n.label, group: n.group }
         if (n.shape && n.shape !== 'circle') clean.shape = n.shape
         if (n.note) clean.note = n.note
+        if (n.noteOffsetX) clean.noteOffsetX = Math.round(n.noteOffsetX)
+        if (n.noteOffsetY) clean.noteOffsetY = Math.round(n.noteOffsetY)
         clean.x = Math.round(n.x)
         clean.y = Math.round(n.y)
         if (n.radius && n.radius !== (graphData.options.nodeRadius || 30)) clean.radius = n.radius
@@ -1345,19 +1357,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
           .html(needTex ? texToHTML(labelText) : labelText)
 
         if (noteText) {
-          const noteW = 160
-          const noteH = 26
-          const noteY = d.shape === 'diamond' ? nr * 1.4 + 4 : nr + 4
-
-          const noteFo = el.append('foreignObject')
-            .attr('class', 'ed-node-fo')
-            .attr('width', noteW).attr('height', noteH)
-            .attr('x', -noteW / 2).attr('y', noteY)
-
-          noteFo.append('xhtml:div')
-            .attr('class', 'ed-node-note-html')
-            .style('text-align', 'center')
-            .html(hasTex(noteText) ? texToHTML(noteText) : noteText)
+          // Note rendered as independent draggable element below (see renderNoteElements)
         }
       }
     })
@@ -1370,6 +1370,9 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         .attr('x', nr - 2).attr('y', -nr + 2)
         .text('📌')
     })
+
+    // ---- Floating Note Elements (for circle/diamond nodes) ----
+    renderNoteElements()
 
     // Click → select
     nodeSel.on('click', (e, d) => {
@@ -1420,6 +1423,106 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       MathJax.startup.document.updateDocument()
       MathJax.typesetPromise([canvasArea, nodeListEl]).catch(() => {})
     }
+  }
+
+  // ---- Floating Note Elements ----
+  // Notes for circle/diamond nodes are rendered as independent draggable <g> elements
+  function updateNotePositions() {
+    if (!notesG) return
+    const r = graphData ? graphData.options.nodeRadius || 30 : 30
+    notesG.selectAll('g.ed-note').attr('transform', d => {
+      const nr = d.radius || r
+      const defaultOffsetY = d.shape === 'diamond' ? nr * 1.4 + 14 : nr + 14
+      const ox = d.noteOffsetX || 0
+      const oy = d.noteOffsetY || defaultOffsetY
+      return `translate(${d.x + ox},${d.y + oy})`
+    })
+  }
+
+  function renderNoteElements() {
+    if (!notesG) return
+    notesG.selectAll('*').remove()
+    if (!graphData) return
+
+    const r = graphData.options.nodeRadius || 30
+
+    // Only render notes for non-rect nodes that have a note
+    const notedNodes = graphData.nodes.filter(n =>
+      n.note && n.shape !== 'rect')
+
+    const noteSel = notesG.selectAll('g.ed-note')
+      .data(notedNodes, d => d.id + '-note')
+      .join('g')
+      .attr('class', d => {
+        let cls = 'ed-note'
+        if (selectedNode && selectedNode.id === d.id) cls += ' note-selected'
+        return cls
+      })
+      .attr('transform', d => {
+        const nr = d.radius || r
+        const defaultOffsetY = d.shape === 'diamond' ? nr * 1.4 + 14 : nr + 14
+        const ox = d.noteOffsetX || 0
+        const oy = d.noteOffsetY || defaultOffsetY
+        return `translate(${d.x + ox},${d.y + oy})`
+      })
+
+    const noteW = 160
+    const noteH = 30
+
+    noteSel.each(function (d) {
+      const el = d3.select(this)
+      const noteText = d.note || ''
+
+      const fo = el.append('foreignObject')
+        .attr('class', 'ed-note-fo')
+        .attr('width', noteW).attr('height', noteH)
+        .attr('x', -noteW / 2).attr('y', -noteH / 2)
+
+      fo.append('xhtml:div')
+        .attr('class', 'ed-node-note-html')
+        .style('text-align', 'center')
+        .style('cursor', 'grab')
+        .style('pointer-events', 'all')
+        .html(hasTex(noteText) ? texToHTML(noteText) : noteText)
+    })
+
+    // Click → select parent node and focus note input
+    noteSel.on('click', (e, d) => {
+      e.stopPropagation()
+      selectNode(d)
+      inpNodeNote.focus()
+    })
+
+    // Drag → move note offset
+    noteSel.call(d3.drag()
+      .on('start', notesDragStarted)
+      .on('drag', notesDragged)
+      .on('end', notesDragEnded))
+  }
+
+  function notesDragStarted(event, d) {
+    event.sourceEvent && event.sourceEvent.stopPropagation()
+    pushUndo()
+  }
+
+  function notesDragged(event, d) {
+    const r = graphData.options.nodeRadius || 30
+    const nr = d.radius || r
+    const defaultOffsetY = d.shape === 'diamond' ? nr * 1.4 + 14 : nr + 14
+
+    const transform = d3.zoomTransform(svgEl.node())
+    const dx = event.dx / transform.k
+    const dy = event.dy / transform.k
+
+    d.noteOffsetX = (d.noteOffsetX || 0) + dx
+    d.noteOffsetY = (d.noteOffsetY || defaultOffsetY) + dy
+
+    d3.select(this).attr('transform',
+      `translate(${d.x + d.noteOffsetX},${d.y + d.noteOffsetY})`)
+  }
+
+  function notesDragEnded(event, d) {
+    // nothing special needed
   }
 
   // ---- Resize Handles ----
@@ -1479,6 +1582,66 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
         .on('end', resizeEnded))
     }
     // diamond 暂不支持 resize 手柄
+
+    // ---- Action icons (delete + clear style) at top-right of selected node ----
+    drawNodeActionIcons()
+  }
+
+  function drawNodeActionIcons() {
+    // Remove old action icons
+    handlesG.selectAll('.node-action-btn').remove()
+    if (!selectedNode) return
+
+    const d = selectedNode
+    const r = graphData.options.nodeRadius || 30
+    let topRightX, topRightY
+
+    if (d.shape === 'rect') {
+      const { w, h } = getNodeRect(d)
+      topRightX = d.x + w / 2
+      topRightY = d.y - h / 2
+    } else if (d.shape === 'diamond') {
+      const nr = d.radius || r
+      topRightX = d.x + nr * 0.7
+      topRightY = d.y - nr * 1.2
+    } else {
+      const nr = d.radius || r
+      topRightX = d.x + nr * 0.7
+      topRightY = d.y - nr - 4
+    }
+
+    const iconGap = 20
+    const icons = [
+      { emoji: '🗑', title: '删除节点', action: () => deleteSelected() },
+    ]
+
+    // Only show clear-style icon if node has custom style
+    if (d.style && (d.style.fill || d.style.stroke || d.style.strokeWidth)) {
+      icons.push({
+        emoji: '🧹', title: '清除自定义样式', action: () => {
+          if (!selectedNode) return
+          pushUndo()
+          delete selectedNode.style
+          renderGraph()
+          selectNode(selectedNode)
+          if (mode === 'force') { restartForceSimulation(); selectNode(selectedNode) }
+        }
+      })
+    }
+
+    icons.forEach((icon, i) => {
+      const g = handlesG.append('g')
+        .attr('class', 'node-action-btn')
+        .attr('transform', `translate(${topRightX + 8 + i * iconGap}, ${topRightY - 12})`)
+
+      g.append('text').text(icon.emoji)
+      g.append('title').text(icon.title)
+
+      g.on('click', (e) => {
+        e.stopPropagation()
+        icon.action()
+      })
+    })
   }
 
   let resizeStartState = null
@@ -1631,6 +1794,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     }
 
     d3.select(this).attr('transform', `translate(${d.x},${d.y})`)
+    updateNotePositions()
     updateEdgePositions()
 
     if (selectedNode && selectedNode.id === d.id) {
@@ -1717,6 +1881,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
         nodesG.selectAll('g.ed-node')
           .attr('transform', d => `translate(${d.x},${d.y})`)
+        updateNotePositions()
         updateEdgePositions()
         drawResizeHandles()
       })
@@ -1870,6 +2035,8 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     // Visual
     nodesG.selectAll('g.ed-node')
       .classed('selected', d => d.id === node.id)
+    notesG && notesG.selectAll('g.ed-note')
+      .classed('note-selected', d => d.id === node.id)
 
     drawResizeHandles()
   }
@@ -1898,6 +2065,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     btnDelete.disabled = true
     nodesG && nodesG.selectAll('g.ed-node').classed('selected', false)
     edgesG && edgesG.selectAll('g.ed-edge').classed('selected', false)
+    notesG && notesG.selectAll('g.ed-note').classed('note-selected', false)
     handlesG && handlesG.selectAll('*').remove()
   }
 
@@ -1917,6 +2085,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
       el.addEventListener('click', () => {
         currentGroup = name
         updateGroupSwatches(name)
+        if (selectedNode) applyNodeImmediate()
       })
       swatchContainer.appendChild(el)
     })
@@ -1956,6 +2125,7 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     inpStyleStroke.value = preset.stroke
     inpStyleStrokeText.value = preset.stroke
     updateStylePresetHighlight()
+    applyNodeImmediate()
   }
 
   function updateStylePresetHighlight() {
@@ -1971,27 +2141,24 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
 
   initStylePresets()
 
-  // Sync color inputs
-  inpStyleFill.addEventListener('input', () => { inpStyleFillText.value = inpStyleFill.value })
+  // Sync color inputs + instant apply
+  inpStyleFill.addEventListener('input', () => {
+    inpStyleFillText.value = inpStyleFill.value
+    applyNodeDebounced()
+  })
   inpStyleFillText.addEventListener('input', () => {
     if (/^#[0-9a-fA-F]{6}$/.test(inpStyleFillText.value)) inpStyleFill.value = inpStyleFillText.value
     updateStylePresetHighlight()
+    applyNodeDebounced()
   })
-  inpStyleStroke.addEventListener('input', () => { inpStyleStrokeText.value = inpStyleStroke.value })
+  inpStyleStroke.addEventListener('input', () => {
+    inpStyleStrokeText.value = inpStyleStroke.value
+    applyNodeDebounced()
+  })
   inpStyleStrokeText.addEventListener('input', () => {
     if (/^#[0-9a-fA-F]{6}$/.test(inpStyleStrokeText.value)) inpStyleStroke.value = inpStyleStrokeText.value
     updateStylePresetHighlight()
-  })
-
-  btnClearStyle.addEventListener('click', () => {
-    if (!selectedNode) return
-    const colors = GROUPS[selectedNode.group] || GROUPS.blue
-    inpStyleFill.value = colors.fill.length === 7 ? colors.fill : '#f0f0f0'
-    inpStyleFillText.value = colors.fill
-    inpStyleStroke.value = colors.stroke.length === 7 ? colors.stroke : '#999999'
-    inpStyleStrokeText.value = colors.stroke
-    inpStyleStrokeWidth.value = 2
-    updateStylePresetHighlight()
+    applyNodeDebounced()
   })
 
   // ---- Add Node ----
@@ -2088,10 +2255,10 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     }
   }
 
-  // ---- Apply Panel Changes ----
+  // ---- Instant Apply: Node ----
+  // Helper: apply current panel state to node and re-render
   function applyNodeChanges() {
     if (!selectedNode || !graphData) return
-    pushUndo()
     const node = graphData.nodes.find(n => n.id === selectedNode.id)
     if (!node) return
 
@@ -2123,7 +2290,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     const swVal = parseFloat(inpStyleStrokeWidth.value) || 2
     const groupColors = GROUPS[node.group] || GROUPS.blue
 
-    // Only save style if different from group default
     const hasCustomStyle = fillVal !== groupColors.fill || strokeVal !== groupColors.stroke || swVal !== 2
     if (hasCustomStyle) {
       node.style = {
@@ -2150,12 +2316,36 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     renderGraph()
     selectNode(node)
 
-    // renderGraph() stops simulation; restart it if we were in force mode
     if (wasForce) {
       restartForceSimulation()
       selectNode(node)
     }
   }
+
+  // Debounced version for text inputs (avoids heavy re-render on every keystroke)
+  let _applyNodeTimer = null
+  function applyNodeDebounced() {
+    clearTimeout(_applyNodeTimer)
+    _applyNodeTimer = setTimeout(() => { pushUndo(); applyNodeChanges() }, 300)
+  }
+
+  // Immediate version for selects, checkboxes, color pickers
+  function applyNodeImmediate() {
+    pushUndo()
+    applyNodeChanges()
+  }
+
+  // Bind instant-apply events on node panel fields
+  inpNodeLabel.addEventListener('input', applyNodeDebounced)
+  inpNodeNote.addEventListener('input', applyNodeDebounced)
+  inpNodeX.addEventListener('change', applyNodeImmediate)
+  inpNodeY.addEventListener('change', applyNodeImmediate)
+  selNodeShape.addEventListener('change', applyNodeImmediate)
+  chkNodePin.addEventListener('change', applyNodeImmediate)
+  inpRectW.addEventListener('change', applyNodeImmediate)
+  inpRectH.addEventListener('change', applyNodeImmediate)
+  inpCircleR.addEventListener('change', applyNodeImmediate)
+  inpStyleStrokeWidth.addEventListener('change', applyNodeImmediate)
 
   // Rect auto size
   btnRectAuto.addEventListener('click', () => {
@@ -2182,9 +2372,9 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     if (wasForce) { restartForceSimulation(); selectNode(node) }
   })
 
+  // ---- Instant Apply: Edge ----
   function applyEdgeChanges() {
     if (!selectedEdge || !graphData) return
-    pushUndo()
     const edge = graphData.edges.find(e =>
       e.source === selectedEdge.source && e.target === selectedEdge.target)
     if (!edge) return
@@ -2196,6 +2386,20 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     renderGraph()
     selectEdge(edge)
   }
+
+  let _applyEdgeTimer = null
+  function applyEdgeDebounced() {
+    clearTimeout(_applyEdgeTimer)
+    _applyEdgeTimer = setTimeout(() => { pushUndo(); applyEdgeChanges() }, 300)
+  }
+  function applyEdgeImmediate() {
+    pushUndo()
+    applyEdgeChanges()
+  }
+
+  inpEdgeLabel.addEventListener('input', applyEdgeDebounced)
+  selEdgeStyle.addEventListener('change', applyEdgeImmediate)
+  inpEdgeColor.addEventListener('change', applyEdgeImmediate)
 
   // ---- Info Panel ----
   function updateInfoPanel() {
@@ -2287,10 +2491,6 @@ button.danger:hover { background: #fde8e8; border-color: var(--danger); }
     else startAddEdge()
   })
   btnDelete.addEventListener('click', deleteSelected)
-  btnApplyNode.addEventListener('click', applyNodeChanges)
-  btnDeleteNode.addEventListener('click', deleteSelected)
-  btnApplyEdge.addEventListener('click', applyEdgeChanges)
-  btnDeleteEdge.addEventListener('click', deleteSelected)
 
   chkGrid.addEventListener('change', () => {
     gridSnap = chkGrid.checked

@@ -11,7 +11,7 @@
       "group": "blue",
       "shape": "rect",
       "note": "$G = \\langle a \\rangle$",
-      "x": 321,
+      "x": 272,
       "y": 105
     },
     {
@@ -20,8 +20,8 @@
       "group": "blue",
       "shape": "rect",
       "note": "$\\langle a \\rangle = \\{a^k \\mid k \\in \\mathbb{Z}\\}$",
-      "x": 448,
-      "y": 36,
+      "x": 457,
+      "y": 46,
       "rectWidth": 109,
       "rectHeight": 60
     },
@@ -31,8 +31,8 @@
       "group": "orange",
       "shape": "rect",
       "note": "所有循环群只有两种",
-      "x": 250,
-      "y": 246,
+      "x": 219,
+      "y": 252,
       "rectWidth": 102,
       "rectHeight": 60
     },
@@ -42,24 +42,29 @@
       "group": "green",
       "shape": "rect",
       "note": "无限循环群的唯一模型",
-      "x": 119,
-      "y": 134
+      "x": 65,
+      "y": 104
     },
     {
       "id": "genPM1",
       "label": "生成元 $\\pm 1$",
       "group": "green",
       "note": "$\\mathbb{Z} = \\langle 1 \\rangle = \\langle -1 \\rangle$",
-      "x": 256,
-      "y": -8
+      "noteOffsetX": 2,
+      "noteOffsetY": 27,
+      "x": 212,
+      "y": -10,
+      "radius": 55
     },
     {
       "id": "subZ",
       "label": "子群 $= n\\mathbb{Z}$",
       "group": "green",
       "note": "$\\mathbb{Z}$ 的每个子群都是 $n\\mathbb{Z}$",
-      "x": 86,
-      "y": 334,
+      "noteOffsetX": -39,
+      "noteOffsetY": 63,
+      "x": 62,
+      "y": 327,
       "radius": 36
     },
     {
@@ -69,7 +74,7 @@
       "shape": "rect",
       "note": "$n$ 阶循环群的唯一模型",
       "x": 341,
-      "y": 419,
+      "y": 416,
       "rectWidth": 127,
       "rectHeight": 60
     },
@@ -78,8 +83,10 @@
       "label": "$n$ 次单位根",
       "group": "purple",
       "note": "$\\mu_n \\cong \\mathbb{Z}_n$",
-      "x": 471,
-      "y": 483,
+      "noteOffsetX": -1,
+      "noteOffsetY": 63,
+      "x": 542,
+      "y": 477,
       "radius": 42
     },
     {
@@ -88,8 +95,8 @@
       "group": "purple",
       "shape": "rect",
       "note": "$[a]$ 生成 $\\mathbb{Z}_n \\Leftrightarrow \\gcd(a,n)=1$",
-      "x": 504,
-      "y": 249,
+      "x": 488,
+      "y": 240,
       "rectWidth": 157,
       "rectHeight": 60
     },
@@ -98,8 +105,10 @@
       "label": "欧拉函数 $\\varphi$",
       "group": "purple",
       "note": "生成元个数 $= \\varphi(n)$",
-      "x": 690,
-      "y": 261,
+      "noteOffsetX": 1,
+      "noteOffsetY": 66,
+      "x": 674,
+      "y": 249,
       "radius": 42
     },
     {
@@ -107,8 +116,9 @@
       "label": "费马小定理",
       "group": "purple",
       "note": "$a^{p-1} \\equiv 1 \\pmod{p}$",
-      "x": 839,
-      "y": 284,
+      "noteOffsetY": 69,
+      "x": 824,
+      "y": 266,
       "radius": 45
     },
     {
@@ -116,15 +126,15 @@
       "label": "子群定理",
       "group": "red",
       "shape": "rect",
-      "x": 160,
-      "y": 521
+      "x": 163,
+      "y": 501
     },
     {
       "id": "subCyclic",
       "label": "子群仍是循环群",
       "group": "red",
-      "x": -3,
-      "y": 514,
+      "x": 4,
+      "y": 540,
       "radius": 63
     },
     {
@@ -132,8 +142,10 @@
       "label": "唯一 $d$ 阶子群",
       "group": "red",
       "note": "对每个 $d \\mid n$",
-      "x": 27,
-      "y": 675,
+      "noteOffsetX": -1,
+      "noteOffsetY": 31,
+      "x": 139,
+      "y": 648,
       "radius": 51
     },
     {
@@ -141,8 +153,10 @@
       "label": "$\\mathbb{Z}_{12}$ 例",
       "group": "red",
       "note": "因子 $1,2,3,4,6,12$",
-      "x": -107,
-      "y": 755
+      "noteOffsetX": 7,
+      "noteOffsetY": 56,
+      "x": 0,
+      "y": 782
     },
     {
       "id": "crt",
@@ -150,8 +164,8 @@
       "group": "gray",
       "shape": "rect",
       "note": "$\\gcd(m,n)=1 \\Rightarrow \\mathbb{Z}_{mn} \\cong \\mathbb{Z}_m \\times \\mathbb{Z}_n$",
-      "x": 347,
-      "y": 611,
+      "x": 376,
+      "y": 608,
       "rectWidth": 193,
       "rectHeight": 60
     },
@@ -160,8 +174,10 @@
       "label": "$\\varphi$ 乘法公式",
       "group": "gray",
       "note": "$\\varphi(mn) = \\varphi(m)\\varphi(n)$",
-      "x": 351,
-      "y": 790,
+      "noteOffsetX": 4,
+      "noteOffsetY": 67,
+      "x": 413,
+      "y": 754,
       "radius": 42
     }
   ],
