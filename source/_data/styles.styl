@@ -207,6 +207,14 @@ strong
         color: #aaa
       &[data-title]::before
         content: attr(data-title)
+      &[data-title="注意"]
+        color: #a63d40
+        border-top-color: #a63d40
+        border-bottom-color: #a63d40
+        &::before
+          color: #a63d40
+        strong
+          color: inherit
       p
         padding: 0
         margin: 0
@@ -245,6 +253,8 @@ strong
         tr
           border: none
           background: none
+          &:hover
+            background: none
         .gutter
           border-right: none
           pre

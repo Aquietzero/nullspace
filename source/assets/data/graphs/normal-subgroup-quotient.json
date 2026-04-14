@@ -1,0 +1,275 @@
+{
+  "title": "正规子群与商群",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    {
+      "id": "normal",
+      "label": "正规子群",
+      "group": "blue",
+      "shape": "rect",
+      "note": "$N \\unlhd G$",
+      "x": 223,
+      "y": 325,
+      "radius": 38,
+      "rectWidth": 100,
+      "rectHeight": 60
+    },
+    {
+      "id": "conjugate",
+      "label": "共轭不变",
+      "group": "blue",
+      "note": "$gng^{-1} \\in N$",
+      "noteOffsetX": 35,
+      "noteOffsetY": 55,
+      "x": 17,
+      "y": 360,
+      "radius": 36
+    },
+    {
+      "id": "equiv",
+      "label": "等价条件",
+      "group": "blue",
+      "shape": "rect",
+      "x": 145,
+      "y": 519
+    },
+    {
+      "id": "gNgN",
+      "label": "$gNg^{-1}=N$",
+      "group": "blue",
+      "x": -22,
+      "y": 517,
+      "radius": 54
+    },
+    {
+      "id": "cosetEq",
+      "label": "$gN=Ng$",
+      "group": "blue",
+      "note": "左陪集=右陪集",
+      "x": 260,
+      "y": 660,
+      "radius": 41
+    },
+    {
+      "id": "quotient",
+      "label": "商群",
+      "group": "orange",
+      "shape": "rect",
+      "note": "$G/N$",
+      "x": 470,
+      "y": 417,
+      "radius": 38,
+      "rectWidth": 80,
+      "rectHeight": 60
+    },
+    {
+      "id": "cosetOp",
+      "label": "陪集运算",
+      "group": "orange",
+      "note": "$(aN)(bN)=(ab)N$",
+      "x": 600,
+      "y": 338
+    },
+    {
+      "id": "wellDef",
+      "label": "良定义性",
+      "group": "orange",
+      "note": "与代表元无关",
+      "x": 424,
+      "y": 592,
+      "radius": 36
+    },
+    {
+      "id": "homo",
+      "label": "同态",
+      "group": "purple",
+      "shape": "rect",
+      "note": "$\\phi: G \\to H$",
+      "x": 470,
+      "y": 84,
+      "rectWidth": 80,
+      "rectHeight": 50
+    },
+    {
+      "id": "kernel",
+      "label": "核",
+      "group": "purple",
+      "note": "$\\ker(\\phi) \\unlhd G$",
+      "x": 319,
+      "y": 177,
+      "radius": 35
+    },
+    {
+      "id": "natHomo",
+      "label": "自然同态",
+      "group": "purple",
+      "note": "$\\pi: G \\to G/N$",
+      "x": 533,
+      "y": 241
+    },
+    {
+      "id": "center",
+      "label": "中心",
+      "group": "red",
+      "note": "$Z(G) \\unlhd G$",
+      "x": 199,
+      "y": 177
+    },
+    {
+      "id": "commutator",
+      "label": "换位子群",
+      "group": "red",
+      "note": "$G' = \\langle [a,b] \\rangle$",
+      "noteOffsetX": 1,
+      "noteOffsetY": 61,
+      "x": 300,
+      "y": 459,
+      "radius": 37
+    },
+    {
+      "id": "exZnZ",
+      "label": "$\\mathbb{Z}/n\\mathbb{Z}$",
+      "group": "green",
+      "x": 564,
+      "y": 537
+    },
+    {
+      "id": "exSnAn",
+      "label": "$S_n/A_n$",
+      "group": "green",
+      "note": "$\\cong \\{\\pm 1\\}$",
+      "x": 624,
+      "y": 445
+    },
+    {
+      "id": "exAbel",
+      "label": "阿贝尔群",
+      "group": "green",
+      "note": "子群都是正规的",
+      "x": 106,
+      "y": 235
+    },
+    {
+      "id": "exD4",
+      "label": "$D_4$ 旋转子群",
+      "group": "green",
+      "note": "正规子群的例子",
+      "x": -132,
+      "y": 325,
+      "radius": 51
+    }
+  ],
+  "edges": [
+    {
+      "source": "normal",
+      "target": "conjugate",
+      "label": "定义"
+    },
+    {
+      "source": "normal",
+      "target": "equiv",
+      "label": "判定"
+    },
+    {
+      "source": "equiv",
+      "target": "gNgN"
+    },
+    {
+      "source": "equiv",
+      "target": "cosetEq"
+    },
+    {
+      "source": "conjugate",
+      "target": "gNgN",
+      "style": "dashed"
+    },
+    {
+      "source": "normal",
+      "target": "quotient",
+      "label": "构造"
+    },
+    {
+      "source": "quotient",
+      "target": "cosetOp",
+      "label": "运算"
+    },
+    {
+      "source": "quotient",
+      "target": "wellDef",
+      "label": "需要证明"
+    },
+    {
+      "source": "cosetEq",
+      "target": "wellDef",
+      "label": "保证",
+      "style": "dashed"
+    },
+    {
+      "source": "kernel",
+      "target": "normal",
+      "label": "是"
+    },
+    {
+      "source": "homo",
+      "target": "kernel",
+      "label": "产生"
+    },
+    {
+      "source": "homo",
+      "target": "natHomo",
+      "style": "dashed"
+    },
+    {
+      "source": "natHomo",
+      "target": "quotient",
+      "label": "映到"
+    },
+    {
+      "source": "normal",
+      "target": "kernel",
+      "label": "↔ 同态核",
+      "style": "dashed"
+    },
+    {
+      "source": "normal",
+      "target": "center",
+      "label": "特殊"
+    },
+    {
+      "source": "normal",
+      "target": "commutator",
+      "label": "特殊"
+    },
+    {
+      "source": "commutator",
+      "target": "quotient",
+      "label": "$G/G'$ 阿贝尔",
+      "style": "dashed"
+    },
+    {
+      "source": "quotient",
+      "target": "exZnZ",
+      "label": "例"
+    },
+    {
+      "source": "quotient",
+      "target": "exSnAn",
+      "label": "例"
+    },
+    {
+      "source": "exAbel",
+      "target": "normal",
+      "label": "所有子群",
+      "style": "dashed"
+    },
+    {
+      "source": "exD4",
+      "target": "conjugate",
+      "label": "验证",
+      "style": "dashed"
+    }
+  ]
+}
