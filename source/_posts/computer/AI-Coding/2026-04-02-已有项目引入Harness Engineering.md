@@ -42,7 +42,7 @@ cd {项目目录}
 claude-internal
 ```
 
-让 claude 生成一个 CLUADE.md 的基础版本（目前已经在 claude 会话内了）。
+让 claude 生成一个 CLAUDE.md 的基础版本（目前已经在 claude 会话内了）。
 
 ```bash
 claude > /init
