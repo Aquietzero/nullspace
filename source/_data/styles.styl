@@ -108,6 +108,34 @@ strong
 .collection-title
   display: none
 
+// Category tags (archive page top)
+.archive-category-nav
+  display: flex
+  flex-wrap: wrap
+  gap: 4px 8px
+  margin: 0 0 28px 20px
+  padding: 0
+  line-height: 1.8
+
+.archive-category-link
+  color: #999
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
+  font-size: 0.75em
+  text-decoration: none
+  border-bottom: none !important
+  white-space: nowrap
+  transition: color 0.15s ease
+  &:hover
+    color: #000
+  &::before
+    content: '#'
+    opacity: 0.4
+
+.archive-category-count
+  font-size: 0.85em
+  opacity: 0.4
+  margin-left: 1px
+
 .posts-collapse .post-content
   .collection-year
     margin: 40px 0 15px 0
@@ -132,11 +160,7 @@ strong
     font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace
     font-size: 0.7em
     color: #999
-    text-decoration: none
-    border-bottom: none !important
     white-space: nowrap
-    &:hover
-      color: #000
 
 // --- Post ---
 .post-block
