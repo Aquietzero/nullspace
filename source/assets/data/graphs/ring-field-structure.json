@@ -1,0 +1,292 @@
+{
+  "title": "环与域的概念体系",
+  "options": {
+    "nodeRadius": 30,
+    "fullWidth": true
+  },
+  "nodes": [
+    {
+      "id": "abelian",
+      "label": "加法阿贝尔群",
+      "group": "blue",
+      "note": "$(R,+)$ 是交换群",
+      "noteOffsetX": -98,
+      "noteOffsetY": 23,
+      "x": 373,
+      "y": 151,
+      "radius": 50
+    },
+    {
+      "id": "semigroup",
+      "label": "乘法半群",
+      "group": "blue",
+      "note": "$(R,\\times)$ 有结合律",
+      "noteOffsetX": 88,
+      "noteOffsetY": 33,
+      "x": 500,
+      "y": 92,
+      "radius": 40
+    },
+    {
+      "id": "distributive",
+      "label": "分配律",
+      "group": "blue",
+      "note": "$a(b+c)=ab+ac$",
+      "x": 491,
+      "y": 399
+    },
+    {
+      "id": "ring",
+      "label": "环",
+      "group": "blue",
+      "shape": "rect",
+      "note": "$(R,+,\\times)$：两个运算的代数结构",
+      "x": 513,
+      "y": 251,
+      "radius": 38,
+      "rectWidth": 160,
+      "rectHeight": 60
+    },
+    {
+      "id": "matrix-ring",
+      "label": "$M_n(\\mathbb{R})$",
+      "group": "green",
+      "note": "矩阵环（非交换）",
+      "x": 429,
+      "y": 490
+    },
+    {
+      "id": "comm-ring",
+      "label": "交换环",
+      "group": "orange",
+      "note": "$ab=ba$",
+      "x": 735,
+      "y": 221
+    },
+    {
+      "id": "unity-ring",
+      "label": "有单位元的环",
+      "group": "orange",
+      "note": "$\\exists\\, 1 \\in R,\\; 1\\cdot a = a$",
+      "noteOffsetX": 2,
+      "noteOffsetY": 72,
+      "x": 614,
+      "y": 469,
+      "radius": 48
+    },
+    {
+      "id": "ring-hom",
+      "label": "环同态",
+      "group": "purple",
+      "shape": "rect",
+      "note": "$\\phi(a+b)=\\phi(a)+\\phi(b)$，$\\phi(ab)=\\phi(a)\\phi(b)$",
+      "x": 307,
+      "y": 348,
+      "rectWidth": 234,
+      "rectHeight": 60
+    },
+    {
+      "id": "Zn",
+      "label": "$\\mathbb{Z}_n$",
+      "group": "green",
+      "note": "模 $n$ 剩余类环",
+      "x": 862,
+      "y": 237
+    },
+    {
+      "id": "integral-domain",
+      "label": "整环",
+      "group": "orange",
+      "shape": "rect",
+      "note": "交换 + 有单位元 + 无零因子<br>消去律成立",
+      "x": 813,
+      "y": 376,
+      "rectWidth": 156,
+      "rectHeight": 60
+    },
+    {
+      "id": "zero-divisor",
+      "label": "零因子",
+      "group": "purple",
+      "note": "$ab=0,\\; a\\neq 0,\\; b\\neq 0$",
+      "noteOffsetX": -3,
+      "noteOffsetY": 55,
+      "x": 726,
+      "y": 545
+    },
+    {
+      "id": "division-ring",
+      "label": "除环",
+      "group": "orange",
+      "shape": "rect",
+      "note": "有单位元 + 非零元可逆（不必交换）",
+      "x": 338,
+      "y": 625,
+      "rectWidth": 185,
+      "rectHeight": 60
+    },
+    {
+      "id": "Z",
+      "label": "$\\mathbb{Z}$",
+      "group": "green",
+      "note": "最典型的整环",
+      "x": 1018,
+      "y": 362
+    },
+    {
+      "id": "poly-ring",
+      "label": "$\\mathbb{Z}[x]$",
+      "group": "green",
+      "note": "整系数多项式环，是整环",
+      "x": 1026,
+      "y": 475
+    },
+    {
+      "id": "field",
+      "label": "域",
+      "group": "red",
+      "shape": "rect",
+      "note": "除环 + 交换 ＝ 整环 + 非零元可逆<br>可做加减乘除",
+      "x": 846,
+      "y": 683,
+      "radius": 38,
+      "rectWidth": 176,
+      "rectHeight": 60
+    },
+    {
+      "id": "H",
+      "label": "$\\mathbb{H}$",
+      "group": "gray",
+      "note": "Hamilton 四元数体（非交换除环）",
+      "x": 228,
+      "y": 777
+    },
+    {
+      "id": "QRC",
+      "label": "$\\mathbb{Q},\\mathbb{R},\\mathbb{C}$",
+      "group": "green",
+      "note": "经典无限域",
+      "x": 746,
+      "y": 842
+    },
+    {
+      "id": "Zp",
+      "label": "$\\mathbb{Z}_p$",
+      "group": "green",
+      "note": "$p$ 为素数，有限素域",
+      "x": 854,
+      "y": 864
+    }
+  ],
+  "edges": [
+    {
+      "source": "abelian",
+      "target": "ring",
+      "label": "加法条件"
+    },
+    {
+      "source": "semigroup",
+      "target": "ring",
+      "label": "乘法条件"
+    },
+    {
+      "source": "distributive",
+      "target": "ring",
+      "label": "连接两运算"
+    },
+    {
+      "source": "ring",
+      "target": "comm-ring",
+      "label": "+ 乘法交换律"
+    },
+    {
+      "source": "ring",
+      "target": "unity-ring",
+      "label": "+ 乘法单位元"
+    },
+    {
+      "source": "ring",
+      "target": "ring-hom",
+      "style": "dashed"
+    },
+    {
+      "source": "matrix-ring",
+      "target": "unity-ring",
+      "label": "非交换例子",
+      "style": "dashed"
+    },
+    {
+      "source": "comm-ring",
+      "target": "integral-domain",
+      "label": "+ 有单位元 + 无零因子"
+    },
+    {
+      "source": "unity-ring",
+      "target": "integral-domain",
+      "style": "dashed"
+    },
+    {
+      "source": "unity-ring",
+      "target": "division-ring",
+      "label": "+ 非零元可逆"
+    },
+    {
+      "source": "integral-domain",
+      "target": "zero-divisor",
+      "label": "不含",
+      "style": "dashed"
+    },
+    {
+      "source": "division-ring",
+      "target": "zero-divisor",
+      "label": "不含",
+      "style": "dashed"
+    },
+    {
+      "source": "integral-domain",
+      "target": "field",
+      "label": "+ 非零元可逆"
+    },
+    {
+      "source": "division-ring",
+      "target": "field",
+      "label": "+ 乘法交换"
+    },
+    {
+      "source": "H",
+      "target": "division-ring",
+      "label": "非交换例子",
+      "style": "dashed"
+    },
+    {
+      "source": "Zn",
+      "target": "comm-ring",
+      "label": "例子",
+      "style": "dashed"
+    },
+    {
+      "source": "Z",
+      "target": "integral-domain",
+      "label": "例子",
+      "style": "dashed"
+    },
+    {
+      "source": "poly-ring",
+      "target": "integral-domain",
+      "label": "例子",
+      "style": "dashed"
+    },
+    {
+      "source": "QRC",
+      "target": "field",
+      "label": "例子",
+      "style": "dashed"
+    },
+    {
+      "source": "Zp",
+      "target": "field",
+      "label": "有限域",
+      "style": "dashed"
+    }
+  ]
+}
