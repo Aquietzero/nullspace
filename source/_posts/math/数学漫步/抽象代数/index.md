@@ -260,3 +260,4 @@ $$\mathbb{Q}(\sqrt{2}) = \{a + b\sqrt{2} \mid a, b \in \mathbb{Q}\}$$
 - {% post_link math/数学漫步/抽象代数/2026-04-07-置换群与对称群 %}
 - {% post_link math/数学漫步/抽象代数/2026-04-08-正规子群与商群 %}
 - {% post_link math/数学漫步/抽象代数/2026-04-09-群同态与同构 %}
+- {% post_link math/数学漫步/抽象代数/2026-04-10-环与域 %}
